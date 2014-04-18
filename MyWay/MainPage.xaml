@@ -40,32 +40,22 @@
         <phone:Pivot Title="МОЙ МАРШРУТ" Loaded="Pivot_Loaded_1">
             <!--Первый элемент Pivot-->
             <phone:PivotItem Header="маршруты">
-                <!--Двухстрочный список с разбивкой текста на строки-->
-                <phone:LongListSelector Margin="0,0,-12,0" ItemsSource="{Binding Items}">
-                    <phone:LongListSelector.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="0,0,0,17">
-                                <TextBlock Text="{Binding LineOne}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
-                                <TextBlock Text="{Binding LineTwo}" TextWrapping="Wrap" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </phone:LongListSelector.ItemTemplate>
-                </phone:LongListSelector>
+                <phone:LongListSelector
+                  x:Name="Routes"
+                  JumpListStyle="{StaticResource RoutesJumpListStyle}"
+                  Background="Transparent"
+                  GroupHeaderTemplate="{StaticResource RoutesGroupHeaderTemplate}"
+                  ItemTemplate="{StaticResource RoutesItemTemplate}"
+                  LayoutMode="List"
+                  IsGroupingEnabled="true"
+                  HideEmptyGroups="true"
+                  Margin="15,-16,-12,10"/>
+                <!--toolkit:TiltEffect.IsTiltEnabled="true"-->
             </phone:PivotItem>
 
             <!--Второй элемент Pivot-->
             <phone:PivotItem Header="остановки">
-                <!--Двухстрочный список без разбивки текста на строки-->
-                <phone:LongListSelector Margin="0,0,-12,0" ItemsSource="{Binding Items}">
-                    <phone:LongListSelector.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Margin="0,0,0,17">
-                                    <TextBlock Text="{Binding LineOne}" TextWrapping="NoWrap" Margin="12,0,0,0" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
-                                    <TextBlock Text="{Binding LineThree}" TextWrapping="NoWrap" Margin="12,-6,0,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
-                                </StackPanel>
-                            </DataTemplate>
-                    </phone:LongListSelector.ItemTemplate>
-                </phone:LongListSelector>
+
             </phone:PivotItem>
         </phone:Pivot>
 

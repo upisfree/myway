@@ -17,34 +17,15 @@
     <!--LayoutRoot представляет корневую сетку, где размещается все содержимое страницы-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
 
-        <!-- ПРИМЕЧАНИЕ О ЛОКАЛИЗАЦИИ:
-            Чтобы локализовать отображаемые строки, скопируйте их значения в соответствующим образом названные
-            ключи в файле ресурсов нейтрального языка приложения (AppResources.resx), а затем
-            замените жестко заданное текстовое значение между кавычками атрибутов
-            на выражение привязки, указывающее на имя соответствующей строки.
-
-            Пример:
-
-                Text="{Binding Path=LocalizedResources.ApplicationTitle, Source={StaticResource LocalizedStrings}}"
-
-            Данная привязка указывает на строковый ресурс шаблона с именем "ApplicationTitle".
-
-            Добавление поддерживаемых языков на вкладку "Свойства проекта" создает
-            новый RESX-файл для каждого языка, в котором могут храниться переведенные значения
-            строк пользовательского интерфейса. Привязка в этих примерах вызывает отрисовку
-            значений атрибутов из RESX-файла, соответствующего
-            CurrentUICulture приложения во время выполнения.
-         -->
-
         <!--Элемент управления Pivot-->
         <phone:Pivot Title="МОЙ МАРШРУТ" Loaded="Pivot_Loaded_1">
             <!--Первый элемент Pivot-->
             <phone:PivotItem Header="маршруты">
                 <phone:LongListSelector
                   x:Name="Routes"
-                  JumpListStyle="{StaticResource RoutesJumpListStyle}"
+                  JumpListStyle="{StaticResource JumpListStyle}"
                   Background="Transparent"
-                  GroupHeaderTemplate="{StaticResource RoutesGroupHeaderTemplate}"
+                  GroupHeaderTemplate="{StaticResource GroupHeaderTemplate}"
                   ItemTemplate="{StaticResource RoutesItemTemplate}"
                   LayoutMode="List"
                   IsGroupingEnabled="true"

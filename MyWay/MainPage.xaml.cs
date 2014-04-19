@@ -43,23 +43,22 @@ namespace MyWay
         {
             InitializeComponent();
 
-            List<GroupByNumber> PlayList = new List<GroupByNumber>();
-            //Add your GroupByNumbers in PlayList
+            List<GroupByNumber> RoutesList = new List<GroupByNumber>();
 
-            PlayList.Add(new GroupByNumber() { Number = "1", Type = "трамвай", Desc = "Пос. Амурский-ПО \"Полет\"" });
-            PlayList.Add(new GroupByNumber() { Number = "10", Type = "автобус", Desc = "здесь что-то" });
-            PlayList.Add(new GroupByNumber() { Number = "101", Type = "автобус", Desc = "\"Полет\"" });
-            PlayList.Add(new GroupByNumber() { Number = "89", Type = "автобус", Desc = "Пос. Амурский-ПО" });
-            PlayList.Add(new GroupByNumber() { Number = "88", Type = "автобус", Desc = "Пос. Амурский-ПО" });
-            PlayList.Add(new GroupByNumber() { Number = "24", Type = "трамвай", Desc = "Пос. Амурский-ПО Пос. Амурский-ПО Пос. Амурский-ПО \"Полет\"" });
-            PlayList.Add(new GroupByNumber() { Number = "254", Type = "трамвай", Desc = "Пос. Амурский-ПО Пос. Амурский-ПО Пос. Амурский-ПО \"Полет\"" });
+            RoutesList.Add(new GroupByNumber() { Number = "1", Type = "трамвай", Desc = "Пос. Амурский-ПО \"Полет\"" });
+            RoutesList.Add(new GroupByNumber() { Number = "10", Type = "автобус", Desc = "здесь что-то" });
+            RoutesList.Add(new GroupByNumber() { Number = "101", Type = "автобус", Desc = "\"Полет\"" });
+            RoutesList.Add(new GroupByNumber() { Number = "89", Type = "автобус", Desc = "Пос. Амурский-ПО" });
+            RoutesList.Add(new GroupByNumber() { Number = "88", Type = "автобус", Desc = "Пос. Амурский-ПО" });
+            RoutesList.Add(new GroupByNumber() { Number = "24", Type = "трамвай", Desc = "Пос. Амурский-ПО Пос. Амурский-ПО Пос. Амурский-ПО \"Полет\"" });
+            RoutesList.Add(new GroupByNumber() { Number = "254", Type = "трамвай", Desc = "Пос. Амурский-ПО Пос. Амурский-ПО Пос. Амурский-ПО \"Полет\"" });
 
-            var groupedPlayList =
-                    from list in PlayList
+            var groupedRoutesList =
+                    from list in RoutesList
                     group list by list.Number[0] into listByGroup
                     select new KeyedList<char, GroupByNumber>(listByGroup);
 
-            Routes.ItemsSource = new List<KeyedList<char, GroupByNumber>>(groupedPlayList);
+            Routes.ItemsSource = new List<KeyedList<char, GroupByNumber>>(groupedRoutesList);
         }
 
         // Загрузка данных для элементов ViewModel

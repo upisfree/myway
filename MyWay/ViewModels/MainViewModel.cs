@@ -7,48 +7,6 @@ namespace MyWay.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        public MainViewModel()
-        {
-            this.Items = new ObservableCollection<ItemViewModel>();
-        }
-
-        /// <summary>
-        /// Коллекция объектов ItemViewModel.
-        /// </summary>
-        public ObservableCollection<ItemViewModel> Items { get; private set; }
-
-        private string _sampleProperty = "Sample Runtime Property Value";
-        /// <summary>
-        /// Пример свойства ViewModel; это свойство используется в представлении для отображения его значения с помощью привязки
-        /// </summary>
-        /// <returns></returns>
-        public string SampleProperty
-        {
-            get
-            {
-                return _sampleProperty;
-            }
-            set
-            {
-                if (value != _sampleProperty)
-                {
-                    _sampleProperty = value;
-                    NotifyPropertyChanged("SampleProperty");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Пример свойства, возвращающего локализованную строку
-        /// </summary>
-        public string LocalizedSampleProperty
-        {
-            get
-            {
-                return AppResources.SampleProperty;
-            }
-        }
-
         public bool IsDataLoaded
         {
             get;

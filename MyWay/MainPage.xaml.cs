@@ -45,13 +45,13 @@ namespace MyWay
 
             List<GroupByNumber> RoutesList = new List<GroupByNumber>();
 
-            RoutesList.Add(new GroupByNumber() { Number = "1", Type = "трамвай", Desc = "Пос. Амурский-ПО \"Полет\"" });
-            RoutesList.Add(new GroupByNumber() { Number = "10", Type = "автобус", Desc = "здесь что-то" });
-            RoutesList.Add(new GroupByNumber() { Number = "101", Type = "автобус", Desc = "\"Полет\"" });
-            RoutesList.Add(new GroupByNumber() { Number = "89", Type = "автобус", Desc = "Пос. Амурский-ПО" });
-            RoutesList.Add(new GroupByNumber() { Number = "88", Type = "автобус", Desc = "Пос. Амурский-ПО" });
-            RoutesList.Add(new GroupByNumber() { Number = "24", Type = "трамвай", Desc = "Пос. Амурский-ПО Пос. Амурский-ПО Пос. Амурский-ПО \"Полет\"" });
-            RoutesList.Add(new GroupByNumber() { Number = "254", Type = "трамвай", Desc = "Пос. Амурский-ПО Пос. Амурский-ПО Пос. Амурский-ПО \"Полет\"" });
+            RoutesList.Add(new GroupByNumber() { Number = "1", Type = " трамвай", Desc = "Пос. Амурский-ПО \"Полет\"" });
+            RoutesList.Add(new GroupByNumber() { Number = "10", Type = " автобус", Desc = "здесь что-то" });
+            RoutesList.Add(new GroupByNumber() { Number = "101", Type = " автобус", Desc = "\"Полет\"" });
+            RoutesList.Add(new GroupByNumber() { Number = "89", Type = " автобус", Desc = "Пос. Амурский-ПО" });
+            RoutesList.Add(new GroupByNumber() { Number = "88", Type = " автобус", Desc = "Пос. Амурский-ПО" });
+            RoutesList.Add(new GroupByNumber() { Number = "24", Type = " трамвай", Desc = "Пос. Амурский-ПО Пос. Амурский-ПО Пос. Амурский-ПО \"Полет\"" });
+            RoutesList.Add(new GroupByNumber() { Number = "254", Type = " трамвай", Desc = "Пос. Амурский-ПО Пос. Амурский-ПО Пос. Амурский-ПО \"Полет\"" });
 
             var groupedRoutesList =
                     from list in RoutesList

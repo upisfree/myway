@@ -247,8 +247,16 @@ namespace MyWay
 
         public void OpenRoute(object sender, EventArgs e)
         {
-            StackPanel test = (StackPanel)sender;
-            MessageBox.Show(test.Tag.ToString());
+            StackPanel href = (StackPanel)sender;
+            string link = href.Tag.ToString();
+
+            TextBlock txtmsg = new TextBlock();
+            txtmsg.Text = "New Program.";
+            txtmsg.Margin = new Thickness(10, 20, 10, 10);
+            txtmsg.TextWrapping = TextWrapping.Wrap;
+            txtmsg.FontSize = 28;
+            txtmsg.TextAlignment = TextAlignment.Center;
+            href.Children.Add(txtmsg);
         }
     }
 }

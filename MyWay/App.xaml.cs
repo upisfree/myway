@@ -1,14 +1,15 @@
-﻿using System;
-using System.Diagnostics;
-using System.Resources;
-using System.Windows;
-using System.Windows.Markup;
-using System.Windows.Navigation;
-using Microsoft.Phone.Controls;
+﻿using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using MyWay.Resources;
 using MyWay.ViewModels;
+using System;
+using System.Diagnostics;
+using System.Resources;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Markup;
+using System.Windows.Media;
+using System.Windows.Navigation;
 
 namespace MyWay
 {
@@ -250,13 +251,7 @@ namespace MyWay
             StackPanel href = (StackPanel)sender;
             string link = href.Tag.ToString();
 
-            TextBlock txtmsg = new TextBlock();
-            txtmsg.Text = "New Program.";
-            txtmsg.Margin = new Thickness(10, 20, 10, 10);
-            txtmsg.TextWrapping = TextWrapping.Wrap;
-            txtmsg.FontSize = 28;
-            txtmsg.TextAlignment = TextAlignment.Center;
-            href.Children.Add(txtmsg);
+            (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Route.xaml?link=" + link, UriKind.RelativeOrAbsolute));
         }
     }
 }

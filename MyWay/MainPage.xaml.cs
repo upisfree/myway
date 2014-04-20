@@ -1,14 +1,17 @@
-﻿using System;
+﻿using HtmlAgilityPack;
+using Microsoft.Phone.Controls;
+using Microsoft.Phone.Shell;
+using MyWay.Resources;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
-using Microsoft.Phone.Controls;
-using Microsoft.Phone.Shell;
-using System.Globalization;
-using MyWay.Resources;
 
 namespace MyWay
 {
@@ -19,6 +22,7 @@ namespace MyWay
             public string Number { get; set; }
             public string Type   { get; set; }
             public string Desc   { get; set; }
+            public string Href   { get; set; }
         }
 
         public class KeyedList<TKey, TItem> : List<TItem>
@@ -42,23 +46,6 @@ namespace MyWay
         public MainPage()
         {
             InitializeComponent();
-
-            List<GroupByNumber> RoutesList = new List<GroupByNumber>();
-
-            RoutesList.Add(new GroupByNumber() { Number = "1", Type = " трамвай", Desc = "Пос. Амурский-ПО \"Полет\"" });
-            RoutesList.Add(new GroupByNumber() { Number = "10", Type = " автобус", Desc = "здесь что-то" });
-            RoutesList.Add(new GroupByNumber() { Number = "101", Type = " автобус", Desc = "\"Полет\"" });
-            RoutesList.Add(new GroupByNumber() { Number = "89", Type = " автобус", Desc = "Пос. Амурский-ПО" });
-            RoutesList.Add(new GroupByNumber() { Number = "88", Type = " автобус", Desc = "Пос. Амурский-ПО" });
-            RoutesList.Add(new GroupByNumber() { Number = "24", Type = " трамвай", Desc = "Пос. Амурский-ПО Пос. Амурский-ПО Пос. Амурский-ПО \"Полет\"" });
-            RoutesList.Add(new GroupByNumber() { Number = "254", Type = " трамвай", Desc = "Пос. Амурский-ПО Пос. Амурский-ПО Пос. Амурский-ПО \"Полет\"" });
-
-            var groupedRoutesList =
-                    from list in RoutesList
-                    group list by list.Number[0] into listByGroup
-                    select new KeyedList<char, GroupByNumber>(listByGroup);
-
-            Routes.ItemsSource = new List<KeyedList<char, GroupByNumber>>(groupedRoutesList);
         }
 
         // Загрузка данных для элементов ViewModel
@@ -67,12 +54,43 @@ namespace MyWay
             if (!App.ViewModel.IsDataLoaded)
             {
                 App.ViewModel.LoadData();
+
+                ShowRoutesList();
             }
         }
 
-        private void Pivot_Loaded_1(object sender, RoutedEventArgs e)
+        public async void ShowRoutesList()
         {
+            List<GroupByNumber> RoutesList = new List<GroupByNumber>();
 
+            string htmlPage = "";
+
+            using (var client = new HttpClient())
+            {
+                htmlPage = await new HttpClient().GetStringAsync("http://t.bus55.ru/index.php/app/get_routes/");
+            }
+
+            HtmlDocument htmlDocument = new HtmlDocument();
+            htmlDocument.LoadHtml(htmlPage);
+
+            foreach (var a in htmlDocument.DocumentNode.SelectNodes("//a"))
+            {
+                var elem = a.ChildNodes.ToArray();
+
+                string number = elem[0].InnerText.Trim();
+                string type   = elem[1].InnerText.Trim();
+                string desc   = elem[2].InnerText.Trim();
+                string href   = a.Attributes["href"].Value;
+
+                RoutesList.Add(new GroupByNumber() { Number = number, Type = " " + type, Desc = desc, Href = href });
+            }
+
+            var groupedRoutesList =
+                    from list in RoutesList
+                    group list by list.Number[0] into listByGroup
+                    select new KeyedList<char, GroupByNumber>(listByGroup);
+
+            Routes.ItemsSource = new List<KeyedList<char, GroupByNumber>>(groupedRoutesList);
         }
     }
 }

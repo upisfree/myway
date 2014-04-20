@@ -8,6 +8,7 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using MyWay.Resources;
 using MyWay.ViewModels;
+using System.Windows.Controls;
 
 namespace MyWay
 {
@@ -242,6 +243,12 @@ namespace MyWay
 
                 throw;
             }
+        }
+
+        public void OpenRoute(object sender, EventArgs e)
+        {
+            StackPanel test = (StackPanel)sender;
+            MessageBox.Show(test.Tag.ToString());
         }
     }
 }

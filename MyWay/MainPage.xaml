@@ -17,7 +17,7 @@
     <Grid x:Name="LayoutRoot" Background="Transparent">
 
         <!--Элемент управления Pivot-->
-        <phone:Pivot Title="МОЙ МАРШРУТ" Loaded="Pivot_Loaded_1">
+        <phone:Pivot Title="МОЙ МАРШРУТ">
             <!--Первый элемент Pivot-->
             <phone:PivotItem Header="маршруты">
                 <phone:LongListSelector

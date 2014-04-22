@@ -251,7 +251,7 @@ namespace MyWay
             StackPanel href = (StackPanel)sender;
             string link = href.Tag.ToString();
 
-            (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Route.xaml?link=" + link, UriKind.RelativeOrAbsolute));
+            (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Route.xaml?link=" + link, UriKind.Relative));
         }
     }
 }

@@ -24,6 +24,12 @@
             </StackPanel>
         </DataTemplate>
 
+        <!-- Остановка в маршруте -->
+        
+        <DataTemplate x:Key="InRouteStop">
+            <TextBlock Height="55" Text="{Binding Name}" VerticalAlignment="Top" Width="436" Margin="10,0" FontFamily="Segoe WP SemiLight" FontSize="36" />
+        </DataTemplate>
+
         <!-- Буква / Цифра, по которой группируются данные в LongListSelector -->
     
         <DataTemplate x:Key="GroupHeaderTemplate">

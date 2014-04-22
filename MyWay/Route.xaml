@@ -1,11 +1,12 @@
 ﻿<phone:PhoneApplicationPage
-    x:Class="MyWay.RoutePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:maps="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
+    x:Class="MyWay.Route"
     mc:Ignorable="d"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -13,45 +14,20 @@
     SupportedOrientations="Portrait"  Orientation="Portrait"
     shell:SystemTray.IsVisible="True">
 
-  <Grid x:Name="LayoutRoot" Background="Transparent">
-        <Button Content="Navigate Back to Main Page" HorizontalAlignment="Left" Margin="139,138,0,0" VerticalAlignment="Top" CacheMode="BitmapCache" ClickMode="Press"/>
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <phone:Pivot Title="МОЙ МАРШРУТ" x:Name="PivotMain">
+            <phone:PivotItem Header="а" Margin="12,0">
+                <ScrollViewer HorizontalAlignment="Left" Height="631" VerticalAlignment="Top" Width="456">
+                    <StackPanel x:Name="RouteA" />
+                </ScrollViewer>
+            </phone:PivotItem>
 
-
-
-
-
-
-
-
-
-
-
-
-
-        <!--
-
-    <phone:Pivot Title="МОЙ МАРШРУТ">
-
-      <phone:PivotItem Header="маршруты">
-        <phone:LongListSelector
-          x:Name="Routes"
-          JumpListStyle="{StaticResource JumpListStyle}"
-          Background="Transparent"
-          GroupHeaderTemplate="{StaticResource GroupHeaderTemplate}"
-          ItemTemplate="{StaticResource RoutesItemTemplate}"
-          LayoutMode="List"
-          IsGroupingEnabled="true"
-          HideEmptyGroups="true"
-          Margin="15,-16,-12,10"/>
-
-      </phone:PivotItem>
-
-
-      <phone:PivotItem Header="остановки">
-
-      </phone:PivotItem>
-    </phone:Pivot>
- -->
-  </Grid>
+            <phone:PivotItem Header="б" Margin="12,0">
+                <ScrollViewer HorizontalAlignment="Left" Height="631" VerticalAlignment="Top" Width="456">
+                    <StackPanel x:Name="RouteB" />
+                </ScrollViewer>
+            </phone:PivotItem>
+        </phone:Pivot>
+    </Grid>
 
 </phone:PhoneApplicationPage>

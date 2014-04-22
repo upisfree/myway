@@ -22,7 +22,7 @@ namespace MyWay
             public string Number { get; set; }
             public string Type   { get; set; }
             public string Desc   { get; set; }
-            public string Href   { get; set; }
+            public string ToStop { get; set; }
         }
 
         public class KeyedList<TKey, TItem> : List<TItem>
@@ -80,9 +80,9 @@ namespace MyWay
                 string number = elem[0].InnerText.Trim();
                 string type   = elem[1].InnerText.Trim();
                 string desc   = elem[2].InnerText.Trim();
-                string href   = a.Attributes["href"].Value;
+                string toStop = a.Attributes["href"].Value + "|" + number + " " + type;
 
-                RoutesList.Add(new GroupByNumber() { Number = number, Type = " " + type, Desc = desc, Href = href });
+                RoutesList.Add(new GroupByNumber() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
             }
 
             var groupedRoutesList =

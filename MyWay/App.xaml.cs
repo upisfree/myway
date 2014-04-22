@@ -248,10 +248,11 @@ namespace MyWay
 
         public void OpenRoute(object sender, EventArgs e)
         {
-            StackPanel href = (StackPanel)sender;
-            string link = href.Tag.ToString();
+            StackPanel text = (StackPanel)sender;
+            string link = text.Tag.ToString().Split(new char[] { '|' })[0]; // да, это говнокод.
+            string name = text.Tag.ToString().Split(new char[] { '|' })[1].ToUpper(); // я писал это в среду, 1:23
 
-            (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Route.xaml?link=" + link, UriKind.Relative));
+            (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Route.xaml?link=" + link + "&name=" + name, UriKind.Relative));
         }
     }
 }

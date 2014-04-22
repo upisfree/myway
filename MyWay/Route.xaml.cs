@@ -22,6 +22,12 @@ namespace MyWay
             base.OnNavigatedTo(e);
 
             string link = "";
+            string name = "";
+
+            if (NavigationContext.QueryString.TryGetValue("name", out name))
+            {
+                PivotMain.Title = name;
+            }
 
             if (NavigationContext.QueryString.TryGetValue("link", out link))
             {
@@ -49,14 +55,14 @@ namespace MyWay
                     {
                         var elem = a.ChildNodes.ToArray();
 
-                        string name = elem[0].InnerText.Trim();
+                        string stop = elem[0].InnerText.Trim();
 
                         Thickness margin = new Thickness();
                         margin.Bottom = 10;
 
                         TextBlock txt = new TextBlock()
-                        { 
-                            Text = name,
+                        {
+                            Text = stop,
                             Height = 55,
                             Width = 436,
                             Margin = margin,

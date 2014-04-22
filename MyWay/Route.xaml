@@ -16,13 +16,13 @@
 
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <phone:Pivot Title="МОЙ МАРШРУТ" x:Name="PivotMain">
-            <phone:PivotItem Header="а" Margin="12,0">
+            <phone:PivotItem Header="а" Margin="12,0" x:Name="RoutePivotA">
                 <ScrollViewer HorizontalAlignment="Left" Height="631" VerticalAlignment="Top" Width="456">
                     <StackPanel x:Name="RouteA" />
                 </ScrollViewer>
             </phone:PivotItem>
 
-            <phone:PivotItem Header="б" Margin="12,0">
+            <phone:PivotItem Header="б" Margin="12,0" x:Name="RoutePivotB">
                 <ScrollViewer HorizontalAlignment="Left" Height="631" VerticalAlignment="Top" Width="456">
                     <StackPanel x:Name="RouteB" />
                 </ScrollViewer>

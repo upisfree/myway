@@ -37,7 +37,9 @@ namespace MyWay
 
                 int i = 0;
 
-                foreach (var a in htmlDocument.DocumentNode.SelectNodes("//li"))
+                var b = htmlDocument.DocumentNode.SelectNodes("//li");
+
+                foreach (var a in b)
                 {
                     if (a.Attributes["class"] != null)
                     {
@@ -63,10 +65,17 @@ namespace MyWay
                         };
 
                         if (i == 1)
+                        {
                             RouteA.Children.Add(txt);
+
+                            if (b.IndexOf(a) == b.Count - 1 && RouteB.Children.Count == 0)
+                                PivotMain.Items.Remove(RoutePivotB);
+                        }
                         else
+                        {
                             RouteB.Children.Add(txt);
-                    }
+                        }
+                   }
                 }
             }
         }

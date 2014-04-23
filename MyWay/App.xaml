@@ -1,9 +1,10 @@
-﻿<Application
+﻿ <Application
     x:Class="MyWay.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
-    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone">
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit">
 
     <!--Ресурсы приложения-->
     <Application.Resources>
@@ -13,7 +14,7 @@
         <!-- Шаблон маршрута в списке маршрутов -->
         
         <DataTemplate x:Key="RoutesItemTemplate">
-            <StackPanel Tag="{Binding ToStop}" VerticalAlignment="Top" Margin="0,-35,0,0" Tap="OpenRoute">
+            <StackPanel Tag="{Binding ToStop}" VerticalAlignment="Top" Margin="0,-35,0,0" toolkit:TiltEffect.IsTiltEnabled="True" Tap="OpenRoute">
                 <TextBlock FontFamily="{StaticResource PhoneFontFamilySemiLight}" Margin="-2,0,0,0">
                     <LineBreak />
                     <Run Text="{Binding Number}" FontSize="64" />
@@ -27,7 +28,7 @@
         <!-- Остановка в маршруте -->
         
         <DataTemplate x:Key="InRouteStop">
-            <TextBlock Height="55" Text="{Binding Name}" VerticalAlignment="Top" Width="436" Margin="10,0" FontFamily="Segoe WP SemiLight" FontSize="36" />
+            <TextBlock Height="55" Text="{Binding Name}" VerticalAlignment="Top" Width="436" Margin="10,0" FontFamily="Segoe WP SemiLight" FontSize="36" toolkit:TiltEffect.IsTiltEnabled="True" />
         </DataTemplate>
 
         <!-- Буква / Цифра, по которой группируются данные в LongListSelector -->
@@ -35,7 +36,8 @@
         <DataTemplate x:Key="GroupHeaderTemplate">
             <Border Background="Transparent" Padding="0,0,0,5">
                 <Border BorderBrush="#FF455580" BorderThickness="4"
-                        Width="76" Height="76" Margin="0,15,18,0" HorizontalAlignment="Left" Background="#FF455580">
+                        Width="76" Height="76" Margin="0,15,18,0" HorizontalAlignment="Left" Background="#FF455580"
+                        toolkit:TiltEffect.IsTiltEnabled="True">
                     <TextBlock Text="{Binding Key}" Foreground="White" FontSize="48" Padding="6" 
                                FontFamily="{StaticResource PhoneFontFamilySemiLight}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 </Border>
@@ -56,7 +58,8 @@
                 <Setter.Value>
                     <DataTemplate>
                         <Border Background="#FF455580"
-                                    Width="111" Height="111" Margin="0,0,12,12" >
+                                Width="111" Height="111" Margin="0,0,12,12"
+                                toolkit:TiltEffect.IsTiltEnabled="True">
                             <TextBlock Text="{Binding Key}"
                                             FontFamily="{StaticResource PhoneFontFamilySemiBold}"
                                             FontSize="48" Padding="6,0,6,12" Margin="6,31,0,0"

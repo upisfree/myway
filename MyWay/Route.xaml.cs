@@ -75,7 +75,11 @@ namespace MyWay
                             RouteA.Children.Add(txt);
 
                             if (b.IndexOf(a) == b.Count - 1 && RouteB.Children.Count == 0)
+                            {
                                 PivotMain.Items.Remove(RoutePivotB);
+
+                                RoutePivotA.Header = "кольцевой";
+                            }
                         }
                         else
                         {

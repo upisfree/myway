@@ -34,9 +34,9 @@
     
         <DataTemplate x:Key="GroupHeaderTemplate">
             <Border Background="Transparent" Padding="0,0,0,5">
-                <Border Background="{StaticResource PhoneAccentBrush}" BorderBrush="{StaticResource PhoneAccentBrush}" BorderThickness="2"
-                        Width="76" Height="76" Margin="0,15,18,0" HorizontalAlignment="Left">
-                    <TextBlock Text="{Binding Key}" Foreground="{StaticResource PhoneBackgroundBrush}" FontSize="48" Padding="6" 
+                <Border BorderBrush="#FF455580" BorderThickness="4"
+                        Width="76" Height="76" Margin="0,15,18,0" HorizontalAlignment="Left" Background="#FF455580">
+                    <TextBlock Text="{Binding Key}" Foreground="White" FontSize="48" Padding="6" 
                                FontFamily="{StaticResource PhoneFontFamilySemiLight}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 </Border>
             </Border>
@@ -55,7 +55,7 @@
             <Setter Property="ItemTemplate">
                 <Setter.Value>
                     <DataTemplate>
-                        <Border Background="{Binding Converter={StaticResource BackgroundConverter}}"
+                        <Border Background="#FF455580"
                                     Width="111" Height="111" Margin="0,0,12,12" >
                             <TextBlock Text="{Binding Key}"
                                             FontFamily="{StaticResource PhoneFontFamilySemiBold}"

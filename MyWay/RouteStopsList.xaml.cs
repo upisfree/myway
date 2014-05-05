@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Phone.Controls;
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -55,7 +56,8 @@ namespace MyWay
                     {
                         var elem = a.ChildNodes.ToArray();
 
-                        string stop = elem[0].InnerText.Trim();
+                        string stop    = elem[0].InnerText.Trim();
+                        string predict = elem[0].Attributes["href"].Value.Trim();
 
                         Thickness margin = new Thickness();
                         margin.Bottom = 10;
@@ -63,12 +65,15 @@ namespace MyWay
                         TextBlock txt = new TextBlock()
                         {
                             Text = stop,
+                            Tag = predict,
                             Height = 55,
                             Width = 436,
                             Margin = margin,
                             FontFamily = new FontFamily("Segoe WP SemiLight"),
                             FontSize = 36
                         };
+
+                        txt.Tap += OpenStopPredict;
 
                         if (i == 1)
                         {
@@ -88,6 +93,19 @@ namespace MyWay
                    }
                 }
             }
+        }
+
+        public void OpenStopPredict(object sender, EventArgs e)
+        {
+          TextBlock text = (TextBlock)sender;
+          
+          string link = text.Tag.ToString();
+
+          MessageBox.Show(link);
+//          string link = text.Tag.ToString().Split(new char[] { '|' })[0]; // да, это говнокод.
+//          string name = text.Tag.ToString().Split(new char[] { '|' })[1].ToUpper(); // я писал это в среду, 1:23
+//
+//          (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/RouteStopsList.xaml?link=" + link + "&name=" + name, UriKind.Relative));
         }
     }
 }

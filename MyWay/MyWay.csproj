@@ -103,8 +103,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>AppResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Route.xaml.cs">
-      <DependentUpon>Route.xaml</DependentUpon>
+    <Compile Include="RouteStopsList.xaml.cs">
+      <DependentUpon>RouteStopsList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="StopPredict.xaml.cs">
+      <DependentUpon>StopPredict.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\MainViewModel.cs" />
   </ItemGroup>
@@ -117,7 +120,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Route.xaml">
+    <Page Include="RouteStopsList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StopPredict.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

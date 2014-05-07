@@ -101,7 +101,7 @@ namespace MyWay
           
           string link = text.Tag.ToString();
 
-          MessageBox.Show(link);
+          (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/StopPredict.xaml?link=" + link, UriKind.Relative));
 //          string link = text.Tag.ToString().Split(new char[] { '|' })[0]; // да, это говнокод.
 //          string name = text.Tag.ToString().Split(new char[] { '|' })[1].ToUpper(); // я писал это в среду, 1:23
 //

@@ -1,16 +1,8 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Phone.Controls;
-using Microsoft.Phone.Shell;
-using MyWay.Resources;
-using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Globalization;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Navigation;
 
 namespace MyWay

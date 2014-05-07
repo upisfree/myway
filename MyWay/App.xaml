@@ -70,7 +70,24 @@
                 </Setter.Value>
             </Setter>
         </Style>
-    </Application.Resources>
+      
+        <!-- Остановка в прогнозе -->
+
+        <DataTemplate x:Key="Predict">
+          <Grid VerticalAlignment="Top" Margin="0,100,0,0">
+            <TextBlock FontFamily="{StaticResource PhoneFontFamilySemiLight}" Margin="0,-8,0,0" Height="91" VerticalAlignment="Top">
+                                        <Run Text="{Binding Number}" FontSize="64" />
+                                        <Run Text="{Binding Type}" FontSize="42" />
+            </TextBlock>
+            <TextBlock Text="{Binding Desc}" FontSize="24" Foreground="#FFAAAAAA" Margin="0,73,0,-1" />
+
+            <Grid Background="#FF455580" Margin="0,0,0,35" HorizontalAlignment="Right" Height="48" VerticalAlignment="Bottom">
+              <TextBlock Text="{Binding Time}" Margin="10,0,10,0" FontSize="32" Foreground="White" FontWeight="ExtraLight" HorizontalAlignment="Left" />
+            </Grid>
+          </Grid>
+        </DataTemplate>
+
+  </Application.Resources>
 
     <Application.ApplicationLifetimeObjects>
         <!--Обязательный объект, обрабатывающий события времени жизни приложения-->

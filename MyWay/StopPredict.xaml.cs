@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using MyWay;
+using System.Net.Http;
+using HtmlAgilityPack;
 
 namespace MyWay
 {
@@ -10,37 +14,67 @@ namespace MyWay
     public StopPredict()
     {
       InitializeComponent();
-
-      ShowPredicts();
     }
 
-    public class PropertyFields
+    protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
+    {
+      base.OnNavigatedTo(e);
+
+      string link = "";
+
+      if (NavigationContext.QueryString.TryGetValue("link", out link))
+      {
+        ShowPredicts(link);
+      }
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////
+
+    public class Predict
     {
       public string Number { get; set; }
-      public string Type   { get; set; }
-      public string Desc   { get; set; }
-      public string Time   { get; set; }
+      public string Type { get; set; }
+      public string Desc { get; set; }
+      public string Time { get; set; }
     }
 
-    public void ShowPredicts()
+    public async void ShowPredicts(string link)
     {
-      List<PropertyFields> propertyList = new List<PropertyFields>();
+      List<Predict> p = new List<Predict>();
 
-      for (int i = 0; i < 100; ++i)
+      string htmlPage = "";
+
+      using (var client = new HttpClient())
       {
-        string name = i.ToString();
-        string type = i.ToString();
-        string desc = i.ToString();
-        string time = i.ToString();
-
-        propertyList.Add(new PropertyFields() { Number = name, Type = type, Desc = desc, Time = time });
+        htmlPage = await new HttpClient().GetStringAsync(link);
       }
 
-      Grid Predict = ContentPanel.FindName("Predict") as Grid;
-      Predict.DataContext = propertyList;
+      HtmlDocument htmlDocument = new HtmlDocument();
+      htmlDocument.LoadHtml(htmlPage);
 
-      //var template = ContentPanel.FindName("frontTemplate") as DataTemplate;
-      //var stackPanel = template.LoadContent() as StackPanel;
+      var b = htmlDocument.DocumentNode.SelectNodes("//li[@class=\"item_predict\"]");
+
+      if (b != null)
+      {
+        foreach (var a in b)
+        {
+          string number = a.ChildNodes[0].InnerText.Trim();
+          string type   = a.ChildNodes[1].InnerText.Trim();
+          string desc   = a.ChildNodes[4].InnerText.Trim();
+          string time   = a.ChildNodes[2].InnerText.Trim();
+
+          p.Add(new Predict() { Number = number, Type = " " + type, Desc = desc, Time = time });
+        }
+
+        Time.Visibility = System.Windows.Visibility.Visible;
+        Predicts.ItemsSource = p;
+      }
+      else
+      {
+        Time.Visibility = System.Windows.Visibility.Collapsed;
+        NoPredicts.Visibility = System.Windows.Visibility.Visible;
+      }
     }
+
   }
 }

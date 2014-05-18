@@ -64,7 +64,7 @@ namespace MyWay
 
                         TextBlock txt = new TextBlock()
                         {
-                            Text = stop,
+                            Text = stop, /////////////////////////////////////////////////////////////////// Смена текста, проверка на отсутствие интернета, ширина
                             Tag = predict,
                             Height = 55,
                             Width = 436,

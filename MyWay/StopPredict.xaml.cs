@@ -21,14 +21,14 @@ namespace MyWay
       base.OnNavigatedTo(e);
 
       string link = "";
+      string name = "";
+
+      if (NavigationContext.QueryString.TryGetValue("name", out name))
+        Title.Text = name.ToUpper();
 
       if (NavigationContext.QueryString.TryGetValue("link", out link))
-      {
-        ShowPredicts(link);
-      }
+        ShowPredicts(link, name);
     }
-
-    //////////////////////////////////////////////////////////////////////////////////////
 
     public class Predict
     {
@@ -38,7 +38,7 @@ namespace MyWay
       public string Time { get; set; }
     }
 
-    public async void ShowPredicts(string link)
+    public async void ShowPredicts(string link, string name)
     {
       List<Predict> p = new List<Predict>();
 
@@ -66,15 +66,12 @@ namespace MyWay
           p.Add(new Predict() { Number = number, Type = " " + type, Desc = desc, Time = time });
         }
 
-        Time.Visibility = System.Windows.Visibility.Visible;
         Predicts.ItemsSource = p;
       }
       else
       {
-        Time.Visibility = System.Windows.Visibility.Collapsed;
         NoPredicts.Visibility = System.Windows.Visibility.Visible;
       }
     }
-
   }
 }

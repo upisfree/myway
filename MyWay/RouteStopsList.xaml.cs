@@ -26,9 +26,7 @@ namespace MyWay
             string name = "";
 
             if (NavigationContext.QueryString.TryGetValue("name", out name))
-            {
                 PivotMain.Title = name;
-            }
 
             if (NavigationContext.QueryString.TryGetValue("link", out link))
             {
@@ -65,7 +63,7 @@ namespace MyWay
                         TextBlock txt = new TextBlock()
                         {
                             Text = stop, /////////////////////////////////////////////////////////////////// Смена текста, проверка на отсутствие интернета, ширина
-                            Tag = predict,
+                            Tag = predict + "|" + stop,
                             Height = 55,
                             Width = 436,
                             Margin = margin,
@@ -98,14 +96,11 @@ namespace MyWay
         public void OpenStopPredict(object sender, EventArgs e)
         {
           TextBlock text = (TextBlock)sender;
-          
-          string link = text.Tag.ToString();
 
-          (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/StopPredict.xaml?link=" + link, UriKind.Relative));
-//          string link = text.Tag.ToString().Split(new char[] { '|' })[0]; // да, это говнокод.
-//          string name = text.Tag.ToString().Split(new char[] { '|' })[1].ToUpper(); // я писал это в среду, 1:23
-//
-//          (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/RouteStopsList.xaml?link=" + link + "&name=" + name, UriKind.Relative));
+          string link = text.Tag.ToString().Split(new char[] { '|' })[0];
+          string name = text.Tag.ToString().Split(new char[] { '|' })[1];
+
+          (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/StopPredict.xaml?link=" + link + "&name=" + name, UriKind.Relative));
         }
     }
 }

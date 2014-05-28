@@ -8,6 +8,7 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
   mc:Ignorable="d"
+  Style="{StaticResource TransitionPageStyle}"
   FontFamily="{StaticResource PhoneFontFamilyNormal}"
   FontSize="{StaticResource PhoneFontSizeNormal}"
   Foreground="{StaticResource PhoneForegroundBrush}"
@@ -23,13 +24,14 @@
 
     <!--TitlePanel содержит имя приложения и заголовок страницы-->
     <StackPanel Grid.Row="0" Margin="12,17,0,28">
-      <TextBlock x:Name="Title" Text="МОЙ МАРШРУТ" Style="{StaticResource PhoneTextNormalStyle}" FontFamily="Segoe WP Semibold" FontSize="22.7" />
+      <TextBlock x:Name="Bus" Text="МОЙ МАРШРУТ" Style="{StaticResource PhoneTextNormalStyle}" FontFamily="Segoe WP Semibold" FontSize="22.7" />
+      <TextBlock x:Name="Stop" Text="МОЙ МАРШРУТ" Style="{StaticResource PhoneTextNormalStyle}" FontFamily="Segoe WP Semibold" FontSize="22.7" />
     </StackPanel>
 
     <Grid x:Name="ContentPanel" Margin="28,0,28,23" DataContext="Predict" Grid.Row="1">
       <Grid x:Name="NoPredicts" Margin="0,-80,0,0" Visibility="Collapsed">
         <TextBlock Text="Прогнозов нет" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-100,0,0" />
-        <TextBlock Text="Может, уже поздно и автобусы не ходят?" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <TextBlock Text="Может, уже поздно и автобусы не ходят?"  Foreground="#FFAAAAAA" HorizontalAlignment="Center" VerticalAlignment="Center" />
       </Grid>
       
       <ListBox x:Name="Predicts" ItemsSource="{Binding Predicts}" Margin="0,0,0,-23">
@@ -52,6 +54,7 @@
         <ListBox.ItemContainerStyle>
           <Style TargetType="ListBoxItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="IsHitTestVisible" Value="False" />
           </Style>
         </ListBox.ItemContainerStyle>
       </ListBox>

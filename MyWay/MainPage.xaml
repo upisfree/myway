@@ -12,12 +12,23 @@
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
+    Style="{StaticResource TransitionPageStyle}"
     shell:SystemTray.IsVisible="True">
 
     <!--LayoutRoot представляет корневую сетку, где размещается все содержимое страницы-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
+      <Grid x:Name="Load" Visibility="Visible">
+        <TextBlock Text="Загрузка..." HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-50,0,0" />
+        <ProgressBar Visibility="Visible" IsIndeterminate="True" Foreground="#FF455580" />
+      </Grid>
 
-        <!--Элемент управления Pivot-->
+      <Grid x:Name="Error" Margin="0,50,0,0" Visibility="Collapsed">
+        <TextBlock Text="Что-то пошло не так :(" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-90,0,0" />
+        <TextBlock Text="Может, стоит проверить доступ к интернету?"  Foreground="#FFAAAAAA" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,125,0,0" />
+      </Grid>
+
+    <!--Элемент управления Pivot-->
         <phone:Pivot Title="МОЙ МАРШРУТ">
             <!--Первый элемент Pivot-->
             <phone:PivotItem Header="маршруты">

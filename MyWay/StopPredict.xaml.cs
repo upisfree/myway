@@ -24,7 +24,7 @@ namespace MyWay
       string name = "";
 
       if (NavigationContext.QueryString.TryGetValue("name", out name))
-        Title.Text = name.ToUpper();
+        Stop.Text = name.ToUpper();
 
       if (NavigationContext.QueryString.TryGetValue("link", out link))
         ShowPredicts(link, name);

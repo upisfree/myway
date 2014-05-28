@@ -1,8 +1,11 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Phone.Controls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.NetworkInformation;
+using System.Windows;
 using System.Windows.Navigation;
 
 namespace MyWay
@@ -20,22 +23,14 @@ namespace MyWay
         public class KeyedList<TKey, TItem> : List<TItem>
         {
             public TKey Key { protected set; get; }
-
-            public KeyedList(TKey key, IEnumerable<TItem> items) : base(items)
-            {
-                Key = key;
-            }
-
-            public KeyedList(IGrouping<TKey, TItem> grouping) : base(grouping)
-            {
-                Key = grouping.Key;
-            }
+            public KeyedList(TKey key, IEnumerable<TItem> items) : base(items)    { Key = key; }
+            public KeyedList(IGrouping<TKey, TItem> grouping)    : base(grouping) { Key = grouping.Key; }
         }
 
         // Конструктор
         public MainPage()
         {
-            InitializeComponent();
+          InitializeComponent();
         }
 
         // Загрузка данных для элементов ViewModel
@@ -45,7 +40,14 @@ namespace MyWay
             {
                 App.ViewModel.LoadData();
 
-                ShowRoutesList();
+                if (NetworkInterface.GetIsNetworkAvailable())
+                {
+                  ShowRoutesList();
+                }
+                else
+                {
+                  ShowError();
+                }
             }
         }
 
@@ -80,7 +82,16 @@ namespace MyWay
                     group list by list.Number[0] into listByGroup
                     select new KeyedList<char, GroupByNumber>(listByGroup);
 
+            Util.RemoveLoader(Load);
+
             Routes.ItemsSource = new List<KeyedList<char, GroupByNumber>>(groupedRoutesList);
+        }
+
+        public void ShowError()
+        {
+          Util.RemoveLoader(Load);
+          Error.Visibility = System.Windows.Visibility.Visible;
+          return;
         }
     }
 }

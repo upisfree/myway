@@ -33,9 +33,9 @@ namespace MyWay
     public class Predict
     {
       public string Number { get; set; }
-      public string Type { get; set; }
-      public string Desc { get; set; }
-      public string Time { get; set; }
+      public string Type   { get; set; }
+      public string Desc   { get; set; }
+      public string Time   { get; set; }
     }
 
     public async void ShowPredicts(string link, string name)

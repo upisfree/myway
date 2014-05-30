@@ -102,7 +102,7 @@ namespace MyWay
       string link = text.Tag.ToString();
       string name = text.Text;
 
-      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/StopPredict.xaml?link=" + link + "&name=" + name, UriKind.Relative));
+      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + link + "&name=" + name, UriKind.Relative));
     }
   }
 }

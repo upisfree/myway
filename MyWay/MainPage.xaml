@@ -1,63 +1,61 @@
 ﻿<phone:PhoneApplicationPage
-    x:Class="MyWay.MainPage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
-    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
-    mc:Ignorable="d"
-    FontFamily="{StaticResource PhoneFontFamilyNormal}"
-    FontSize="{StaticResource PhoneFontSizeNormal}"
-    Foreground="{StaticResource PhoneForegroundBrush}"
-    SupportedOrientations="Portrait" Orientation="Portrait"
-    Style="{StaticResource TransitionPageStyle}"
-    shell:SystemTray.IsVisible="True">
+  x:Class="MyWay.MainPage"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+  xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+  mc:Ignorable="d"
+  FontFamily="{StaticResource PhoneFontFamilyNormal}"
+  FontSize="{StaticResource PhoneFontSizeNormal}"
+  Foreground="{StaticResource PhoneForegroundBrush}"
+  SupportedOrientations="Portrait" Orientation="Portrait"
+  Style="{StaticResource TransitionPageStyle}"
+  shell:SystemTray.IsVisible="True">
 
-    <!--LayoutRoot представляет корневую сетку, где размещается все содержимое страницы-->
-    <Grid x:Name="LayoutRoot" Background="Transparent">
-      <Grid x:Name="Load" Visibility="Visible">
-        <TextBlock Text="Загрузка..." HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-50,0,0" />
-        <ProgressBar Visibility="Visible" IsIndeterminate="True" Foreground="#FF455580" />
-      </Grid>
-
-      <Grid x:Name="Error" Margin="0,50,0,0" Visibility="Collapsed">
-        <TextBlock Text="Что-то пошло не так :(" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-90,0,0" />
-        <TextBlock Text="Может, стоит проверить доступ к интернету?"  Foreground="#FFAAAAAA" HorizontalAlignment="Center" VerticalAlignment="Center" />
-        <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,125,0,0" />
-      </Grid>
-
-    <!--Элемент управления Pivot-->
-        <phone:Pivot Title="МОЙ МАРШРУТ">
-            <!--Первый элемент Pivot-->
-            <phone:PivotItem Header="маршруты">
-                <phone:LongListSelector
-                  x:Name="Routes"
-                  JumpListStyle="{StaticResource JumpListStyle}"
-                  Background="Transparent"
-                  GroupHeaderTemplate="{StaticResource GroupHeaderTemplate}"
-                  ItemTemplate="{StaticResource RoutesItemTemplate}"
-                  LayoutMode="List"
-                  IsGroupingEnabled="true"
-                  HideEmptyGroups="true"
-                  Margin="15,-16,-12,10"/>
-                <!--toolkit:TiltEffect.IsTiltEnabled="true"-->
-            </phone:PivotItem>
-
-            <!--Второй элемент Pivot-->
-            <phone:PivotItem Header="остановки">
-
-            </phone:PivotItem>
-        </phone:Pivot>
-
-        <!--Раскомментируйте, чтобы увидеть сетку выравнивания и выровнять
-            элементы управления по общим границам.  Верхнее поле изображения равно -32 пикселя, чтобы
-            осталось место для области уведомлений. Установите его равным 0 (или вообще удалите поле),
-            если область уведомлений скрыта.
-
-            Перед сдачей приложения удалите этот код XAML и само изображение.-->
-        <!--<Image Source="/Assets/AlignmentGrid.png" VerticalAlignment="Top" Height="800" Width="480" Margin="0,-32,0,0" Grid.Row="0" IsHitTestVisible="False" />-->
+  <!--LayoutRoot представляет корневую сетку, где размещается все содержимое страницы-->
+  <Grid x:Name="LayoutRoot" Background="Transparent">
+    <Grid x:Name="Load" Visibility="Visible" Margin="0,-49,0,0">
+      <ProgressBar Visibility="Visible" IsIndeterminate="True" Foreground="#FF455580" />
+      <TextBlock Text="Загрузка..." HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,0" />
     </Grid>
 
+    <Grid x:Name="Error" Margin="0,50,0,0" Visibility="Collapsed">
+      <TextBlock Text="Что-то пошло не так :(" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-90,0,0" />
+      <TextBlock Text="Может, стоит проверить доступ к интернету?"  Foreground="#FFAAAAAA" HorizontalAlignment="Center" VerticalAlignment="Center" />
+      <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,125,0,0" />
+    </Grid>
+
+  <!--Элемент управления Pivot-->
+    <phone:Pivot Title="МОЙ МАРШРУТ">
+      <!--Первый элемент Pivot-->
+      <phone:PivotItem Header="маршруты">
+        <phone:LongListSelector
+          x:Name="Routes"
+          JumpListStyle="{StaticResource JumpListStyle}"
+          Background="Transparent"
+          GroupHeaderTemplate="{StaticResource GroupHeaderTemplate}"
+          ItemTemplate="{StaticResource RoutesItemTemplate}"
+          LayoutMode="List"
+          IsGroupingEnabled="true"
+          HideEmptyGroups="true"
+          Margin="15,-16,-12,10"/>
+      </phone:PivotItem>
+
+      <!--Второй элемент Pivot-->
+      <phone:PivotItem Header="остановки">
+
+      </phone:PivotItem>
+    </phone:Pivot>
+
+      <!--Раскомментируйте, чтобы увидеть сетку выравнивания и выровнять
+          элементы управления по общим границам.  Верхнее поле изображения равно -32 пикселя, чтобы
+          осталось место для области уведомлений. Установите его равным 0 (или вообще удалите поле),
+          если область уведомлений скрыта.
+
+          Перед сдачей приложения удалите этот код XAML и само изображение.-->
+      <!--<Image Source="/Assets/AlignmentGrid.png" VerticalAlignment="Top" Height="800" Width="480" Margin="0,-32,0,0" Grid.Row="0" IsHitTestVisible="False" />-->
+  </Grid>
 </phone:PhoneApplicationPage>

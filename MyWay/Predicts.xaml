@@ -18,23 +18,28 @@
   <!--LayoutRoot представляет корневую сетку, где размещается все содержимое страницы-->
   <Grid x:Name="LayoutRoot" Background="Transparent">
     <Grid.RowDefinitions>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto" MinHeight="76"/>
+      <RowDefinition/>
     </Grid.RowDefinitions>
 
-    <!--TitlePanel содержит имя приложения и заголовок страницы-->
     <StackPanel Grid.Row="0" Margin="12,17,0,28">
-      <TextBlock x:Name="Bus" Text="МОЙ МАРШРУТ" Style="{StaticResource PhoneTextNormalStyle}" FontFamily="Segoe WP Semibold" FontSize="22.7" />
       <TextBlock x:Name="Stop" Text="МОЙ МАРШРУТ" Style="{StaticResource PhoneTextNormalStyle}" FontFamily="Segoe WP Semibold" FontSize="22.7" />
+      <!--<TextBlock x:Name="Bus" Text="МОЙ МАРШРУТ" Style="{StaticResource PhoneTextNormalStyle}" FontFamily="Segoe WP Semibold" FontSize="22.7" />-->
     </StackPanel>
 
-    <Grid x:Name="ContentPanel" Margin="28,0,28,23" DataContext="Predict" Grid.Row="1">
-      <Grid x:Name="NoPredicts" Margin="0,-80,0,0" Visibility="Collapsed">
+    <Grid x:Name="ContentPanel" Margin="28,53,28,23" DataContext="Predict" Grid.RowSpan="2">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="670*"/>
+        <RowDefinition Height="19*"/>
+        <RowDefinition Height="3*"/>
+      </Grid.RowDefinitions>
+
+      <Grid x:Name="NoPredicts" Visibility="Collapsed" Grid.RowSpan="3">
         <TextBlock Text="Прогнозов нет" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-100,0,0" />
         <TextBlock Text="Может, уже поздно и автобусы не ходят?"  Foreground="#FFAAAAAA" HorizontalAlignment="Center" VerticalAlignment="Center" />
       </Grid>
       
-      <ListBox x:Name="Predicts" ItemsSource="{Binding Predicts}" Margin="0,0,0,-23">
+      <ListBox x:Name="Predicts" ItemsSource="{Binding Predicts}" Margin="0,0,0,-23" Grid.RowSpan="3">
         <ListBox.ItemTemplate>
           <DataTemplate>
             <Grid>

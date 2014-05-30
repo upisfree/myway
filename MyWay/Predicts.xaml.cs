@@ -1,15 +1,11 @@
-﻿using Microsoft.Phone.Controls;
+﻿using HtmlAgilityPack;
+using Microsoft.Phone.Controls;
 using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using MyWay;
 using System.Net.Http;
-using HtmlAgilityPack;
 
 namespace MyWay
 {
-  public partial class StopPredict : PhoneApplicationPage
+  public partial class StopPredict:PhoneApplicationPage
   {
     public StopPredict()
     {
@@ -27,7 +23,7 @@ namespace MyWay
         Stop.Text = name.ToUpper();
 
       if (NavigationContext.QueryString.TryGetValue("link", out link))
-        ShowPredicts(link, name);
+        ShowPredicts(link);
     }
 
     public class Predict
@@ -38,7 +34,7 @@ namespace MyWay
       public string Time   { get; set; }
     }
 
-    public async void ShowPredicts(string link, string name)
+    public async void ShowPredicts(string link)
     {
       List<Predict> p = new List<Predict>();
 

@@ -50,8 +50,10 @@
               <TextBlock Text="{Binding Desc}" FontSize="24" Foreground="#FFAAAAAA" Margin="0,73,0,-1" />
 
               <Grid Background="#FF455580" Margin="0,0,0,35" HorizontalAlignment="Right" Height="48" VerticalAlignment="Bottom">
-                <TextBlock Text="{Binding Time}" Margin="10,0,10,0" FontSize="32" Foreground="White" FontWeight="ExtraLight" HorizontalAlignment="Left" />
-              </Grid>
+                <Border BorderBrush="White" BorderThickness="7" Margin="-7">
+                  <TextBlock Text="{Binding Time}" Margin="10,0,10,0" FontSize="32" Foreground="White" FontWeight="ExtraLight" HorizontalAlignment="Left" />
+                </Border>
+              </Grid>                
             </Grid>
           </DataTemplate>
         </ListBox.ItemTemplate>

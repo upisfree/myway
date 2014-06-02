@@ -13,7 +13,7 @@ using System.Windows.Navigation;
 
 namespace MyWay
 {
-    public partial class App : Application
+    public partial class App:Application
     {
         private static MainViewModel viewModel = null;
 

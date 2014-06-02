@@ -40,10 +40,10 @@ namespace MyWay
       {
         App.ViewModel.LoadData();
 
-        if (DataBase.ReadFile("Routes.txt") == "false" || DataBase.ReadFile("Routes.txt") == "")
-          ShowRoutesList();
-        else
+        if (DataBase.IsExists("Routes.db"))
           ShowRoutesListOffline();
+        else
+          ShowRoutesList();
 
 //        if (NetworkInterface.GetIsNetworkAvailable())
       }
@@ -72,7 +72,7 @@ namespace MyWay
         string desc   = elem[2].InnerText.Trim();
         string toStop = a.Attributes["href"].Value + "|" + number + " " + type;
 
-        DataBase.WriteToFile("Routes.txt", number + "|" + type + "|" + desc + "|" + a.Attributes["href"].Value);
+        DataBase.Write("Routes.db", number + "|" + type + "|" + desc + "|" + a.Attributes["href"].Value);
 
         RoutesList.Add(new GroupByNumber() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
       }
@@ -91,7 +91,7 @@ namespace MyWay
     {
       List<GroupByNumber> RoutesList = new List<GroupByNumber>();
 
-      Array db = DataBase.ReadFile("Routes.txt").Split(new Char[] {'\n'});
+      Array db = DataBase.Read("Routes.db").Split(new Char[] {'\n'});
 
       foreach (string a in db)
       {

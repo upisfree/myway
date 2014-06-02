@@ -94,7 +94,6 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataBase.cs" />
-    <Compile Include="RoutesDatabase.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="LocalizedStrings.cs" />
     <Compile Include="MainPage.xaml.cs">

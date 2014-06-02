@@ -7,43 +7,52 @@ namespace MyWay
   class DataBase
   {
     // Запись в базу
-    public static void WriteToFile(string file, string text)
+    public static void Write(string file, string text)
     {
       IsolatedStorageFile fileStorage = IsolatedStorageFile.GetUserStoreForApplication();
       StreamWriter Writer = new StreamWriter(new IsolatedStorageFileStream(file, FileMode.Append, fileStorage));
+
       Writer.WriteLine(text);
+
       Writer.Close();
     }
 
     // Чтение из базы
-    public static string ReadFile(string file)
+    public static string Read(string file)
     {
       IsolatedStorageFile fileStorage = IsolatedStorageFile.GetUserStoreForApplication();
       StreamReader Reader = null;
-
-      string result;
+      Reader = new StreamReader(new IsolatedStorageFileStream(file, FileMode.Open, fileStorage));
       
-      try
-      {
-        Reader = new StreamReader(new IsolatedStorageFileStream(file, FileMode.Open, fileStorage));
-        string textFile = Reader.ReadToEnd();
-        result = textFile;
-        Reader.Close();
+      string textFile = Reader.ReadToEnd();
+      
+      Reader.Close();
 
-        return result;
-      }
-      catch
-      {
-        return "false";
-      }
+      return textFile;
     }
 
     // Удаление базы
-    public static void DeleteFile(string file)
+    public static void Delete(string file)
     {
       IsolatedStorageFile fileStorage = IsolatedStorageFile.GetUserStoreForApplication();
-      StreamWriter Writer = new StreamWriter(new IsolatedStorageFileStream(file, FileMode.Truncate, fileStorage));
-      Writer.Close();
+
+      fileStorage.DeleteFile(file);
+    }
+
+    // Проверка на существование файла
+    public static bool IsExists(string file)
+    {
+      IsolatedStorageFile fileStorage = IsolatedStorageFile.GetUserStoreForApplication();
+
+      return fileStorage.FileExists(file);
+    }
+
+    // Создание папки
+    public static void CreateDir(string name)
+    {
+      IsolatedStorageFile fileStorage = IsolatedStorageFile.GetUserStoreForApplication();
+
+      fileStorage.CreateDirectory(name);
     }
   }
 }

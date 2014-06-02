@@ -54,5 +54,13 @@ namespace MyWay
 
       fileStorage.CreateDirectory(name);
     }
+
+    // Проверка на существование папки
+    public static bool IsDirExists(string dir)
+    {
+      IsolatedStorageFile fileStorage = IsolatedStorageFile.GetUserStoreForApplication();
+
+      return fileStorage.DirectoryExists(dir);
+    }
   }
 }

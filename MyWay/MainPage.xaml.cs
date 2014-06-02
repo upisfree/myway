@@ -118,12 +118,5 @@ namespace MyWay
 
       Routes.ItemsSource = new List<KeyedList<char, GroupByNumber>>(groupedRoutesList);
     }
-
-    public void ShowError()
-    {
-      Util.RemoveLoader(Load);
-      Error.Visibility = System.Windows.Visibility.Visible;
-      return;
-    }
   }
 }

@@ -50,22 +50,24 @@
         <ListBox Margin="15,-16,15,0">
           <ListBoxItem>
             <Grid Width="425">
-              <TextBlock Text="Удаляет все данные, сохранённые приложением: маршруты, остановки и так далее"
+              <TextBlock Text="Удаляет все данные, сохранённые приложением: маршруты, остановки и т. д."
                          TextWrapping="Wrap"
                           Foreground="#FFAAAAAA" />
-              <Button Content="удалить кэш" Margin="-12,80,-12,0" Tap="DeleteCache" toolkit:TiltEffect.IsTiltEnabled="True" />                 
+              <Button Content="удалить кэш" Margin="-12,55,-12,0" Tap="DeleteCache" toolkit:TiltEffect.IsTiltEnabled="True" />                 
+            </Grid>
+          </ListBoxItem>
+
+          <ListBoxItem>
+            <Grid Width="425">
+              <TextBlock Text="Автор приложения — Сеня Пугач / upisfree. Связаться со мной можно нажав на эти красивенькие кнопочки ниже."
+                         TextWrapping="Wrap"
+                         Foreground="#FFAAAAAA" />
+              <Button Content="почта" Margin="-12,82.5,205,0" Click="ContactEmail" toolkit:TiltEffect.IsTiltEnabled="True" />
+              <Button Content="вконтакте" Margin="205,82.5,-12,0" Click="ContactVK" toolkit:TiltEffect.IsTiltEnabled="True" />
             </Grid>
           </ListBoxItem>
         </ListBox>
       </phone:PivotItem>
     </phone:Pivot>
-
-      <!--Раскомментируйте, чтобы увидеть сетку выравнивания и выровнять
-          элементы управления по общим границам.  Верхнее поле изображения равно -32 пикселя, чтобы
-          осталось место для области уведомлений. Установите его равным 0 (или вообще удалите поле),
-          если область уведомлений скрыта.
-
-          Перед сдачей приложения удалите этот код XAML и само изображение.-->
-      <!--<Image Source="/Assets/AlignmentGrid.png" VerticalAlignment="Top" Height="800" Width="480" Margin="0,-32,0,0" Grid.Row="0" IsHitTestVisible="False" />-->
   </Grid>
 </phone:PhoneApplicationPage>

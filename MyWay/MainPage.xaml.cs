@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Phone.Controls;
+using Microsoft.Phone.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -124,6 +125,28 @@ namespace MyWay
       DataBase.RemoveAll("");
 
       MessageBox.Show("Удаление прошло успешно", "Кэш очищен", MessageBoxButton.OK);
+    }
+
+    // Контакты
+
+    private void ContactEmail(object sender, RoutedEventArgs e)
+    {
+      EmailComposeTask emailComposeTask = new EmailComposeTask();
+
+      emailComposeTask.To = "upisfree@outlook.com";
+      emailComposeTask.Subject = "@myway";
+      emailComposeTask.Body = "Можно удалить фразу про то, с какого устройства было отправлено письмо. Я попробую угадать :)";
+
+      emailComposeTask.Show();
+    }
+
+    private void ContactVK(object sender, RoutedEventArgs e)
+    {
+      WebBrowserTask webBrowserTask = new WebBrowserTask();
+
+      webBrowserTask.Uri = new Uri("http://vk.com/upisfree", UriKind.Absolute);
+
+      webBrowserTask.Show();
     } 
   }
 }

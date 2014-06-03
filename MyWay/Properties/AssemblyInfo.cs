@@ -11,12 +11,12 @@ using System.Resources;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("MyWay")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCopyright("Copyright © 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Если для ComVisible установить значение false, типы в этой сборке не будут поддерживаться 
-// COM-компонентами.  При необходимости доступа к какому-либо типу в этой сборке 
+// COM-компонентами. При необходимости доступа к какому-либо типу в этой сборке 
 // из модели COM задайте для атрибута ComVisible этого типа значение true.
 [assembly: ComVisible(false)]
 

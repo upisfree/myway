@@ -168,7 +168,7 @@ namespace MyWay
     public void OpenPredict(object sender, EventArgs e)
     {
       TextBlock text = (TextBlock)sender;
-      text.Foreground = new SolidColorBrush(Colors.Black);
+      text.Foreground = new SolidColorBrush((Color)Application.Current.Resources["PhoneForegroundColor"]);
 
       string link = text.Tag.ToString();
       string name = text.Text;

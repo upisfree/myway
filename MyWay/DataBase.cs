@@ -62,5 +62,28 @@ namespace MyWay
 
       return fileStorage.DirectoryExists(dir);
     }
+
+    // Удаление всех баз данных
+    public static void RemoveAll(string directory)
+    {
+      IsolatedStorageFile fileStorage = IsolatedStorageFile.GetUserStoreForApplication();
+
+      if (fileStorage.DirectoryExists(directory))
+      {
+        string[] files = fileStorage.GetFileNames(directory + @"/*");
+        foreach (string file in files)
+        {
+          fileStorage.DeleteFile(directory + @"/" + file);
+        }
+
+        string[] subDirectories = fileStorage.GetDirectoryNames(directory + @"/*");
+        foreach (string subDirectory in subDirectories)
+        {
+          RemoveAll(directory + @"/" + subDirectory);
+        }
+
+        fileStorage.DeleteDirectory(directory);
+      }
+    }
   }
 }

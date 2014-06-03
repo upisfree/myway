@@ -118,5 +118,12 @@ namespace MyWay
 
       Routes.ItemsSource = new List<KeyedList<char, GroupByNumber>>(groupedRoutesList);
     }
+
+    private void DeleteCache(object sender, System.Windows.Input.GestureEventArgs e)
+    {
+      DataBase.RemoveAll("");
+
+      MessageBox.Show("Удаление прошло успешно", "Кэш очищен", MessageBoxButton.OK);
+    } 
   }
 }

@@ -30,7 +30,6 @@
 
   <!--Элемент управления Pivot-->
     <phone:Pivot Title="МОЙ МАРШРУТ">
-      <!--Первый элемент Pivot-->
       <phone:PivotItem Header="маршруты">
         <phone:LongListSelector
           x:Name="Routes"
@@ -44,8 +43,20 @@
           Margin="15,-16,-12,10"/>
       </phone:PivotItem>
 
-      <!--Второй элемент Pivot-->
       <phone:PivotItem Header="остановки">
+      </phone:PivotItem>
+
+      <phone:PivotItem Header="настройки">
+        <ListBox Margin="15,-16,15,0">
+          <ListBoxItem>
+            <Grid Width="425">
+              <TextBlock Text="Удаляет все данные, сохранённые приложением: маршруты, остановки и так далее"
+                         TextWrapping="Wrap"
+                          Foreground="#FFAAAAAA" />
+              <Button Content="удалить кэш" Margin="-12,80,-12,0" Tap="DeleteCache"/>                 
+            </Grid>
+          </ListBoxItem>
+        </ListBox>
       </phone:PivotItem>
     </phone:Pivot>
 

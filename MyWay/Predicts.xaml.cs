@@ -69,5 +69,13 @@ namespace MyWay
         NoPredicts.Visibility = System.Windows.Visibility.Visible;
       }
     }
+
+    private void Refresh(object sender, System.EventArgs e)
+    {
+      string link = "";
+
+      if (NavigationContext.QueryString.TryGetValue("link", out link))
+        ShowPredicts(link);
+    }
   }
 }

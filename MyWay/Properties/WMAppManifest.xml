@@ -5,16 +5,13 @@
     <Language code="ru" />
     <Language code="ru-RU" />
   </Languages>
-  <App xmlns="" ProductID="{df514d43-08d1-4983-b1f9-507743814f53}" Title="Мой маршрут" RuntimeType="Silverlight" Version="1.0 beta" Genre="apps.normal" Author="upisfree" Description="Мобильная версия известной омичам системы «Мой маршрут».&#xD;&#xA;&#xD;&#xA;Версии:&#xD;&#xA;1.0 beta&#xD;&#xA; — Прогноз времени прибытия нужного автобуса, троллейбуса или трамвая на выбранную остановку." Publisher="upisfree" PublisherID="{9f7fcde2-6f3e-489d-b3e6-3a9cab21e30c}">
+  <App xmlns="" ProductID="{df514d43-08d1-4983-b1f9-507743814f53}" Title="Мой маршрут" RuntimeType="Silverlight" Version="1.0" Genre="apps.normal" Author="upisfree" Description="Мобильная версия известной омичам системы «Мой маршрут».&#xD;&#xA;&#xD;&#xA;Версии:&#xD;&#xA;1.0 beta&#xD;&#xA; — Прогноз времени прибытия нужного автобуса, троллейбуса или трамвая на выбранную остановку." Publisher="upisfree" PublisherID="{9f7fcde2-6f3e-489d-b3e6-3a9cab21e30c}">
     <IconPath IsRelative="true" IsResource="false">Assets\ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />
       <Capability Name="ID_CAP_MEDIALIB_PLAYBACK" />
       <Capability Name="ID_CAP_SENSORS" />
       <Capability Name="ID_CAP_WEBBROWSERCOMPONENT" />
-      <Capability Name="ID_CAP_MAP" />
-      <Capability Name="ID_CAP_LOCATION" />
-      <Capability Name="ID_CAP_ISV_CAMERA" />
     </Capabilities>
     <Tasks>
       <DefaultTask Name="_default" NavigationPage="MainPage.xaml" />
@@ -22,9 +19,9 @@
     <Tokens>
       <PrimaryToken TokenID="MyWayToken" TaskName="_default">
         <TemplateFlip>
-          <SmallImageURI IsRelative="true" IsResource="false">Assets\Tiles\FlipCycleTileSmall.png</SmallImageURI>
+          <SmallImageURI IsRelative="true" IsResource="false">Assets\Tiles\Small.png</SmallImageURI>
           <Count>0</Count>
-          <BackgroundImageURI IsRelative="true" IsResource="false">Assets\Tiles\FlipCycleTileMedium.png</BackgroundImageURI>
+          <BackgroundImageURI IsRelative="true" IsResource="false">Assets\Tiles\Medium.png</BackgroundImageURI>
           <Title>Мой маршрут</Title>
           <BackContent>
           </BackContent>
@@ -32,7 +29,7 @@
           </BackBackgroundImageURI>
           <BackTitle>
           </BackTitle>
-          <LargeBackgroundImageURI IsRelative="true" IsResource="false">Assets\Tiles\FlipCycleTileLarge.png</LargeBackgroundImageURI>
+          <LargeBackgroundImageURI IsRelative="true" IsResource="false">Assets\Tiles\Large.png</LargeBackgroundImageURI>
           <LargeBackContent />
           <LargeBackBackgroundImageURI IsRelative="true" IsResource="false">
           </LargeBackBackgroundImageURI>
@@ -43,9 +40,9 @@
       </PrimaryToken>
     </Tokens>
     <ScreenResolutions>
-      <ScreenResolution Name="ID_RESOLUTION_WVGA" />
       <ScreenResolution Name="ID_RESOLUTION_WXGA" />
       <ScreenResolution Name="ID_RESOLUTION_HD720P" />
+      <ScreenResolution Name="ID_RESOLUTION_WVGA" />
     </ScreenResolutions>
   </App>
 </Deployment>

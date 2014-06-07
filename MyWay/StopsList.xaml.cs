@@ -34,7 +34,7 @@ namespace MyWay
         Array a = link.Split(new Char[] { '/' });
         string b = Regex.Match(a.GetValue(a.Length - 1).ToString(), @"\d+").Value; // мне правда было лень создавать новые переменные. правда.
 
-        if (DataBase.IsDirExists("Stops/" + b))
+        if (DataBase.IsExists("Stops/" + b + "/a.db"))
           ShowStopsOffline(link, b);
         else
           ShowStops(link, b);
@@ -49,6 +49,7 @@ namespace MyWay
 
     public async void ShowStops(string link, string number)
     {
+      MessageBox.Show("онлайн");
       if (!DataBase.IsDirExists("Stops"))
         DataBase.CreateDir("Stops");
 
@@ -115,11 +116,11 @@ namespace MyWay
 
     public void ShowStopsOffline(string link, string number)
     {
+      MessageBox.Show("оффлайн");
       List<Stop> stopsA = new List<Stop>();
       List<Stop> stopsB = new List<Stop>();
 
       Array stopsAdb = DataBase.Read("Stops/" + number + "/a.db").Split(new Char[] { '\n' });
-
       foreach (string a in stopsAdb)
       {
         try

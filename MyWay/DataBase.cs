@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.IO.IsolatedStorage;
-using System.Windows;
 
 namespace MyWay
 {

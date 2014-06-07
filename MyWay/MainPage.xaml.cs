@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.NetworkInformation;
 using System.Windows;
 using System.Windows.Navigation;
 
@@ -120,6 +119,22 @@ namespace MyWay
       Routes.ItemsSource = new List<KeyedList<char, GroupByNumber>>(groupedRoutesList);
     }
 
+    private void Search(object sender, EventArgs e)
+    {
+      MainImageSlideIn.Begin();
+      //TextBox box = new TextBox()
+      //{
+      //  Text = "поиск",
+      //};
+
+      //CustomMessageBox messageBox = new CustomMessageBox()
+      //{
+      //  Content = box
+      //};
+
+      //messageBox.Show();
+    }
+
     private void DeleteCache(object sender, System.Windows.Input.GestureEventArgs e)
     {
       DataBase.RemoveAll("");
@@ -134,7 +149,7 @@ namespace MyWay
       EmailComposeTask emailComposeTask = new EmailComposeTask();
 
       emailComposeTask.To = "upisfree@outlook.com";
-      emailComposeTask.Subject = "@myway";
+      emailComposeTask.Subject = "fromapp@myway";
       emailComposeTask.Body = "Можно удалить фразу про то, с какого устройства было отправлено письмо. Я попробую угадать :)";
 
       emailComposeTask.Show();
@@ -147,6 +162,6 @@ namespace MyWay
       webBrowserTask.Uri = new Uri("http://vk.com/upisfree", UriKind.Absolute);
 
       webBrowserTask.Show();
-    } 
+    }
   }
 }

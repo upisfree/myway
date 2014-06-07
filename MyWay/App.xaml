@@ -39,8 +39,7 @@
           </Setter>
         </Style>
 
-
-    <!-- Шаблон маршрута в списке маршрутов -->
+        <!-- Шаблон маршрута в списке маршрутов -->
         
         <DataTemplate x:Key="RoutesItemTemplate">
             <StackPanel Tag="{Binding ToStop}" VerticalAlignment="Top" Margin="0,-35,0,0" toolkit:TiltEffect.IsTiltEnabled="True" Tap="OpenRoute">

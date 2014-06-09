@@ -18,32 +18,6 @@
   <!--LayoutRoot представляет корневую сетку, где размещается все содержимое страницы-->
   <Grid x:Name="LayoutRoot" Background="Transparent">
 
-
-
-    <Grid>
-      
-    </Grid>
-
-
-
-    <Grid>
-      <Grid.Resources>
-        <Storyboard x:Name="MainImageSlideIn">
-          <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="MainImage">
-            <EasingDoubleKeyFrame KeyTime="0" Value="-100"/>
-            <EasingDoubleKeyFrame KeyTime="0:0:0.75" Value="10" />
-          </DoubleAnimationUsingKeyFrames>
-        </Storyboard>
-      </Grid.Resources>
-
-      <TextBox x:Name="MainImage" HorizontalAlignment="Center" VerticalAlignment="Top" Width="480">
-        <TextBox.RenderTransform>
-          <CompositeTransform TranslateY="-100" />
-        </TextBox.RenderTransform>
-      </TextBox>
-    </Grid>
-<!-- Анимация выскакивания сверху -->
-
   <!--Элемент управления Pivot-->
     <phone:Pivot Title="МОЙ МАРШРУТ">
       <phone:PivotItem Header="маршруты">
@@ -85,6 +59,12 @@
         </ListBox>
       </phone:PivotItem>
     </phone:Pivot>
+
+    <Popup x:Name="SearchPopup" Margin="0,0,0,626">
+      <Grid Width="480" Background="White">
+        <TextBox x:Name="SearchBox" InputScope="Search" />
+      </Grid>
+    </Popup>
 
     <Grid x:Name="Load" Visibility="Visible" Margin="0,25,0,0">
       <ProgressBar Visibility="Visible" IsIndeterminate="True" Foreground="#FF455580" />

@@ -33,6 +33,11 @@ namespace MyWay
     public MainPage()
     {
       InitializeComponent();
+
+      SearchBox.LostFocus += (sender, e) =>
+      {
+        SearchPopup.IsOpen = false;
+      };
     }
 
     // Загрузка данных для элементов ViewModel
@@ -137,25 +142,19 @@ namespace MyWay
 
     private void Search(object sender, EventArgs e)
     {
-      MainImageSlideIn.Begin();
+      SearchPopup.IsOpen = true;
+      SearchBox.Focus();
+    }
 
+    protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
+    {
+      if (SearchPopup.IsOpen)
+      {
+        SearchPopup.IsOpen = false;
+        e.Cancel = true;
+      }
 
-
-
-
-
-
-      //TextBox box = new TextBox()
-      //{
-      //  Text = "поиск",
-      //};
-
-      //CustomMessageBox messageBox = new CustomMessageBox()
-      //{
-      //  Content = box
-      //};
-
-      //messageBox.Show();
+      base.OnBackKeyPress(e);
     }
 
     // Очистка кэша

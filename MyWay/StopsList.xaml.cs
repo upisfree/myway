@@ -34,10 +34,12 @@ namespace MyWay
         Array a = link.Split(new Char[] { '/' });
         string b = Regex.Match(a.GetValue(a.Length - 1).ToString(), @"\d+").Value; // мне правда было лень создавать новые переменные. правда.
 
+        LayoutRoot.Tag = link + "|" + b;
+
         if (DataBase.IsExists("Stops/" + b + "/a.db"))
           ShowStopsOffline(link, b);
         else
-          ShowStops(link, b);
+          ShowStopsOnline(link, b);
       }
     }
 
@@ -47,70 +49,80 @@ namespace MyWay
       public string Link { get; set; }
     }
 
-    public async void ShowStops(string link, string number)
+    public async void ShowStopsOnline(string link, string number)
     {
-      if (!DataBase.IsDirExists("Stops"))
-        DataBase.CreateDir("Stops");
-
-      if (!DataBase.IsDirExists(number))
-        DataBase.CreateDir("Stops/" + number);
-
-      List<Stop> stopsA = new List<Stop>();
-      List<Stop> stopsB = new List<Stop>();
-
-      string htmlPage = "";
-
-      using (var client = new HttpClient())
+      if (Util.IsInternetAvailable())
       {
-        htmlPage = await new HttpClient().GetStringAsync(link);
-      }
+        Error.Visibility = System.Windows.Visibility.Collapsed;
+        if (!DataBase.IsDirExists("Stops"))
+          DataBase.CreateDir("Stops");
 
-      HtmlDocument htmlDocument = new HtmlDocument();
-      htmlDocument.LoadHtml(htmlPage);
+        if (!DataBase.IsDirExists(number))
+          DataBase.CreateDir("Stops/" + number);
 
-      int i = 0;
+        List<Stop> stopsA = new List<Stop>();
+        List<Stop> stopsB = new List<Stop>();
 
-      var b = htmlDocument.DocumentNode.SelectNodes("//li");
+        string htmlPage = "";
 
-      foreach (var a in b)
-      {
-        if (a.Attributes["class"] == null)
+        using (var client = new HttpClient())
         {
-          var elem = a.ChildNodes.ToArray();
+          htmlPage = await new HttpClient().GetStringAsync(link);
+        }
 
-          string text = elem[0].InnerText.Trim();
-          string href = elem[0].Attributes["href"].Value.Trim();
+        HtmlDocument htmlDocument = new HtmlDocument();
+        htmlDocument.LoadHtml(htmlPage);
 
-          if (i == 1)
+        int i = 0;
+
+        var b = htmlDocument.DocumentNode.SelectNodes("//li");
+
+        foreach (var a in b)
+        {
+          if (a.Attributes["class"] == null)
           {
-            DataBase.Write("Stops/" + number + "/a.db", text + "|" + href);
+            var elem = a.ChildNodes.ToArray();
 
-            stopsA.Add(new Stop() { Text = text, Link = href });
+            string text = elem[0].InnerText.Trim();
+            string href = elem[0].Attributes["href"].Value.Trim();
 
-            if (b.IndexOf(a) == b.Count - 1 && stopsB.Count == 0)
+            if (i == 1)
             {
-              PivotRoot.Items.Remove(PivotB);
+              DataBase.Write("Stops/" + number + "/a.db", text + "|" + href);
 
-              PivotA.Header = "кольцевой";
+              stopsA.Add(new Stop() { Text = text, Link = href });
+
+              if (b.IndexOf(a) == b.Count - 1 && stopsB.Count == 0)
+              {
+                PivotRoot.Items.Remove(PivotB);
+
+                PivotA.Header = "кольцевой";
+              }
+            }
+            else
+            {
+              DataBase.Write("Stops/" + number + "/b.db", text + "|" + href);
+
+              stopsB.Add(new Stop() { Text = text, Link = href });
             }
           }
           else
           {
-            DataBase.Write("Stops/" + number + "/b.db", text + "|" + href);
-
-            stopsB.Add(new Stop() { Text = text, Link = href });
+            i++;
           }
         }
-        else
-        {
-          i++;
-        }
+
+        Load.Visibility = System.Windows.Visibility.Collapsed;
+
+        StopsA.ItemsSource = stopsA;
+
+        if (stopsB.Count != 0)
+          StopsB.ItemsSource = stopsB;
       }
-
-      StopsA.ItemsSource = stopsA;
-
-      if (stopsB.Count != 0)
-        StopsB.ItemsSource = stopsB;
+      else
+      {
+        Error.Visibility = System.Windows.Visibility.Visible;
+      }
     }
 
     public void ShowStopsOffline(string link, string number)
@@ -153,6 +165,8 @@ namespace MyWay
         }
       }
 
+      Load.Visibility = System.Windows.Visibility.Collapsed;
+
       StopsA.ItemsSource = stopsA;
 
       if (stopsB.Count != 0)
@@ -163,6 +177,16 @@ namespace MyWay
 
         PivotA.Header = "кольцевой";
       }
+    }
+
+    private void ShowStopsAgain(object sender, System.Windows.Input.GestureEventArgs e) // Гениальное название :)
+    {
+      Array tag = LayoutRoot.Tag.ToString().Split(new char[] { '|' });
+
+      string a = tag.GetValue(0).ToString();
+      string b = tag.GetValue(1).ToString();
+
+      ShowStopsOnline(a, b);
     }
 
     public void OpenPredict(object sender, EventArgs e)

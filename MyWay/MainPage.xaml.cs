@@ -128,7 +128,6 @@ namespace MyWay
       Routes.ItemsSource = new List<KeyedList<char, GroupByNumber>>(groupedRoutesList);
     }
 
-
     private void ShowRoutesAgain(object sender, System.Windows.Input.GestureEventArgs e) // Гениальное название :)
     {
       ShowRoutesListOnline();

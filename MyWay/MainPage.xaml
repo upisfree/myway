@@ -96,7 +96,6 @@
       <TextBlock Text="Может, стоит проверить доступ к интернету?"  Foreground="#FFAAAAAA" HorizontalAlignment="Center" VerticalAlignment="Center" />
       <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="99,342,98,232" Tap="ShowRoutesAgain"/>
     </Grid>
-
   </Grid>
 
   <phone:PhoneApplicationPage.ApplicationBar>

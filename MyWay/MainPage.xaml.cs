@@ -4,9 +4,11 @@ using Microsoft.Phone.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Navigation;
+using Windows.Networking.Connectivity;
 
 namespace MyWay
 {
@@ -43,48 +45,55 @@ namespace MyWay
         if (DataBase.IsExists("Routes.db"))
           ShowRoutesListOffline();
         else
-          ShowRoutesList();
-
-//        if (NetworkInterface.GetIsNetworkAvailable())
+          ShowRoutesListOnline();
       }
     }
 
-    public async void ShowRoutesList()
+    public async void ShowRoutesListOnline()
     {
-      List<GroupByNumber> RoutesList = new List<GroupByNumber>();
-
-      string htmlPage = "";
-
-      using (var client = new HttpClient())
+      if (Util.IsInternetAvailable())
       {
-        htmlPage = await new HttpClient().GetStringAsync("http://t.bus55.ru/index.php/app/get_routes/");
+        Error.Visibility = System.Windows.Visibility.Collapsed;
+
+        List<GroupByNumber> RoutesList = new List<GroupByNumber>();
+
+        string htmlPage = "";
+
+        using (var client = new HttpClient())
+        {
+          htmlPage = await new HttpClient().GetStringAsync("http://t.bus55.ru/index.php/app/get_routes/");
+        }
+
+        HtmlDocument htmlDocument = new HtmlDocument();
+        htmlDocument.LoadHtml(htmlPage);
+
+        foreach (var a in htmlDocument.DocumentNode.SelectNodes("//a"))
+        {
+          var elem = a.ChildNodes.ToArray();
+
+          string number = elem[0].InnerText.Trim();
+          string type = elem[1].InnerText.Trim();
+          string desc = elem[2].InnerText.Trim();
+          string toStop = a.Attributes["href"].Value + "|" + number + " " + type;
+
+          DataBase.Write("Routes.db", number + "|" + type + "|" + desc + "|" + a.Attributes["href"].Value);
+
+          RoutesList.Add(new GroupByNumber() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
+        }
+
+        var groupedRoutesList =
+              from list in RoutesList
+              group list by list.Number[0] into listByGroup
+              select new KeyedList<char, GroupByNumber>(listByGroup);
+
+        Load.Visibility = System.Windows.Visibility.Collapsed;
+
+        Routes.ItemsSource = new List<KeyedList<char, GroupByNumber>>(groupedRoutesList);
       }
-
-      HtmlDocument htmlDocument = new HtmlDocument();
-      htmlDocument.LoadHtml(htmlPage);
-
-      foreach (var a in htmlDocument.DocumentNode.SelectNodes("//a"))
+      else
       {
-        var elem = a.ChildNodes.ToArray();
-
-        string number = elem[0].InnerText.Trim();
-        string type   = elem[1].InnerText.Trim();
-        string desc   = elem[2].InnerText.Trim();
-        string toStop = a.Attributes["href"].Value + "|" + number + " " + type;
-
-        DataBase.Write("Routes.db", number + "|" + type + "|" + desc + "|" + a.Attributes["href"].Value);
-
-        RoutesList.Add(new GroupByNumber() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
+        Error.Visibility = System.Windows.Visibility.Visible;
       }
-
-      var groupedRoutesList =
-            from list in RoutesList
-            group list by list.Number[0] into listByGroup
-            select new KeyedList<char, GroupByNumber>(listByGroup);
-
-      Util.RemoveLoader(Load);
-
-      Routes.ItemsSource = new List<KeyedList<char, GroupByNumber>>(groupedRoutesList);
     }
 
     public void ShowRoutesListOffline()
@@ -114,14 +123,29 @@ namespace MyWay
             group list by list.Number[0] into listByGroup
             select new KeyedList<char, GroupByNumber>(listByGroup);
 
-      Util.RemoveLoader(Load);
+      Load.Visibility = System.Windows.Visibility.Collapsed;
 
       Routes.ItemsSource = new List<KeyedList<char, GroupByNumber>>(groupedRoutesList);
     }
 
+
+    private void ShowRoutesAgain(object sender, System.Windows.Input.GestureEventArgs e) // Гениальное название :)
+    {
+      ShowRoutesListOnline();
+    }
+
+    // Поиск
+
     private void Search(object sender, EventArgs e)
     {
       MainImageSlideIn.Begin();
+
+
+
+
+
+
+
       //TextBox box = new TextBox()
       //{
       //  Text = "поиск",
@@ -134,6 +158,8 @@ namespace MyWay
 
       //messageBox.Show();
     }
+
+    // Очистка кэша
 
     private void DeleteCache(object sender, System.Windows.Input.GestureEventArgs e)
     {

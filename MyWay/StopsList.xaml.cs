@@ -49,7 +49,6 @@ namespace MyWay
 
     public async void ShowStops(string link, string number)
     {
-      MessageBox.Show("онлайн");
       if (!DataBase.IsDirExists("Stops"))
         DataBase.CreateDir("Stops");
 
@@ -116,11 +115,11 @@ namespace MyWay
 
     public void ShowStopsOffline(string link, string number)
     {
-      MessageBox.Show("оффлайн");
       List<Stop> stopsA = new List<Stop>();
       List<Stop> stopsB = new List<Stop>();
 
       Array stopsAdb = DataBase.Read("Stops/" + number + "/a.db").Split(new Char[] { '\n' });
+
       foreach (string a in stopsAdb)
       {
         try

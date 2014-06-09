@@ -1,12 +1,22 @@
-﻿using System.Windows.Controls;
+﻿using Microsoft.Phone.Net.NetworkInformation;
+using System.Windows.Controls;
 
 namespace MyWay
 {
   class Util
   {
-    public static void RemoveLoader(Grid loader)
+    public static bool IsInternetAvailable()
     {
-      loader.Visibility = System.Windows.Visibility.Collapsed;
+      var ni = NetworkInterface.NetworkInterfaceType;
+
+      bool isConnected = false;
+
+      if ((ni == NetworkInterfaceType.Wireless80211) || (ni == NetworkInterfaceType.MobileBroadbandCdma) || (ni == NetworkInterfaceType.MobileBroadbandGsm))
+        isConnected = true;
+      else if (ni == NetworkInterfaceType.None)
+        isConnected = false;
+
+      return isConnected;
     }
   }
 }

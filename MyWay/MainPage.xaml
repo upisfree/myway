@@ -56,7 +56,7 @@
           LayoutMode="List"
           IsGroupingEnabled="true"
           HideEmptyGroups="true"
-          Margin="15,-16,-12,10"/>
+          Margin="15,-16,-12,0"/>
       </phone:PivotItem>
 
       <phone:PivotItem Header="остановки">

@@ -122,6 +122,7 @@ namespace MyWay
       else
       {
         Error.Visibility = System.Windows.Visibility.Visible;
+        Load.Visibility = System.Windows.Visibility.Collapsed;
       }
     }
 

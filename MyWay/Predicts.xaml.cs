@@ -1,7 +1,8 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Phone.Controls;
-using System.Collections.Generic;
-using System.Net.Http;
+using System;
+using System.Net;
+using System.Windows;
 
 namespace MyWay
 {
@@ -23,7 +24,9 @@ namespace MyWay
         Stop.Text = name.ToUpper();
 
       if (NavigationContext.QueryString.TryGetValue("link", out link))
-        ShowPredicts(link);
+        Predicts.Tag = link;
+
+      ShowPredicts(Predicts.Tag.ToString());
     }
 
     public class Predict
@@ -34,48 +37,60 @@ namespace MyWay
       public string Time   { get; set; }
     }
 
-    public async void ShowPredicts(string link)
+    public void ShowPredicts(string link)
     {
-      List<Predict> p = new List<Predict>();
+      NoPredicts.Visibility = System.Windows.Visibility.Collapsed;
+      Error.Visibility = System.Windows.Visibility.Collapsed;
+      Load.Visibility = System.Windows.Visibility.Visible;
 
-      string htmlPage = "";
-
-      using (var client = new HttpClient())
+      if (Util.IsInternetAvailable())
       {
-        htmlPage = await new HttpClient().GetStringAsync(link);
-      }
+        var client = new WebClient();
 
-      HtmlDocument htmlDocument = new HtmlDocument();
-      htmlDocument.LoadHtml(htmlPage);
+        client.Headers["If-Modified-Since"] = DateTimeOffset.Now.ToString(); // отключение кэширования
 
-      var b = htmlDocument.DocumentNode.SelectNodes("//li[@class=\"item_predict\"]");
-
-      if (b != null)
-      {
-        foreach (var a in b)
+        client.DownloadStringCompleted += (sender, e) =>
         {
-          string number = a.ChildNodes[0].InnerText.Trim();
-          string type   = a.ChildNodes[1].InnerText.Trim();
-          string desc   = a.ChildNodes[4].InnerText.Trim();
-          string time   = a.ChildNodes[2].InnerText.Trim();
+          HtmlDocument htmlDocument = new HtmlDocument();
+          htmlDocument.LoadHtml(e.Result);
 
-          p.Add(new Predict() { Number = number, Type = " " + type, Desc = desc, Time = time });
-        }
+          var b = htmlDocument.DocumentNode.SelectNodes("//li[@class=\"item_predict\"]");
 
-        Predicts.ItemsSource = p;
+          if (b != null)
+          {
+            foreach (var a in b)
+            {
+              string number = a.ChildNodes[0].InnerText.Trim();
+              string type = a.ChildNodes[1].InnerText.Trim();
+              string desc = a.ChildNodes[4].InnerText.Trim();
+              string time = a.ChildNodes[2].InnerText.Trim();
+
+              Predicts.Items.Add(new Predict() { Number = number, Type = " " + type, Desc = desc, Time = time });
+            }
+
+            Load.Visibility = System.Windows.Visibility.Collapsed;
+          }
+          else
+          {
+            NoPredicts.Visibility = System.Windows.Visibility.Visible;
+            Load.Visibility = System.Windows.Visibility.Collapsed;
+          }
+        };
+
+        client.DownloadStringAsync(new Uri(link));
       }
       else
       {
-        NoPredicts.Visibility = System.Windows.Visibility.Visible;
+        Error.Visibility = System.Windows.Visibility.Visible;
+        Load.Visibility = System.Windows.Visibility.Collapsed;
       }
     }
 
     private void Refresh(object sender, System.EventArgs e)
     {
-      string link = "";
+      Predicts.Items.Clear();
 
-      if (NavigationContext.QueryString.TryGetValue("link", out link))
-        ShowPredicts(link);
+      ShowPredicts(Predicts.Tag.ToString());
     }
   }
 }

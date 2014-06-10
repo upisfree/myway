@@ -140,9 +140,9 @@ namespace MyWay
 
     // Поиск
 
-    private void Search(object sender, EventArgs e)
-    {
-      SearchPopup.IsOpen = true;
+    private void Search(object sender, EventArgs e) // вызывать событие поиска при наборе нового символа / модификации строки поиска
+    {                                               // пишем все маршрутыв переменную, данные из поля ввода сопостовляем с полями в массиве
+      SearchPopup.IsOpen = true;                    // (номер, тип, описание) при помощи регулярок, добавляем в массив и выводим как в прогнозах
       SearchBox.Focus();
     }
 

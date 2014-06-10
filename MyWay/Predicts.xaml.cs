@@ -3,6 +3,7 @@ using Microsoft.Phone.Controls;
 using System;
 using System.Net;
 using System.Windows;
+using System.Windows.Media.Animation;
 
 namespace MyWay
 {
@@ -40,6 +41,8 @@ namespace MyWay
     public void ShowPredicts(string link)
     {
       NoPredicts.Visibility = System.Windows.Visibility.Collapsed;
+      NoFuture.Opacity = 0;
+      NoFuture_Flag = 0;
       Error.Visibility = System.Windows.Visibility.Collapsed;
       Load.Visibility = System.Windows.Visibility.Visible;
 
@@ -91,6 +94,53 @@ namespace MyWay
       Predicts.Items.Clear();
 
       ShowPredicts(Predicts.Tag.ToString());
+    }
+
+    // Анимации
+    private int NoFuture_Flag;
+    private int NoFuture_RandomItem;
+
+    private void NoFuture_DoubleTap(object sender, System.EventArgs e)
+    {
+      if (NoFuture_Flag % 2 == 0)
+      {
+        NoFuture_RandomItem = new Random().Next(0, 10);
+
+        NoFuture.Children[NoFuture_RandomItem].Opacity = 1;
+
+        NoFuture_Animation(0.0, 1.0, 3.5).Begin();
+      }
+      else
+      {
+        NoFuture_Animation(1.0, 0.0, 3.5).Begin();
+
+        System.Threading.Timer timer = new System.Threading.Timer(obj => // ждём, пока завершится анимация, скрываем фото
+        {
+          try
+          { 
+            NoFuture.Children[NoFuture_RandomItem].Opacity = 0;
+          }
+          catch { }
+        }, null, 3500, System.Threading.Timeout.Infinite);
+      }
+
+      NoFuture_Flag++;
+    }
+
+    private Storyboard NoFuture_Animation(double from, double to, double time)
+    {
+      Storyboard sb = new Storyboard();
+      DoubleAnimation fadeInAnimation = new DoubleAnimation();
+      fadeInAnimation.From = from;
+      fadeInAnimation.To = to;
+      fadeInAnimation.Duration = new Duration(TimeSpan.FromSeconds(time));
+
+      Storyboard.SetTarget(fadeInAnimation, NoFuture);
+      Storyboard.SetTargetProperty(fadeInAnimation, new PropertyPath("Opacity"));
+
+      sb.Children.Add(fadeInAnimation);
+
+      return sb;
     }
   }
 }

@@ -144,6 +144,15 @@
     <Content Include="Assets\ApplicationIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\NoFuture\1.jpg" />
+    <Content Include="Assets\NoFuture\2.jpg" />
+    <Content Include="Assets\NoFuture\3.jpg" />
+    <Content Include="Assets\NoFuture\4.jpg" />
+    <Content Include="Assets\NoFuture\5.jpg" />
+    <Content Include="Assets\NoFuture\6.jpg" />
+    <Content Include="Assets\NoFuture\7.jpg" />
+    <Content Include="Assets\NoFuture\8.jpg" />
+    <Content Include="Assets\NoFuture\9.jpg" />
     <Content Include="Assets\Tiles\Large.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

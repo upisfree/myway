@@ -56,6 +56,16 @@
               <Button Content="вконтакте" Margin="205,82.5,-12,0" Click="ContactVK" toolkit:TiltEffect.IsTiltEnabled="True" />
             </Grid>
           </ListBoxItem>
+
+          <ListBoxItem>
+            <Grid Width="425">
+              <TextBlock Text="Если ждать автобус скучно, то можно попробовать поискать пасхальные яйца :)"
+                         TextWrapping="Wrap"
+                         Foreground="#FFAAAAAA">
+                
+              </TextBlock>
+              </Grid>
+          </ListBoxItem>
         </ListBox>
       </phone:PivotItem>
     </phone:Pivot>

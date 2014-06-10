@@ -27,13 +27,25 @@
       <!--<TextBlock x:Name="Bus" Text="МОЙ МАРШРУТ" Style="{StaticResource PhoneTextNormalStyle}" FontFamily="Segoe WP Semibold" FontSize="22.7" />-->
     </StackPanel>
 
+    <Grid x:Name="NoFuture" Tag="off" Opacity="0">
+      <Image Opacity="0" Source="/Assets/NoFuture/1.jpg" Margin="-451,-52,0,-352" />
+      <Image Opacity="0" Source="/Assets/NoFuture/2.jpg" Margin="-307,-52,-144,-352" />
+      <Image Opacity="0" Source="/Assets/NoFuture/3.jpg" Margin="-137,10,-47,-337" />
+      <Image Opacity="0" Source="/Assets/NoFuture/4.jpg" Margin="-224,61,-227,-465" />
+      <Image Opacity="0" Source="/Assets/NoFuture/5.jpg" Margin="-224,-52,-227,-352" />
+      <Image Opacity="0" Source="/Assets/NoFuture/6.jpg" Margin="-224,-52,-227,-352" />
+      <Image Opacity="0" Source="/Assets/NoFuture/7.jpg" Margin="-307,-52,-144,-352" />
+      <Image Opacity="0" Source="/Assets/NoFuture/8.jpg" Margin="-224,-52,-227,-352" />
+      <Image Opacity="0" Source="/Assets/NoFuture/9.jpg" Margin="-137,54,-314,-458" />
+    </Grid>
+
     <Grid x:Name="ContentPanel" Margin="28,53,28,23" DataContext="Predict" Grid.RowSpan="2">
       <Grid.RowDefinitions>
         <RowDefinition Height="670*"/>
         <RowDefinition Height="19*"/>
         <RowDefinition Height="3*"/>
       </Grid.RowDefinitions>
-      
+
       <ListBox x:Name="Predicts" Margin="0,10,0,-23" Grid.RowSpan="3">
         <ListBox.ItemTemplate>
           <DataTemplate>
@@ -48,11 +60,11 @@
                 <Border BorderBrush="{StaticResource PhoneBackgroundBrush}" BorderThickness="7" Margin="-7">
                   <TextBlock Text="{Binding Time}" Margin="10,0,10,0" FontSize="32" Foreground="White" FontWeight="ExtraLight" HorizontalAlignment="Left" />
                 </Border>
-              </Grid>                
+              </Grid>
             </Grid>
           </DataTemplate>
         </ListBox.ItemTemplate>
-        
+
         <ListBox.ItemContainerStyle>
           <Style TargetType="ListBoxItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -62,7 +74,7 @@
         </ListBox.ItemContainerStyle>
       </ListBox>
 
-      <Grid x:Name="NoPredicts" Visibility="Collapsed" Grid.RowSpan="3" Margin="0,10,0,0">
+      <Grid x:Name="NoPredicts" Visibility="Collapsed" Grid.RowSpan="3" Margin="0,10,0,0" DoubleTap="NoFuture_DoubleTap">
         <TextBlock Text="Прогнозов нет" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-75,0,0" />
         <TextBlock Text="Может, уже поздно и автобусы не ходят?"  Foreground="#FFAAAAAA" HorizontalAlignment="Center" VerticalAlignment="Center" />
       </Grid>

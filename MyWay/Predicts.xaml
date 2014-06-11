@@ -35,8 +35,7 @@
       <Image Opacity="0" Source="/Assets/NoFuture/5.jpg" Margin="-224,-52,-227,-352" />
       <Image Opacity="0" Source="/Assets/NoFuture/6.jpg" Margin="-224,-52,-227,-352" />
       <Image Opacity="0" Source="/Assets/NoFuture/7.jpg" Margin="-307,-52,-144,-352" />
-      <Image Opacity="0" Source="/Assets/NoFuture/8.jpg" Margin="-224,-52,-227,-352" />
-      <Image Opacity="0" Source="/Assets/NoFuture/9.jpg" Margin="-137,54,-314,-458" />
+      <Image Opacity="0" Source="/Assets/NoFuture/8.jpg" Margin="-137,54,-314,-458" />
     </Grid>
 
     <Grid x:Name="ContentPanel" Margin="28,53,28,23" DataContext="Predict" Grid.RowSpan="2">

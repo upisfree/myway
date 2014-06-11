@@ -71,7 +71,7 @@
     </phone:Pivot>
 
     <Popup x:Name="SearchPopup" Margin="0,0,0,626">
-      <Grid Width="480" Background="White">
+      <Grid Width="480" Background="{StaticResource PhoneBackgroundBrush}">
         <TextBox x:Name="SearchBox" InputScope="Search" />
       </Grid>
     </Popup>

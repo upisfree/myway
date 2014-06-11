@@ -104,7 +104,17 @@ namespace MyWay
     {
       if (NoFuture_Flag % 2 == 0)
       {
-        NoFuture_RandomItem = new Random().Next(0, 10);
+        NoFuture_RandomItem = new Random().Next(0, 9);
+
+        if (NoFuture_RandomItem == NoFuture.Children.Count)
+          NoFuture_RandomItem -= 1;
+        
+        int i = 0;
+        while (i < NoFuture.Children.Count)
+        {
+          NoFuture.Children[i].Opacity = 0;
+          i++;
+        }
 
         NoFuture.Children[NoFuture_RandomItem].Opacity = 1;
 

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.IO.IsolatedStorage;
+using System.Threading.Tasks;
 
 namespace MyWay
 {
@@ -25,6 +26,21 @@ namespace MyWay
       
       string textFile = Reader.ReadToEnd();
       
+      Reader.Close();
+
+      return textFile;
+    }
+
+    // Ассинхронное чтение из базы
+    public async static Task<string> ReadAsync(string file)
+    {
+      IsolatedStorageFile fileStorage = IsolatedStorageFile.GetUserStoreForApplication();
+
+      StreamReader Reader = null;
+      Reader = new StreamReader(new IsolatedStorageFileStream(file, FileMode.Open, fileStorage));
+
+      string textFile = await Reader.ReadToEndAsync();
+
       Reader.Close();
 
       return textFile;

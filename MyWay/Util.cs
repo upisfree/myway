@@ -1,9 +1,9 @@
 ﻿using Microsoft.Phone.Net.NetworkInformation;
-using System.Windows.Controls;
+using System;
 
 namespace MyWay
 {
-  class Util
+  public static class Util
   {
     public static bool IsInternetAvailable()
     {
@@ -17,6 +17,11 @@ namespace MyWay
         isConnected = false;
 
       return isConnected;
+    }
+
+    public static bool IsStringContains(this string source, string toCheck) // case insensitive
+    {
+      return source.IndexOf(toCheck, StringComparison.OrdinalIgnoreCase) >= 0;
     }
   }
 }

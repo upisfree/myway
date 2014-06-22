@@ -19,22 +19,60 @@
   <Grid x:Name="LayoutRoot" Background="Transparent">
 
   <!--Элемент управления Pivot-->
-    <phone:Pivot Title="МОЙ МАРШРУТ">
+    <phone:Pivot Title="МОЙ МАРШРУТ" SelectionChanged="Pivot_SelectionChanged">
       <phone:PivotItem Header="маршруты">
-        <phone:LongListSelector
-          x:Name="Routes"
-          JumpListStyle="{StaticResource JumpListStyle}"
-          Background="Transparent"
-          GroupHeaderTemplate="{StaticResource GroupHeaderTemplate}"
-          ItemTemplate="{StaticResource RoutesItemTemplate}"
-          LayoutMode="List"
-          IsGroupingEnabled="true"
-          HideEmptyGroups="true"
-          Margin="15,-16,-12,0"/>
+        <Grid>
+          <phone:LongListSelector
+            x:Name="Routes"
+            JumpListStyle="{StaticResource JumpListStyle}"
+            Background="Transparent"
+            GroupHeaderTemplate="{StaticResource GroupHeaderTemplate}"
+            ItemTemplate="{StaticResource RoutesItemTemplate}"
+            LayoutMode="List"
+            IsGroupingEnabled="true"
+            HideEmptyGroups="true"
+            Margin="15,-16,-12,0"/>
+
+          <ListBox x:Name="SearchRoutes_Result" Visibility="Collapsed" Margin="15,-16,-12,0" Grid.RowSpan="3">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Grid Tag="{Binding ToStop}" Tap="OpenRoute" toolkit:TiltEffect.IsTiltEnabled="True">
+                  <TextBlock FontFamily="{StaticResource PhoneFontFamilySemiLight}" Margin="0,-8,0,0" Height="91" VerticalAlignment="Top">
+                  <Run Text="{Binding Number}" FontSize="64" Foreground="{StaticResource PhoneForegroundBrush}" />
+                  <Run Text="{Binding Type}" FontSize="42" Foreground="{StaticResource PhoneForegroundBrush}" />
+                  </TextBlock>
+
+                  <TextBlock Text="{Binding Desc}" FontSize="24" Foreground="#FFAAAAAA" Margin="0,73,0,-1" />
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+
+            <ListBox.ItemContainerStyle>
+              <Style TargetType="ListBoxItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="IsHitTestVisible" Value="True" />
+                <Setter Property="Margin" Value="0,-10,0,10" />
+              </Style>
+            </ListBox.ItemContainerStyle>
+          </ListBox>
+
+          <Grid x:Name="SearchRoutes_NoResults" Visibility="Collapsed" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="Ничего не найдено" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-90,0,0" />
+            <TextBlock Text="Может, попробовать поискать по-другому?"  Foreground="#FFAAAAAA" HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Grid>
+
+          <Grid x:Name="SearchBoxContainer" Width="480" Height="80" Margin="-12,-500,-12,500" Background="{StaticResource PhoneBackgroundBrush}">
+            <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged" Height="80" FontSize="32" InputScope="Search" Tap="SearchBox_Tap" />
+
+            <Grid.RenderTransform>
+              <TranslateTransform x:Name="SearchBoxContainer_Transform" />
+            </Grid.RenderTransform>
+          </Grid>
+        </Grid>
       </phone:PivotItem>
 
-      <phone:PivotItem Header="остановки">
-      </phone:PivotItem>
+      <!--<phone:PivotItem Header="остановки">
+      </phone:PivotItem>-->
 
       <phone:PivotItem Header="настройки">
         <ListBox Margin="15,-16,15,0">
@@ -70,12 +108,6 @@
       </phone:PivotItem>
     </phone:Pivot>
 
-    <Popup x:Name="SearchPopup" Margin="0,0,0,626">
-      <Grid Width="480" Background="{StaticResource PhoneBackgroundBrush}">
-        <TextBox x:Name="SearchBox" InputScope="Search" />
-      </Grid>
-    </Popup>
-
     <Grid x:Name="Load" Visibility="Visible" Margin="0,25,0,0">
       <ProgressBar Visibility="Visible" IsIndeterminate="True" Foreground="#FF455580" />
       <TextBlock Text="Загрузка..." HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,0" />
@@ -90,7 +122,69 @@
 
   <phone:PhoneApplicationPage.ApplicationBar>
     <shell:ApplicationBar IsVisible="True">
-      <shell:ApplicationBarIconButton IconUri="/Images/search.png" Text="поиск" Click="Search"/>
+      <shell:ApplicationBarIconButton IconUri="/Images/search.png" Text="поиск" Click="SearchRoutes_OpenBox"/>
     </shell:ApplicationBar>
   </phone:PhoneApplicationPage.ApplicationBar>
+  
+  <phone:PhoneApplicationPage.Resources>
+    <!-- Анимация появления поля поиска -->
+    <Storyboard x:Key="SearchBox_Show">
+      <DoubleAnimation Storyboard.TargetName="SearchBoxContainer_Transform" 
+                       Storyboard.TargetProperty="(TranslateTransform.Y)"
+                       Duration="0:0:0.5"
+                       From="0" To="70">
+        <DoubleAnimation.EasingFunction>
+          <BackEase Amplitude="0.5" EasingMode="EaseOut" />
+        </DoubleAnimation.EasingFunction>
+      </DoubleAnimation>
+    </Storyboard>
+
+    <!-- Анимация возвращения поля поиска до фокуса -->
+    <Storyboard x:Key="SearchBox_BeforeFocus">
+      <DoubleAnimation Storyboard.TargetName="SearchBoxContainer_Transform" 
+                       Storyboard.TargetProperty="(TranslateTransform.Y)"
+                       Duration="0:0:0.5"
+                       From="70" To="75">
+        <DoubleAnimation.EasingFunction>
+          <BackEase Amplitude="1" EasingMode="EaseOut" />
+        </DoubleAnimation.EasingFunction>
+      </DoubleAnimation>
+    </Storyboard>
+
+    <!-- Анимация возвращения поля поиска после фокуса -->
+    <Storyboard x:Key="SearchBox_AfterFocus">
+      <DoubleAnimation Storyboard.TargetName="SearchBoxContainer_Transform" 
+                       Storyboard.TargetProperty="(TranslateTransform.Y)"
+                       Duration="0:0:0.5"
+                       From="75" To="70">
+        <DoubleAnimation.EasingFunction>
+          <BackEase Amplitude="1" EasingMode="EaseOut" />
+        </DoubleAnimation.EasingFunction>
+      </DoubleAnimation>
+    </Storyboard>
+
+    <!-- Анимация исчезновения поля поиска -->
+    <Storyboard x:Key="SearchBox_Hide">
+      <DoubleAnimation Storyboard.TargetName="SearchBoxContainer_Transform" 
+                       Storyboard.TargetProperty="(TranslateTransform.Y)"
+                       Duration="0:0:0.5"
+                       From="70" To="0">
+        <DoubleAnimation.EasingFunction>
+          <BackEase Amplitude="0.25" EasingMode="EaseIn" />
+        </DoubleAnimation.EasingFunction>
+      </DoubleAnimation>
+    </Storyboard>
+
+    <!-- Жуткий костыль, оформить в виде функции на C# -->
+    <Storyboard x:Key="SearchBox_Hide1">
+      <DoubleAnimation Storyboard.TargetName="SearchBoxContainer_Transform" 
+                       Storyboard.TargetProperty="(TranslateTransform.Y)"
+                       Duration="0:0:0.5"
+                       From="110" To="0">
+        <DoubleAnimation.EasingFunction>
+          <BackEase Amplitude="0.25" EasingMode="EaseIn" />
+        </DoubleAnimation.EasingFunction>
+      </DoubleAnimation>
+    </Storyboard>
+  </phone:PhoneApplicationPage.Resources>
 </phone:PhoneApplicationPage>

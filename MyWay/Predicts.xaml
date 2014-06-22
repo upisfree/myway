@@ -50,8 +50,8 @@
           <DataTemplate>
             <Grid>
               <TextBlock FontFamily="{StaticResource PhoneFontFamilySemiLight}" Margin="0,-8,0,0" Height="91" VerticalAlignment="Top">
-                <Run Text="{Binding Number}" FontSize="64" />
-                <Run Text="{Binding Type}" FontSize="42" />
+                <Run Text="{Binding Number}" FontSize="64" Foreground="{StaticResource PhoneForegroundBrush}" />
+                <Run Text="{Binding Type}" FontSize="42" Foreground="{StaticResource PhoneForegroundBrush}" />
               </TextBlock>
               <TextBlock Text="{Binding Desc}" FontSize="24" Foreground="#FFAAAAAA" Margin="0,73,0,-1" />
 

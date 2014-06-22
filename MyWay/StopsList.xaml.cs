@@ -182,10 +182,10 @@ namespace MyWay
 
     private void ShowStopsAgain(object sender, System.Windows.Input.GestureEventArgs e) // Гениальное название :)
     {
-      Array tag = LayoutRoot.Tag.ToString().Split(new char[] { '|' });
+      string[] tag = LayoutRoot.Tag.ToString().Split(new char[] { '|' });
 
-      string a = tag.GetValue(0).ToString();
-      string b = tag.GetValue(1).ToString();
+      string a = tag[0];
+      string b = tag[1];
 
       ShowStopsOnline(a, b);
     }
@@ -193,7 +193,6 @@ namespace MyWay
     public void OpenPredict(object sender, EventArgs e)
     {
       TextBlock text = (TextBlock)sender;
-      text.Foreground = new SolidColorBrush((Color)Application.Current.Resources["PhoneForegroundColor"]);
 
       string link = text.Tag.ToString();
       string name = text.Text;

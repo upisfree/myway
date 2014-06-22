@@ -6,7 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media.Animation;
 using System.Windows.Navigation;
 using Windows.Networking.Connectivity;
 
@@ -14,7 +18,53 @@ namespace MyWay
 {
   public partial class MainPage:PhoneApplicationPage
   {
-    public class GroupByNumber
+    // Функции анимаций поля поиска
+    public void SearchBox_Show() { (this.Resources["SearchBox_Show"] as Storyboard).Begin(); }
+    public void SearchBox_Hide() { (this.Resources["SearchBox_Hide"] as Storyboard).Begin(); }
+    public void SearchBox_Hide1() { (this.Resources["SearchBox_Hide1"] as Storyboard).Begin(); }
+    public void SearchBox_BeforeFocus() { (this.Resources["SearchBox_BeforeFocus"] as Storyboard).Begin(); }
+    public void SearchBox_AfterFocus() { (this.Resources["SearchBox_AfterFocus"] as Storyboard).Begin(); }
+
+    // Конструктор
+    public MainPage()
+    {
+      InitializeComponent();
+
+      SearchBox.LostFocus += (sender, e) =>
+      {
+        if (((TextBox)sender).Text == "")
+        {
+          SearchBox_Hide1();
+
+          ApplicationBar.IsVisible = true;
+        }
+        else
+          SearchBox_AfterFocus();
+      };
+    }
+
+    private void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+      bool flag = true;
+
+      switch (((Pivot)sender).SelectedIndex)
+      {
+        case 0:
+          if (SearchBox.Text != "")
+            flag = false;
+          break;
+        case 1:
+          flag = false;
+          break;
+        default:
+          flag = true;
+          break;
+      }
+
+      ApplicationBar.IsVisible = flag;
+    }
+
+    public class Route
     {
       public string Number { get; set; }
       public string Type   { get; set; }
@@ -27,17 +77,6 @@ namespace MyWay
       public TKey Key { protected set; get; }
       public KeyedList(TKey key, IEnumerable<TItem> items) : base(items)    { Key = key; }
       public KeyedList(IGrouping<TKey, TItem> grouping)    : base(grouping) { Key = grouping.Key; }
-    }
-
-    // Конструктор
-    public MainPage()
-    {
-      InitializeComponent();
-
-      SearchBox.LostFocus += (sender, e) =>
-      {
-        SearchPopup.IsOpen = false;
-      };
     }
 
     // Загрузка данных для элементов ViewModel
@@ -54,13 +93,33 @@ namespace MyWay
       }
     }
 
+    protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
+    {
+      if (SearchBox.Text != "")
+      {
+        SearchBox_Hide();
+        SearchBox.Text = "";
+
+        SearchRoutes_NoResults.Visibility = System.Windows.Visibility.Collapsed;
+        SearchRoutes_Result.Visibility = System.Windows.Visibility.Collapsed;
+        SearchRoutes_Result.Items.Clear();
+        Routes.Visibility = System.Windows.Visibility.Visible;
+
+        ApplicationBar.IsVisible = true;
+
+        e.Cancel = true;
+      }
+
+      base.OnBackKeyPress(e);
+    }
+
     public async void ShowRoutesListOnline()
     {
       if (Util.IsInternetAvailable())
       {
         Error.Visibility = System.Windows.Visibility.Collapsed;
 
-        List<GroupByNumber> RoutesList = new List<GroupByNumber>();
+        List<Route> RoutesList = new List<Route>();
 
         string htmlPage = "";
 
@@ -83,17 +142,17 @@ namespace MyWay
 
           DataBase.Write("Routes.db", number + "|" + type + "|" + desc + "|" + a.Attributes["href"].Value);
 
-          RoutesList.Add(new GroupByNumber() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
+          RoutesList.Add(new Route() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
         }
 
         var groupedRoutesList =
               from list in RoutesList
               group list by list.Number[0] into listByGroup
-              select new KeyedList<char, GroupByNumber>(listByGroup);
+              select new KeyedList<char, Route>(listByGroup);
 
         Load.Visibility = System.Windows.Visibility.Collapsed;
 
-        Routes.ItemsSource = new List<KeyedList<char, GroupByNumber>>(groupedRoutesList);
+        Routes.ItemsSource = new List<KeyedList<char, Route>>(groupedRoutesList);
       }
       else
       {
@@ -103,7 +162,7 @@ namespace MyWay
 
     public void ShowRoutesListOffline()
     {
-      List<GroupByNumber> RoutesList = new List<GroupByNumber>();
+      List<Route> RoutesList = new List<Route>();
 
       Array db = DataBase.Read("Routes.db").Split(new Char[] {'\n'});
 
@@ -118,7 +177,7 @@ namespace MyWay
           string desc = line.GetValue(2).ToString();
           string toStop = line.GetValue(3).ToString() + "|" + number + " " + type;
 
-          RoutesList.Add(new GroupByNumber() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
+          RoutesList.Add(new Route() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
         }
         catch { }
       }
@@ -126,11 +185,11 @@ namespace MyWay
       var groupedRoutesList =
             from list in RoutesList
             group list by list.Number[0] into listByGroup
-            select new KeyedList<char, GroupByNumber>(listByGroup);
+            select new KeyedList<char, Route>(listByGroup);
 
       Load.Visibility = System.Windows.Visibility.Collapsed;
 
-      Routes.ItemsSource = new List<KeyedList<char, GroupByNumber>>(groupedRoutesList);
+      Routes.ItemsSource = new List<KeyedList<char, Route>>(groupedRoutesList);
     }
 
     private void ShowRoutesAgain(object sender, System.Windows.Input.GestureEventArgs e) // Гениальное название :)
@@ -139,26 +198,115 @@ namespace MyWay
     }
 
     // Поиск
-
-    private void Search(object sender, EventArgs e) // вызывать событие поиска при наборе нового символа / модификации строки поиска
-    {                                               // пишем все маршрутыв переменную, данные из поля ввода сопостовляем с полями в массиве
-      SearchPopup.IsOpen = true;                    // (номер, тип, описание) при помощи регулярок, добавляем в массив и выводим как в прогнозах
-      SearchBox.Focus();
-    }
-
-    protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
+    protected class SearchRoutes
     {
-      if (SearchPopup.IsOpen)
+      private async static Task<string> GetRoutes()
       {
-        SearchPopup.IsOpen = false;
-        e.Cancel = true;
+        string db = await DataBase.ReadAsync("Routes.db");
+
+        return db;
       }
 
-      base.OnBackKeyPress(e);
+      public async static Task<Array> GetEqualRoutes(string query)
+      {
+        string routes = await GetRoutes();
+        string[] b = routes.Split(new Char[] { '\n' });
+        List<string[]> list = new List<string[]>();
+
+        query = query.Trim();
+
+        foreach (string a in b)
+        {
+          try
+          {
+            string[] line = a.Split(new Char[] { '|' });
+
+            if (Util.IsStringContains(line[0], query) ||
+                Util.IsStringContains(line[1], query) ||
+                Util.IsStringContains(line[2], query) ||
+                Util.IsStringContains(line[0] + " " + line[1], query) ||
+                Util.IsStringContains(line[0] + " " + line[1] + " " + line[2], query))
+            {
+              list.Add(line);
+            }
+          }
+          catch { }
+        }
+
+        return list.ToArray();
+      }
+    }
+
+    private async void SearchBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+    {
+      TextBox s = (TextBox)sender;
+
+      SearchRoutes_Result.Items.Clear();
+
+      if (s.Text != "")
+      {
+        SearchRoutes_Result.Visibility = System.Windows.Visibility.Visible;
+        SearchRoutes_NoResults.Visibility = System.Windows.Visibility.Collapsed;
+        Routes.Visibility = System.Windows.Visibility.Collapsed;
+
+        try
+        {
+          Array b = await SearchRoutes.GetEqualRoutes(s.Text);
+
+          if (b.Length != 0)
+          {
+            foreach (string[] a in b)
+            {
+              string number = a[0];
+              string type = " " + a[1];
+              string desc = a[2];
+              string toStop = a[3] + "|" + number + " " + type;
+
+              SearchRoutes_Result.Items.Add(new Route() { Number = number, Type = type, Desc = desc, ToStop = toStop });
+            }
+          }
+          else
+          {
+            SearchRoutes_NoResults.Visibility = System.Windows.Visibility.Visible;
+          }
+        }
+        catch { }
+      }
+      else
+      {
+        SearchRoutes_Result.Visibility = System.Windows.Visibility.Collapsed;
+        Routes.Visibility = System.Windows.Visibility.Visible;
+      }
+    }
+
+    private void SearchRoutes_OpenBox(object sender, EventArgs e)
+    {
+      if (SearchBox.Text == "")
+        SearchBox_Show();
+
+      SearchBox.Focus();
+
+      ApplicationBar.IsVisible = false;
+    }
+
+    private void SearchBox_Tap(object sender, RoutedEventArgs e)
+    {
+      SearchBox_BeforeFocus();
+    }
+
+    public void OpenRoute(object sender, EventArgs e)
+    {
+      Grid text = (Grid)sender;
+
+      string[] a = text.Tag.ToString().Split(new char[] { '|' });
+
+      string link = a[0];
+      string name = a[1].ToUpper();
+
+      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/StopsList.xaml?link=" + link + "&name=" + name, UriKind.Relative));
     }
 
     // Очистка кэша
-
     private void DeleteCache(object sender, System.Windows.Input.GestureEventArgs e)
     {
       DataBase.RemoveAll("");
@@ -167,7 +315,6 @@ namespace MyWay
     }
 
     // Контакты
-
     private void ContactEmail(object sender, RoutedEventArgs e)
     {
       EmailComposeTask emailComposeTask = new EmailComposeTask();

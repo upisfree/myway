@@ -4,15 +4,12 @@ using Microsoft.Phone.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using System.Windows.Navigation;
-using Windows.Networking.Connectivity;
 
 namespace MyWay
 {

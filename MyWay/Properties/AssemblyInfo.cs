@@ -9,7 +9,7 @@ using System.Resources;
 [assembly: AssemblyTitle("MyWay")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("upisfree")]
 [assembly: AssemblyProduct("MyWay")]
 [assembly: AssemblyCopyright("Copyright © 2014")]
 [assembly: AssemblyTrademark("")]

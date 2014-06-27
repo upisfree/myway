@@ -2,6 +2,7 @@
 using Microsoft.Phone.Controls;
 using System;
 using System.Net;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
 
@@ -100,7 +101,7 @@ namespace MyWay
     private int NoFuture_Flag;
     private int NoFuture_RandomItem;
 
-    private void NoFuture_DoubleTap(object sender, System.EventArgs e)
+    private async void NoFuture_DoubleTap(object sender, System.EventArgs e)
     {
       if (NoFuture_Flag % 2 == 0)
       {
@@ -118,39 +119,26 @@ namespace MyWay
 
         NoFuture.Children[NoFuture_RandomItem].Opacity = 1;
 
-        NoFuture_Animation(0.0, 1.0, 3.5).Begin();
+        NoFuture_Animation(0.0, 1.0, 3.5);
       }
       else
       {
-        NoFuture_Animation(1.0, 0.0, 3.5).Begin();
-
-        System.Threading.Timer timer = new System.Threading.Timer(obj => // ждём, пока завершится анимация, скрываем фото
-        {
-          try
-          { 
-            NoFuture.Children[NoFuture_RandomItem].Opacity = 0;
-          }
-          catch { }
-        }, null, 3500, System.Threading.Timeout.Infinite);
+        NoFuture_Animation(1.0, 0.0, 3.5);
+        await Task.Delay(3500);
+        NoFuture.Children[NoFuture_RandomItem].Opacity = 0;
       }
 
       NoFuture_Flag++;
     }
 
-    private Storyboard NoFuture_Animation(double from, double to, double time)
+    private void NoFuture_Animation(double from, double to, double time)
     {
-      Storyboard sb = new Storyboard();
-      DoubleAnimation fadeInAnimation = new DoubleAnimation();
-      fadeInAnimation.From = from;
-      fadeInAnimation.To = to;
-      fadeInAnimation.Duration = new Duration(TimeSpan.FromSeconds(time));
+      DoubleAnimation da = new DoubleAnimation();
+      da.From = from;
+      da.To = to;
+      da.Duration = new Duration(TimeSpan.FromSeconds(time));
 
-      Storyboard.SetTarget(fadeInAnimation, NoFuture);
-      Storyboard.SetTargetProperty(fadeInAnimation, new PropertyPath("Opacity"));
-
-      sb.Children.Add(fadeInAnimation);
-
-      return sb;
+      Util.Animation(NoFuture, new PropertyPath("Opacity"), da);
     }
   }
 }

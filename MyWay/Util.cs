@@ -1,5 +1,7 @@
 ﻿using Microsoft.Phone.Net.NetworkInformation;
 using System;
+using System.Windows;
+using System.Windows.Media.Animation;
 
 namespace MyWay
 {
@@ -22,6 +24,18 @@ namespace MyWay
     public static bool IsStringContains(this string source, string toCheck) // case insensitive
     {
       return source.IndexOf(toCheck, StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    public static void Animation(DependencyObject target, PropertyPath property, DoubleAnimation animation)
+    {
+      Storyboard sb = new Storyboard();
+
+      Storyboard.SetTarget(animation, target);
+      Storyboard.SetTargetProperty(animation, property);
+
+      sb.Children.Add(animation);
+
+      sb.Begin();
     }
   }
 }

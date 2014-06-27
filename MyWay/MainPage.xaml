@@ -59,10 +59,14 @@
           <Grid x:Name="SearchRoutes_NoResults" Visibility="Collapsed" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock Text="Ничего не найдено" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-90,0,0" />
             <TextBlock Text="Может, попробовать поискать по-другому?"  Foreground="#FFAAAAAA" HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+            <Grid.RenderTransform>
+              <TranslateTransform x:Name="SearchRoutes_NoResults_Transform" />
+            </Grid.RenderTransform>
           </Grid>
 
-          <Grid x:Name="SearchBoxContainer" Width="480" Height="80" Margin="-12,-500,-12,500" Background="{StaticResource PhoneBackgroundBrush}">
-            <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged" Height="80" FontSize="32" InputScope="Search" Tap="SearchBox_Tap" />
+          <Grid x:Name="SearchBoxContainer" Width="480" Height="80" Margin="-12,-1000,-12,0" Background="{StaticResource PhoneBackgroundBrush}">
+            <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged" Height="80" FontSize="32" AcceptsReturn="False" InputScope="TelephoneCountryCode" Tap="SearchBox_Tap" LostFocus="SearchBox_LostFocus" />
 
             <Grid.RenderTransform>
               <TranslateTransform x:Name="SearchBoxContainer_Transform" />
@@ -125,66 +129,4 @@
       <shell:ApplicationBarIconButton IconUri="/Images/search.png" Text="поиск" Click="SearchRoutes_OpenBox"/>
     </shell:ApplicationBar>
   </phone:PhoneApplicationPage.ApplicationBar>
-  
-  <phone:PhoneApplicationPage.Resources>
-    <!-- Анимация появления поля поиска -->
-    <Storyboard x:Key="SearchBox_Show">
-      <DoubleAnimation Storyboard.TargetName="SearchBoxContainer_Transform" 
-                       Storyboard.TargetProperty="(TranslateTransform.Y)"
-                       Duration="0:0:0.5"
-                       From="0" To="70">
-        <DoubleAnimation.EasingFunction>
-          <BackEase Amplitude="0.5" EasingMode="EaseOut" />
-        </DoubleAnimation.EasingFunction>
-      </DoubleAnimation>
-    </Storyboard>
-
-    <!-- Анимация возвращения поля поиска до фокуса -->
-    <Storyboard x:Key="SearchBox_BeforeFocus">
-      <DoubleAnimation Storyboard.TargetName="SearchBoxContainer_Transform" 
-                       Storyboard.TargetProperty="(TranslateTransform.Y)"
-                       Duration="0:0:0.5"
-                       From="70" To="75">
-        <DoubleAnimation.EasingFunction>
-          <BackEase Amplitude="1" EasingMode="EaseOut" />
-        </DoubleAnimation.EasingFunction>
-      </DoubleAnimation>
-    </Storyboard>
-
-    <!-- Анимация возвращения поля поиска после фокуса -->
-    <Storyboard x:Key="SearchBox_AfterFocus">
-      <DoubleAnimation Storyboard.TargetName="SearchBoxContainer_Transform" 
-                       Storyboard.TargetProperty="(TranslateTransform.Y)"
-                       Duration="0:0:0.5"
-                       From="75" To="70">
-        <DoubleAnimation.EasingFunction>
-          <BackEase Amplitude="1" EasingMode="EaseOut" />
-        </DoubleAnimation.EasingFunction>
-      </DoubleAnimation>
-    </Storyboard>
-
-    <!-- Анимация исчезновения поля поиска -->
-    <Storyboard x:Key="SearchBox_Hide">
-      <DoubleAnimation Storyboard.TargetName="SearchBoxContainer_Transform" 
-                       Storyboard.TargetProperty="(TranslateTransform.Y)"
-                       Duration="0:0:0.5"
-                       From="70" To="0">
-        <DoubleAnimation.EasingFunction>
-          <BackEase Amplitude="0.25" EasingMode="EaseIn" />
-        </DoubleAnimation.EasingFunction>
-      </DoubleAnimation>
-    </Storyboard>
-
-    <!-- Жуткий костыль, оформить в виде функции на C# -->
-    <Storyboard x:Key="SearchBox_Hide1">
-      <DoubleAnimation Storyboard.TargetName="SearchBoxContainer_Transform" 
-                       Storyboard.TargetProperty="(TranslateTransform.Y)"
-                       Duration="0:0:0.5"
-                       From="110" To="0">
-        <DoubleAnimation.EasingFunction>
-          <BackEase Amplitude="0.25" EasingMode="EaseIn" />
-        </DoubleAnimation.EasingFunction>
-      </DoubleAnimation>
-    </Storyboard>
-  </phone:PhoneApplicationPage.Resources>
 </phone:PhoneApplicationPage>

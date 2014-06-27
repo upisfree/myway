@@ -15,31 +15,48 @@ namespace MyWay
 {
   public partial class MainPage:PhoneApplicationPage
   {
-    // Функции анимаций поля поиска
-    public void SearchBox_Show() { (this.Resources["SearchBox_Show"] as Storyboard).Begin(); }
-    public void SearchBox_Hide() { (this.Resources["SearchBox_Hide"] as Storyboard).Begin(); }
-    public void SearchBox_Hide1() { (this.Resources["SearchBox_Hide1"] as Storyboard).Begin(); }
-    public void SearchBox_BeforeFocus() { (this.Resources["SearchBox_BeforeFocus"] as Storyboard).Begin(); }
-    public void SearchBox_AfterFocus() { (this.Resources["SearchBox_AfterFocus"] as Storyboard).Begin(); }
-
     // Конструктор
     public MainPage()
     {
       InitializeComponent();
-
-      SearchBox.LostFocus += (sender, e) =>
-      {
-        if (((TextBox)sender).Text == "")
-        {
-          SearchBox_Hide1();
-
-          ApplicationBar.IsVisible = true;
-        }
-        else
-          SearchBox_AfterFocus();
-      };
     }
 
+    // Загрузка данных для элементов ViewModel
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+      if (!App.ViewModel.IsDataLoaded)
+      {
+        App.ViewModel.LoadData();
+
+        if (DataBase.IsExists("Routes.db"))
+          ShowRoutesListOffline();
+        else
+          ShowRoutesListOnline();
+      }
+    }
+
+    // Нажатие на клавишу «Назад»
+    protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
+    {
+      if (SearchBox.Text != "")
+      {
+        SearchBox_Animation(110, 0, 0.5, 0.25, EasingMode.EaseIn);
+        SearchBox.Text = "";
+
+        SearchRoutes_NoResults.Visibility = System.Windows.Visibility.Collapsed;
+        SearchRoutes_Result.Visibility = System.Windows.Visibility.Collapsed;
+        SearchRoutes_Result.Items.Clear();
+        Routes.Visibility = System.Windows.Visibility.Visible;
+
+        ApplicationBar.IsVisible = true;
+
+        e.Cancel = true;
+      }
+
+      base.OnBackKeyPress(e);
+    }
+
+    // Событие, вызываемое при прокрутке Pivot-ов
     private void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
       bool flag = true;
@@ -61,6 +78,7 @@ namespace MyWay
       ApplicationBar.IsVisible = flag;
     }
 
+    // Маршруты
     public class Route
     {
       public string Number { get; set; }
@@ -74,40 +92,6 @@ namespace MyWay
       public TKey Key { protected set; get; }
       public KeyedList(TKey key, IEnumerable<TItem> items) : base(items)    { Key = key; }
       public KeyedList(IGrouping<TKey, TItem> grouping)    : base(grouping) { Key = grouping.Key; }
-    }
-
-    // Загрузка данных для элементов ViewModel
-    protected override void OnNavigatedTo(NavigationEventArgs e)
-    {
-      if (!App.ViewModel.IsDataLoaded)
-      {
-        App.ViewModel.LoadData();
-
-        if (DataBase.IsExists("Routes.db"))
-          ShowRoutesListOffline();
-        else
-          ShowRoutesListOnline();
-      }
-    }
-
-    protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
-    {
-      if (SearchBox.Text != "")
-      {
-        SearchBox_Hide();
-        SearchBox.Text = "";
-
-        SearchRoutes_NoResults.Visibility = System.Windows.Visibility.Collapsed;
-        SearchRoutes_Result.Visibility = System.Windows.Visibility.Collapsed;
-        SearchRoutes_Result.Items.Clear();
-        Routes.Visibility = System.Windows.Visibility.Visible;
-
-        ApplicationBar.IsVisible = true;
-
-        e.Cancel = true;
-      }
-
-      base.OnBackKeyPress(e);
     }
 
     public async void ShowRoutesListOnline()
@@ -194,7 +178,7 @@ namespace MyWay
       ShowRoutesListOnline();
     }
 
-    // Поиск
+    // Поиск маршрутов
     protected class SearchRoutes
     {
       private async static Task<string> GetRoutes()
@@ -264,6 +248,12 @@ namespace MyWay
           }
           else
           {
+            BounceEase be = new BounceEase();
+            be.Bounces = 2;
+            be.Bounciness = 1;
+            be.EasingMode = EasingMode.EaseOut;
+
+            SearchBox_Animation(75, 70, 1, ea: be);
             SearchRoutes_NoResults.Visibility = System.Windows.Visibility.Visible;
           }
         }
@@ -279,7 +269,7 @@ namespace MyWay
     private void SearchRoutes_OpenBox(object sender, EventArgs e)
     {
       if (SearchBox.Text == "")
-        SearchBox_Show();
+        SearchBox_Animation(0, 70, 0.5, 0.5, EasingMode.EaseOut);
 
       SearchBox.Focus();
 
@@ -288,7 +278,19 @@ namespace MyWay
 
     private void SearchBox_Tap(object sender, RoutedEventArgs e)
     {
-      SearchBox_BeforeFocus();
+      SearchBox_Animation(70, 75, 0.5, 1, EasingMode.EaseOut);
+    }
+
+    private async void SearchBox_LostFocus(object sender, RoutedEventArgs e)
+    {
+      if (SearchBox.Text == "")
+      {
+        SearchBox_Animation(70, 0, 0.5, 0.25, EasingMode.EaseIn);
+        await Task.Delay(400);
+        ApplicationBar.IsVisible = true;
+      }
+      else
+        SearchBox_Animation(75, 70, 0.5, 1, EasingMode.EaseOut);
     }
 
     public void OpenRoute(object sender, EventArgs e)
@@ -318,7 +320,7 @@ namespace MyWay
 
       emailComposeTask.To = "upisfree@outlook.com";
       emailComposeTask.Subject = "fromapp@myway";
-      emailComposeTask.Body = "Можно удалить фразу про то, с какого устройства было отправлено письмо. Я попробую угадать :)";
+      emailComposeTask.Body = "Можно удалить фразу про то, с какого устройства было отправлено письмо. Я попробую угадать.";
 
       emailComposeTask.Show();
     }
@@ -330,6 +332,30 @@ namespace MyWay
       webBrowserTask.Uri = new Uri("http://vk.com/upisfree", UriKind.Absolute);
 
       webBrowserTask.Show();
+    }
+
+    // Анимация
+    private void SearchBox_Animation(double from, double to, double time, double amplitude = 0, EasingMode mode = EasingMode.EaseOut, IEasingFunction ea = null)
+    {
+      DoubleAnimation da = new DoubleAnimation();
+
+      da.From = from;
+      da.To = to;
+      da.Duration = new Duration(TimeSpan.FromSeconds(time));
+
+      if (ea != null)
+      {
+        da.EasingFunction = ea;
+      }
+      else
+      {
+        BackEase b = new BackEase();
+        b.Amplitude = amplitude;
+        b.EasingMode = mode;
+        da.EasingFunction = b;
+      }
+
+      Util.Animation(SearchBoxContainer_Transform, new PropertyPath("(TranslateTransform.Y)"), da);
     }
   }
 }

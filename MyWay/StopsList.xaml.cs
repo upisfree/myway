@@ -35,7 +35,7 @@ namespace MyWay
 
         LayoutRoot.Tag = link + "|" + b;
 
-        if (DataBase.IsExists("Stops/" + b + "/a.db"))
+        if (Data.File.IsExists("Stops/" + b + "/a.db"))
           ShowStopsOffline(link, b);
         else
           ShowStopsOnline(link, b);
@@ -53,11 +53,12 @@ namespace MyWay
       if (Util.IsInternetAvailable())
       {
         Error.Visibility = System.Windows.Visibility.Collapsed;
-        if (!DataBase.IsDirExists("Stops"))
-          DataBase.CreateDir("Stops");
+        
+        if (await Data.Folder.IsExists("Stops") == false)
+          await Data.Folder.Create("Stops");
 
-        if (!DataBase.IsDirExists(number))
-          DataBase.CreateDir("Stops/" + number);
+        if (await Data.Folder.IsExists(number) == false)
+          await Data.Folder.Create("Stops/" + number);
 
         List<Stop> stopsA = new List<Stop>();
         List<Stop> stopsB = new List<Stop>();
@@ -87,7 +88,7 @@ namespace MyWay
 
             if (i == 1)
             {
-              DataBase.Write("Stops/" + number + "/a.db", text + "|" + href);
+              await Data.File.Write("Stops/" + number + "/a.db", text + "|" + href);
 
               stopsA.Add(new Stop() { Text = text, Link = href });
 
@@ -100,7 +101,7 @@ namespace MyWay
             }
             else
             {
-              DataBase.Write("Stops/" + number + "/b.db", text + "|" + href);
+              await Data.File.Write("Stops/" + number + "/b.db", text + "|" + href);
 
               stopsB.Add(new Stop() { Text = text, Link = href });
             }
@@ -125,12 +126,13 @@ namespace MyWay
       }
     }
 
-    public void ShowStopsOffline(string link, string number)
+    public async void ShowStopsOffline(string link, string number)
     {
       List<Stop> stopsA = new List<Stop>();
       List<Stop> stopsB = new List<Stop>();
 
-      Array stopsAdb = DataBase.Read("Stops/" + number + "/a.db").Split(new Char[] { '\n' });
+      string s = await Data.File.Read("Stops/" + number + "/a.db");
+      Array stopsAdb = s.Split(new Char[] { '\n' });
 
       foreach (string a in stopsAdb)
       {
@@ -146,9 +148,10 @@ namespace MyWay
         catch { }
       }
 
-      if (DataBase.IsExists("Stops/" + number + "/b.db"))
+      if (Data.File.IsExists("Stops/" + number + "/b.db"))
       {
-        Array stopsBdb = DataBase.Read("Stops/" + number + "/b.db").Split(new Char[] { '\n' });
+        string s2 = await Data.File.Read("Stops/" + number + "/b.db");
+        Array stopsBdb = s2.Split(new Char[] { '\n' });
 
         foreach (string a in stopsBdb)
         {

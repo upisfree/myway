@@ -22,31 +22,31 @@ namespace MyWay
     }
 
     // Загрузка данных для элементов ViewModel
-    protected override void OnNavigatedTo(NavigationEventArgs e)
+    protected async override void OnNavigatedTo(NavigationEventArgs e)
     {
       if (!App.ViewModel.IsDataLoaded)
       {
         App.ViewModel.LoadData();
 
-        if (DataBase.IsExists("Routes.db"))
-          ShowRoutesListOffline();
+        if (Data.File.IsExists("Routes.db"))
+          await Routes_Show_Offline();
         else
-          ShowRoutesListOnline();
+          await Routes_Show_Online();
       }
     }
 
     // Нажатие на клавишу «Назад»
     protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
     {
-      if (SearchBox.Text != "")
+      if (Routes_Search_Box.Text != "")
       {
-        SearchBox_Animation(110, 0, 0.5, 0.25, EasingMode.EaseIn);
-        SearchBox.Text = "";
+        Routes_Search_Box_Animation(110, 0, 0.5, 0.25, EasingMode.EaseIn);
+        Routes_Search_Box.Text = "";
 
-        SearchRoutes_NoResults.Visibility = System.Windows.Visibility.Collapsed;
-        SearchRoutes_Result.Visibility = System.Windows.Visibility.Collapsed;
-        SearchRoutes_Result.Items.Clear();
-        Routes.Visibility = System.Windows.Visibility.Visible;
+        Routes_Search_NoResults.Visibility = System.Windows.Visibility.Collapsed;
+        Routes_Search_Result.Visibility = System.Windows.Visibility.Collapsed;
+        Routes_Search_Result.Items.Clear();
+        Routes_Root.Visibility = System.Windows.Visibility.Visible;
 
         ApplicationBar.IsVisible = true;
 
@@ -64,7 +64,7 @@ namespace MyWay
       switch (((Pivot)sender).SelectedIndex)
       {
         case 0:
-          if (SearchBox.Text != "")
+          if (Routes_Search_Box.Text != "")
             flag = false;
           break;
         case 1:
@@ -78,29 +78,31 @@ namespace MyWay
       ApplicationBar.IsVisible = flag;
     }
 
-    // Маршруты
-    public class Route
+    public class Routes
     {
-      public string Number { get; set; }
-      public string Type   { get; set; }
-      public string Desc   { get; set; }
-      public string ToStop { get; set; }
+      public class Model
+      {
+        public string Number { get; set; }
+        public string Type { get; set; }
+        public string Desc { get; set; }
+        public string ToStop { get; set; }
+      }
+
+      public class KeyedList<TKey, TItem> : List<TItem>
+      {
+        public TKey Key { protected set; get; }
+        public KeyedList(TKey key, IEnumerable<TItem> items) : base(items) { Key = key; }
+        public KeyedList(IGrouping<TKey, TItem> grouping) : base(grouping) { Key = grouping.Key; }
+      }
     }
 
-    public class KeyedList<TKey, TItem> : List<TItem>
-    {
-      public TKey Key { protected set; get; }
-      public KeyedList(TKey key, IEnumerable<TItem> items) : base(items)    { Key = key; }
-      public KeyedList(IGrouping<TKey, TItem> grouping)    : base(grouping) { Key = grouping.Key; }
-    }
-
-    public async void ShowRoutesListOnline()
+    public async Task Routes_Show_Online()
     {
       if (Util.IsInternetAvailable())
       {
-        Error.Visibility = System.Windows.Visibility.Collapsed;
+        Routes_Error.Visibility = System.Windows.Visibility.Collapsed;
 
-        List<Route> RoutesList = new List<Route>();
+        List<Routes.Model> RoutesList = new List<Routes.Model>();
 
         string htmlPage = "";
 
@@ -121,44 +123,45 @@ namespace MyWay
           string desc = elem[2].InnerText.Trim();
           string toStop = a.Attributes["href"].Value + "|" + number + " " + type;
 
-          DataBase.Write("Routes.db", number + "|" + type + "|" + desc + "|" + a.Attributes["href"].Value);
+          await Data.File.Write("Routes.db", number + "|" + type + "|" + desc + "|" + a.Attributes["href"].Value);
 
-          RoutesList.Add(new Route() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
+          RoutesList.Add(new Routes.Model() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
         }
 
         var groupedRoutesList =
               from list in RoutesList
               group list by list.Number[0] into listByGroup
-              select new KeyedList<char, Route>(listByGroup);
+              select new Routes.KeyedList<char, Routes.Model>(listByGroup);
 
-        Load.Visibility = System.Windows.Visibility.Collapsed;
+        Routes_Load.Visibility = System.Windows.Visibility.Collapsed;
 
-        Routes.ItemsSource = new List<KeyedList<char, Route>>(groupedRoutesList);
+        Routes_Root.ItemsSource = new List<Routes.KeyedList<char, Routes.Model>>(groupedRoutesList);
       }
       else
       {
-        Error.Visibility = System.Windows.Visibility.Visible;
+        Routes_Error.Visibility = System.Windows.Visibility.Visible;
       }
     }
 
-    public void ShowRoutesListOffline()
+    public async Task Routes_Show_Offline()
     {
-      List<Route> RoutesList = new List<Route>();
+      List<Routes.Model> RoutesList = new List<Routes.Model>();
 
-      Array db = DataBase.Read("Routes.db").Split(new Char[] {'\n'});
+      string s = await Data.File.Read("Routes.db");
+      Array db = s.Split(new Char[] { '\n' });
 
       foreach (string a in db)
       {
         try
         {
-          Array line = a.Split(new Char[] {'|'});
+          Array line = a.Split(new Char[] { '|' });
 
           string number = line.GetValue(0).ToString();
           string type = line.GetValue(1).ToString();
           string desc = line.GetValue(2).ToString();
           string toStop = line.GetValue(3).ToString() + "|" + number + " " + type;
 
-          RoutesList.Add(new Route() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
+          RoutesList.Add(new Routes.Model() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
         }
         catch { }
       }
@@ -166,27 +169,32 @@ namespace MyWay
       var groupedRoutesList =
             from list in RoutesList
             group list by list.Number[0] into listByGroup
-            select new KeyedList<char, Route>(listByGroup);
+            select new Routes.KeyedList<char, Routes.Model>(listByGroup);
 
-      Load.Visibility = System.Windows.Visibility.Collapsed;
+      Routes_Load.Visibility = System.Windows.Visibility.Collapsed;
 
-      Routes.ItemsSource = new List<KeyedList<char, Route>>(groupedRoutesList);
+      Routes_Root.ItemsSource = new List<Routes.KeyedList<char, Routes.Model>>(groupedRoutesList);
     }
 
-    private void ShowRoutesAgain(object sender, System.Windows.Input.GestureEventArgs e) // Гениальное название :)
+    private async void Routes_Error_Button_Tap(object sender, System.Windows.Input.GestureEventArgs e) // сменить название на Кнопка_Tap и перенести отсюда
     {
-      ShowRoutesListOnline();
+      await Routes_Show_Online();
     }
 
     // Поиск маршрутов
-    protected class SearchRoutes
+    protected class Routes_Search
     {
       private async static Task<string> GetRoutes()
       {
-        string db = await DataBase.ReadAsync("Routes.db");
+        string db = await Data.File.Read("Routes.db");
 
         return db;
       }
+
+      //private async static Task<string> Routes()
+      //{
+      //  get { return await Data.File.Read("Routes.db"); }
+      //}
 
       public async static Task<Array> GetEqualRoutes(string query)
       {
@@ -218,21 +226,21 @@ namespace MyWay
       }
     }
 
-    private async void SearchBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+    private async void Routes_Search_Box_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
     {
       TextBox s = (TextBox)sender;
 
-      SearchRoutes_Result.Items.Clear();
+      Routes_Search_Result.Items.Clear();
 
       if (s.Text != "")
       {
-        SearchRoutes_Result.Visibility = System.Windows.Visibility.Visible;
-        SearchRoutes_NoResults.Visibility = System.Windows.Visibility.Collapsed;
-        Routes.Visibility = System.Windows.Visibility.Collapsed;
+        Routes_Search_Result.Visibility = System.Windows.Visibility.Visible;
+        Routes_Search_NoResults.Visibility = System.Windows.Visibility.Collapsed;
+        Routes_Root.Visibility = System.Windows.Visibility.Collapsed;
 
         try
         {
-          Array b = await SearchRoutes.GetEqualRoutes(s.Text);
+          Array b = await Routes_Search.GetEqualRoutes(s.Text);
 
           if (b.Length != 0)
           {
@@ -243,7 +251,7 @@ namespace MyWay
               string desc = a[2];
               string toStop = a[3] + "|" + number + " " + type;
 
-              SearchRoutes_Result.Items.Add(new Route() { Number = number, Type = type, Desc = desc, ToStop = toStop });
+              Routes_Search_Result.Items.Add(new Routes.Model() { Number = number, Type = type, Desc = desc, ToStop = toStop });
             }
           }
           else
@@ -253,47 +261,48 @@ namespace MyWay
             be.Bounciness = 1;
             be.EasingMode = EasingMode.EaseOut;
 
-            SearchBox_Animation(75, 70, 1, ea: be);
-            SearchRoutes_NoResults.Visibility = System.Windows.Visibility.Visible;
+            Routes_Search_Box_Animation(75, 70, 1, ea: be);
+            Routes_Search_NoResults.Visibility = System.Windows.Visibility.Visible;
           }
         }
         catch { }
       }
       else
       {
-        SearchRoutes_Result.Visibility = System.Windows.Visibility.Collapsed;
-        Routes.Visibility = System.Windows.Visibility.Visible;
+        Routes_Search_Result.Visibility = System.Windows.Visibility.Collapsed;
+        Routes_Root.Visibility = System.Windows.Visibility.Visible;
       }
     }
 
-    private void SearchRoutes_OpenBox(object sender, EventArgs e)
+    private void Routes_Search_Box_Open(object sender, EventArgs e)
     {
-      if (SearchBox.Text == "")
-        SearchBox_Animation(0, 70, 0.5, 0.5, EasingMode.EaseOut);
+      if (Routes_Search_Box.Text == "")
+        Routes_Search_Box_Animation(0, 70, 0.5, 0.5, EasingMode.EaseOut);
 
-      SearchBox.Focus();
+      Routes_Search_Box.Focus();
 
       ApplicationBar.IsVisible = false;
     }
 
-    private void SearchBox_Tap(object sender, RoutedEventArgs e)
+    private void Routes_Search_Box_Tap(object sender, RoutedEventArgs e) // повторное нажатие (условие по позиции?)
     {
-      SearchBox_Animation(70, 75, 0.5, 1, EasingMode.EaseOut);
+      if (Routes_Search_Box_Transform.Y != 75)
+        Routes_Search_Box_Animation(70, 75, 0.5, 1, EasingMode.EaseOut);
     }
 
-    private async void SearchBox_LostFocus(object sender, RoutedEventArgs e)
+    private async void Routes_Search_Box_LostFocus(object sender, RoutedEventArgs e)
     {
-      if (SearchBox.Text == "")
+      if (Routes_Search_Box.Text == "")
       {
-        SearchBox_Animation(70, 0, 0.5, 0.25, EasingMode.EaseIn);
+        Routes_Search_Box_Animation(70, 0, 0.5, 0.25, EasingMode.EaseIn);
         await Task.Delay(400);
         ApplicationBar.IsVisible = true;
       }
       else
-        SearchBox_Animation(75, 70, 0.5, 1, EasingMode.EaseOut);
+        Routes_Search_Box_Animation(75, 70, 0.5, 1, EasingMode.EaseOut);
     }
 
-    public void OpenRoute(object sender, EventArgs e)
+    public void Route_GoToStops(object sender, System.Windows.Input.GestureEventArgs e)
     {
       Grid text = (Grid)sender;
 
@@ -305,10 +314,21 @@ namespace MyWay
       (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/StopsList.xaml?link=" + link + "&name=" + name, UriKind.Relative));
     }
 
+    // Остановки
+
+
+
+
+
+
+
+
+
+
     // Очистка кэша
-    private void DeleteCache(object sender, System.Windows.Input.GestureEventArgs e)
+    private async void DeleteCache(object sender, System.Windows.Input.GestureEventArgs e)
     {
-      DataBase.RemoveAll("");
+      await Data.Clear();
 
       MessageBox.Show("Удаление прошло успешно", "Кэш очищен", MessageBoxButton.OK);
     }
@@ -335,7 +355,7 @@ namespace MyWay
     }
 
     // Анимация
-    private void SearchBox_Animation(double from, double to, double time, double amplitude = 0, EasingMode mode = EasingMode.EaseOut, IEasingFunction ea = null)
+    private void Routes_Search_Box_Animation(double from, double to, double time, double amplitude = 0, EasingMode mode = EasingMode.EaseOut, IEasingFunction ea = null)
     {
       DoubleAnimation da = new DoubleAnimation();
 
@@ -355,7 +375,7 @@ namespace MyWay
         da.EasingFunction = b;
       }
 
-      Util.Animation(SearchBoxContainer_Transform, new PropertyPath("(TranslateTransform.Y)"), da);
+      Util.Animation(Routes_Search_Box_Transform, new PropertyPath("(TranslateTransform.Y)"), da);
     }
   }
 }

@@ -4,6 +4,7 @@ using Microsoft.Phone.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,16 +23,15 @@ namespace MyWay
     }
 
     // Загрузка данных для элементов ViewModel
-    protected async override void OnNavigatedTo(NavigationEventArgs e)
+    protected override void OnNavigatedTo(NavigationEventArgs e)
     {
       if (!App.ViewModel.IsDataLoaded)
       {
         App.ViewModel.LoadData();
 
-        if (Data.File.IsExists("Routes.db"))
-          await Routes_Show_Offline();
-        else
-          await Routes_Show_Online();
+        //Stops.Download();
+
+        Routes_Show();
       }
     }
 
@@ -78,13 +78,13 @@ namespace MyWay
       ApplicationBar.IsVisible = flag;
     }
 
-    public class Routes
+    private class Routes
     {
       public class Model
       {
         public string Number { get; set; }
-        public string Type { get; set; }
-        public string Desc { get; set; }
+        public string Type   { get; set; }
+        public string Desc   { get; set; }
         public string ToStop { get; set; }
       }
 
@@ -94,38 +94,95 @@ namespace MyWay
         public KeyedList(TKey key, IEnumerable<TItem> items) : base(items) { Key = key; }
         public KeyedList(IGrouping<TKey, TItem> grouping) : base(grouping) { Key = grouping.Key; }
       }
+
+      public async static Task<HtmlDocument> Download()
+      {
+        if (Util.IsInternetAvailable())
+        {
+          string htmlPage = "";
+
+          try
+          {
+            htmlPage = await new HttpClient().GetStringAsync("http://t.bus55.ru/index.php/app/get_routes");
+          }
+          catch
+          {
+            return null;
+          }
+
+          HtmlDocument htmlDocument = new HtmlDocument();
+          htmlDocument.LoadHtml(htmlPage);
+
+          return htmlDocument;
+        }
+        else
+          return null;
+      }
+
+      public async static Task<string[]> WriteAndGet(HtmlDocument html)
+      {
+        if (html == null)
+          return null;
+
+        List<string> s = new List<string>();
+
+        foreach (var a in html.DocumentNode.SelectNodes("//a"))
+        {
+          var b = a.ChildNodes.ToArray();
+
+          string number = b[0].InnerText.Trim();
+          string type   = b[1].InnerText.Trim();
+          string desc   = b[2].InnerText.Trim();
+          string toStop = a.Attributes["href"].Value + "|" + number + " " + type;
+
+          string c = number + "|" + type + "|" + desc + "|" + a.Attributes["href"].Value;
+
+          s.Add(c);
+          await Data.File.Write("Routes.db", c);
+        }
+
+        return s.ToArray();
+      }
+
+      public async static Task<string[]> Get()
+      {
+        if (Data.File.IsExists("Routes.db"))
+        {
+          string a = await Data.File.Read("Routes.db");
+          return a.Split(new Char[] { '\n' });
+        }
+        else
+        {
+          HtmlDocument a = await Download();
+          return await WriteAndGet(a);
+        }
+      }
     }
 
-    public async Task Routes_Show_Online()
+    private async void Routes_Show()
     {
-      if (Util.IsInternetAvailable())
+      string[] b = await Routes.Get();
+
+      if (b != null)
       {
         Routes_Error.Visibility = System.Windows.Visibility.Collapsed;
 
         List<Routes.Model> RoutesList = new List<Routes.Model>();
 
-        string htmlPage = "";
-
-        using (var client = new HttpClient())
+        foreach (string a in b)
         {
-          htmlPage = await new HttpClient().GetStringAsync("http://t.bus55.ru/index.php/app/get_routes/");
-        }
+          try
+          {
+            string[] line = a.Split(new Char[] { '|' });
 
-        HtmlDocument htmlDocument = new HtmlDocument();
-        htmlDocument.LoadHtml(htmlPage);
+            string number = line[0].ToString();
+            string type   = line[1].ToString();
+            string desc   = line[2].ToString();
+            string toStop = line[3].ToString() + "|" + number + " " + type;
 
-        foreach (var a in htmlDocument.DocumentNode.SelectNodes("//a"))
-        {
-          var elem = a.ChildNodes.ToArray();
-
-          string number = elem[0].InnerText.Trim();
-          string type = elem[1].InnerText.Trim();
-          string desc = elem[2].InnerText.Trim();
-          string toStop = a.Attributes["href"].Value + "|" + number + " " + type;
-
-          await Data.File.Write("Routes.db", number + "|" + type + "|" + desc + "|" + a.Attributes["href"].Value);
-
-          RoutesList.Add(new Routes.Model() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
+            RoutesList.Add(new Routes.Model() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
+          }
+          catch { }
         }
 
         var groupedRoutesList =
@@ -138,51 +195,16 @@ namespace MyWay
         Routes_Root.ItemsSource = new List<Routes.KeyedList<char, Routes.Model>>(groupedRoutesList);
       }
       else
-      {
         Routes_Error.Visibility = System.Windows.Visibility.Visible;
-      }
     }
 
-    public async Task Routes_Show_Offline()
+    private void Routes_Error_Button_Tap(object sender, System.Windows.Input.GestureEventArgs e)
     {
-      List<Routes.Model> RoutesList = new List<Routes.Model>();
-
-      string s = await Data.File.Read("Routes.db");
-      Array db = s.Split(new Char[] { '\n' });
-
-      foreach (string a in db)
-      {
-        try
-        {
-          Array line = a.Split(new Char[] { '|' });
-
-          string number = line.GetValue(0).ToString();
-          string type = line.GetValue(1).ToString();
-          string desc = line.GetValue(2).ToString();
-          string toStop = line.GetValue(3).ToString() + "|" + number + " " + type;
-
-          RoutesList.Add(new Routes.Model() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
-        }
-        catch { }
-      }
-
-      var groupedRoutesList =
-            from list in RoutesList
-            group list by list.Number[0] into listByGroup
-            select new Routes.KeyedList<char, Routes.Model>(listByGroup);
-
-      Routes_Load.Visibility = System.Windows.Visibility.Collapsed;
-
-      Routes_Root.ItemsSource = new List<Routes.KeyedList<char, Routes.Model>>(groupedRoutesList);
-    }
-
-    private async void Routes_Error_Button_Tap(object sender, System.Windows.Input.GestureEventArgs e) // сменить название на Кнопка_Tap и перенести отсюда
-    {
-      await Routes_Show_Online();
+      Routes_Show();
     }
 
     // Поиск маршрутов
-    protected class Routes_Search
+    private class Routes_Search
     {
       private async static Task<string> GetRoutes()
       {
@@ -284,7 +306,7 @@ namespace MyWay
       ApplicationBar.IsVisible = false;
     }
 
-    private void Routes_Search_Box_Tap(object sender, RoutedEventArgs e) // повторное нажатие (условие по позиции?)
+    private void Routes_Search_Box_Tap(object sender, RoutedEventArgs e)
     {
       if (Routes_Search_Box_Transform.Y != 75)
         Routes_Search_Box_Animation(70, 75, 0.5, 1, EasingMode.EaseOut);
@@ -302,7 +324,7 @@ namespace MyWay
         Routes_Search_Box_Animation(75, 70, 0.5, 1, EasingMode.EaseOut);
     }
 
-    public void Route_GoToStops(object sender, System.Windows.Input.GestureEventArgs e)
+    private void Route_GoToStops(object sender, System.Windows.Input.GestureEventArgs e)
     {
       Grid text = (Grid)sender;
 
@@ -315,7 +337,19 @@ namespace MyWay
     }
 
     // Остановки
-
+    private class Stops
+    {
+      public static void Download()
+      {
+        String myUrl = "http://t.bus55.ru/index.php/app/get_stations_json";
+        WebClient client = new WebClient();
+        client.DownloadStringAsync(new Uri(myUrl), UriKind.Relative);
+        client.DownloadStringCompleted += (sender, e) =>
+        {
+          MessageBox.Show(e.Result);
+        };
+      }
+    }
 
 
 

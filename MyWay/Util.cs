@@ -26,6 +26,16 @@ namespace MyWay
       return source.IndexOf(toCheck, StringComparison.OrdinalIgnoreCase) >= 0;
     }
 
+    public static void Show(UIElement e)
+    {
+      e.Visibility = Visibility.Visible;
+    }
+
+    public static void Hide(UIElement e)
+    {
+      e.Visibility = Visibility.Collapsed;
+    }
+
     public static void Animation(DependencyObject target, PropertyPath property, DoubleAnimation animation)
     {
       Storyboard sb = new Storyboard();

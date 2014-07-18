@@ -52,7 +52,7 @@ namespace MyWay
     {
       if (Util.IsInternetAvailable())
       {
-        Error.Visibility = System.Windows.Visibility.Collapsed;
+        Util.Hide(Error);
         
         if (await Data.Folder.IsExists("Stops") == false)
           await Data.Folder.Create("Stops");
@@ -62,6 +62,9 @@ namespace MyWay
 
         List<Stop> stopsA = new List<Stop>();
         List<Stop> stopsB = new List<Stop>();
+
+        string wA = null;
+        string wB = null;
 
         string htmlPage = "";
 
@@ -86,9 +89,11 @@ namespace MyWay
             string text = elem[0].InnerText.Trim();
             string href = elem[0].Attributes["href"].Value.Trim();
 
+            string c = text + "|" + href;
+
             if (i == 1)
             {
-              await Data.File.Write("Stops/" + number + "/a.db", text + "|" + href);
+              wA += c + "\n";
 
               stopsA.Add(new Stop() { Text = text, Link = href });
 
@@ -101,7 +106,7 @@ namespace MyWay
             }
             else
             {
-              await Data.File.Write("Stops/" + number + "/b.db", text + "|" + href);
+              wB += c + "\n";
 
               stopsB.Add(new Stop() { Text = text, Link = href });
             }
@@ -112,17 +117,25 @@ namespace MyWay
           }
         }
 
-        Load.Visibility = System.Windows.Visibility.Collapsed;
+        Util.Hide(Load);
+
+        wA = wA.Substring(0, wA.Length - 1);
+        await Data.File.Write("Stops/" + number + "/a.db", wA);
 
         StopsA.ItemsSource = stopsA;
 
         if (stopsB.Count != 0)
+        {
+          wB = wB.Substring(0, wB.Length - 1);
+          await Data.File.Write("Stops/" + number + "/b.db", wB);
+
           StopsB.ItemsSource = stopsB;
+        }
       }
       else
       {
-        Error.Visibility = System.Windows.Visibility.Visible;
-        Load.Visibility = System.Windows.Visibility.Collapsed;
+        Util.Show(Error);
+        Util.Hide(Load);
       }
     }
 
@@ -168,7 +181,7 @@ namespace MyWay
         }
       }
 
-      Load.Visibility = System.Windows.Visibility.Collapsed;
+      Util.Hide(Load);
 
       StopsA.ItemsSource = stopsA;
 

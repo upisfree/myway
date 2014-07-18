@@ -41,11 +41,11 @@ namespace MyWay
 
     public void ShowPredicts(string link)
     {
-      NoPredicts.Visibility = System.Windows.Visibility.Collapsed;
+      Util.Hide(NoPredicts);
       NoFuture.Opacity = 0;
       NoFuture_Flag = 0;
-      Error.Visibility = System.Windows.Visibility.Collapsed;
-      Load.Visibility = System.Windows.Visibility.Visible;
+      Util.Hide(Error);
+      Util.Show(Load);
 
       if (Util.IsInternetAvailable())
       {
@@ -72,12 +72,12 @@ namespace MyWay
               Predicts.Items.Add(new Predict() { Number = number, Type = " " + type, Desc = desc, Time = time });
             }
 
-            Load.Visibility = System.Windows.Visibility.Collapsed;
+            Util.Hide(Load);
           }
           else
           {
-            NoPredicts.Visibility = System.Windows.Visibility.Visible;
-            Load.Visibility = System.Windows.Visibility.Collapsed;
+            Util.Show(NoPredicts);
+            Util.Hide(Load);
           }
         };
 
@@ -85,8 +85,8 @@ namespace MyWay
       }
       else
       {
-        Error.Visibility = System.Windows.Visibility.Visible;
-        Load.Visibility = System.Windows.Visibility.Collapsed;
+        Util.Show(Error);
+        Util.Hide(Load);
       }
     }
 

@@ -19,12 +19,12 @@
     <!-- Шаблон маршрута в списке маршрутов -->
     <DataTemplate x:Key="RoutesItemTemplate">
       <Grid Tag="{Binding ToStop}" Tap="Route_GoToStops" toolkit:TiltEffect.IsTiltEnabled="True" Margin="0,-7.5,0,5">
-        <TextBlock FontFamily="{StaticResource PhoneFontFamilySemiLight}" Margin="0,-8,0,0" Height="91" VerticalAlignment="Top">
-          <Run Text="{Binding Number}" FontSize="64" Foreground="{StaticResource PhoneForegroundBrush}" />
-          <Run Text="{Binding Type}" FontSize="42" Foreground="{StaticResource PhoneForegroundBrush}" />
+        <TextBlock FontFamily="{StaticResource PhoneFontFamilySemiLight}" Foreground="{StaticResource PhoneForegroundBrush}" Margin="0,-8,0,0" Height="91" VerticalAlignment="Top">
+          <Run Text="{Binding Number}" FontSize="64" />
+          <Run Text="{Binding Type}" FontSize="42" />
         </TextBlock>
 
-        <TextBlock Text="{Binding Desc}" FontSize="24" Foreground="#FFAAAAAA" Margin="0,73,0,-1" />
+        <TextBlock Text="{Binding Desc}" FontSize="24" Foreground="{StaticResource PhoneSubtleBrush}" Margin="0,73,0,-1" />
       </Grid>
     </DataTemplate>
 
@@ -134,8 +134,57 @@
         </Grid>
       </phone:PivotItem>
 
-      <!--<phone:PivotItem Header="остановки">
-      </phone:PivotItem>-->
+      <phone:PivotItem Header="остановки">
+        <Grid>
+          <ListBox x:Name="Stops_Root" Margin="15,-16,15,0">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Name}"
+                           Tag="{Binding Link}"
+                           Tap="Stop_Open"
+                           Width="436"
+                           Height="55"
+                           Margin="0,0,0,10"
+                           FontFamily="Segoe WP SemiLight"
+                           FontSize="36"
+                           Foreground="{StaticResource PhoneForegroundBrush}"
+                           toolkit:TiltEffect.IsTiltEnabled="True" />
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+
+            <ListBox.ItemContainerStyle>
+              <Style TargetType="ListBoxItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+              </Style>
+            </ListBox.ItemContainerStyle>
+          </ListBox>
+
+          <!--<Grid x:Name="Stops_Search_NoResults" Visibility="Collapsed" Margin="0,-100,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="Ничего не найдено" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-90,0,0" />
+            <TextBlock Text="Может, попробовать поискать по-другому?"  Foreground="#FFAAAAAA" HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Grid>
+
+          <Grid x:Name="Stops_Search_Box_Container" Width="480" Height="80" Margin="-12,-1000,-12,0" Background="{StaticResource PhoneBackgroundBrush}">
+            <TextBox x:Name="Stops_Search_Box" TextChanged="Routes_Search_Box_TextChanged" Height="80" FontSize="32" AcceptsReturn="False" InputScope="Time" Tap="Routes_Search_Box_Tap" LostFocus="Routes_Search_Box_LostFocus" />
+
+            <Grid.RenderTransform>
+              <TranslateTransform x:Name="Stops_Search_Box_Transform" />
+            </Grid.RenderTransform>
+          </Grid>-->
+
+          <Grid x:Name="Stops_Load" Visibility="Visible" Margin="0,25,0,0">
+            <ProgressBar Visibility="Visible" IsIndeterminate="True" Foreground="#FF455580" />
+            <TextBlock Text="Загрузка..." HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,0" />
+          </Grid>
+
+          <!--<Grid x:Name="Stops_Error" Visibility="Collapsed" Margin="0,70,0,0">
+            <TextBlock Text="Что-то пошло не так :(" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-90,0,0" />
+            <TextBlock Text="Может, стоит проверить доступ к интернету?"  Foreground="#FFAAAAAA" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="99,342,98,232" Tap="Stops_Error_Button_Tap"/>
+          </Grid>-->
+        </Grid>
+
+      </phone:PivotItem>
 
       <phone:PivotItem Header="настройки">
         <ListBox Margin="15,-16,15,0">

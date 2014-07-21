@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,7 +17,7 @@ using System.Windows.Navigation;
 
 namespace MyWay
 {
-  public partial class MainPage:PhoneApplicationPage
+  public partial class MainPage : PhoneApplicationPage
   {
     // Конструктор
     public MainPage()
@@ -274,10 +275,10 @@ namespace MyWay
           {
             string[] line = a.Split(new Char[] { '|' });
 
-            string number = line[0];
-            string type   = line[1];
-            string desc   = line[2];
-            string toStop = line[3] + "|" + number + " " + type;
+            string number = Util.TypographString(line[0]);
+            string type   = Util.TypographString(line[1]);
+            string desc   = Util.TypographString(line[2]);
+            string toStop = Util.TypographString(line[3] + "|" + number + " " + type);
 
             RoutesList.Add(new Routes.Model() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
           }
@@ -482,8 +483,8 @@ namespace MyWay
           {
             string[] line = a.Split(new Char[] { '|' });
 
-            string name = line[0];
-            string link = line[1];
+            string name = Util.TypographString(line[0]);
+            string link = Util.TypographString(line[1]);
 
             StopsList.Add(new Stops.Model_List() { Name = name, Link = link });
           }

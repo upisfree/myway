@@ -16,11 +16,16 @@ namespace MyWay
 
     public class File
     {
-      public static async Task Write(string path, string text)
+      public static async Task Write(string path, string text, bool isTypography = true)
       {
         path = Regex.Replace(path, "/", "\\");
 
         StorageFile file = await storage.CreateFileAsync(path, CreationCollisionOption.OpenIfExists);
+
+        if (isTypography)
+        {
+          text = Util.TypographString(text);
+        }
 
         await FileIO.AppendTextAsync(file, text + "\n");
       }

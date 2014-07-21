@@ -64,10 +64,10 @@ namespace MyWay
           {
             foreach (var a in b)
             {
-              string number = a.ChildNodes[0].InnerText.Trim();
-              string type = a.ChildNodes[1].InnerText.Trim();
-              string desc = a.ChildNodes[4].InnerText.Trim();
-              string time = a.ChildNodes[2].InnerText.Trim();
+              string number = Util.TypographString(a.ChildNodes[0].InnerText.Trim());
+              string type   = Util.TypographString(a.ChildNodes[1].InnerText.Trim());
+              string desc   = Util.TypographString(a.ChildNodes[4].InnerText.Trim());
+              string time   = Util.TypographString(a.ChildNodes[2].InnerText.Trim());
 
               Predicts.Items.Add(new Predict() { Number = number, Type = " " + type, Desc = desc, Time = time });
             }

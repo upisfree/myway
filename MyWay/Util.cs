@@ -1,5 +1,6 @@
 ﻿using Microsoft.Phone.Net.NetworkInformation;
 using System;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Media.Animation;
 
@@ -24,6 +25,15 @@ namespace MyWay
     public static bool IsStringContains(this string source, string toCheck) // case insensitive
     {
       return source.IndexOf(toCheck, StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    public static string TypographString(string s)
+    {
+      s = Regex.Replace(s, "\"([а-яА-Я0-9\\-]+)\"", "«$1»"); // "слово" -> «слово»
+      s = Regex.Replace(s, "([^0-9])-((?!Омск)[А-Я«]|$)", "$1 — $2"); // текст-текст -> текст — текст
+      s = Regex.Replace(s, " - ", " — "); // текст - текст -> текст — текст
+
+      return s;
     }
 
     public static void Show(UIElement e)

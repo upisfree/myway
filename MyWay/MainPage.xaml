@@ -94,7 +94,7 @@
                     <Run Text="{Binding Type}" FontSize="42" Foreground="{StaticResource PhoneForegroundBrush}" />
                   </TextBlock>
 
-                  <TextBlock Text="{Binding Desc}" FontSize="24" Foreground="#FFAAAAAA" Margin="0,73,0,-1" />
+                  <TextBlock Text="{Binding Desc}" FontSize="24" Foreground="#FFAAAAAA" Margin="0,73,0,-1" toolkit:SlideInEffect.LineIndex="1" />
                 </Grid>
               </DataTemplate>
             </ListBox.ItemTemplate>

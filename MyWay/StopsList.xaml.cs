@@ -86,8 +86,8 @@ namespace MyWay
           {
             var elem = a.ChildNodes.ToArray();
 
-            string text = elem[0].InnerText.Trim();
-            string href = elem[0].Attributes["href"].Value.Trim();
+            string text = Util.TypographString(elem[0].InnerText.Trim());
+            string href = Util.TypographString(elem[0].Attributes["href"].Value.Trim());
 
             string c = text + "|" + href;
 

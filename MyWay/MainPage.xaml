@@ -19,12 +19,12 @@
     <!-- Шаблон маршрута в списке маршрутов -->
     <DataTemplate x:Key="RoutesItemTemplate">
       <Grid Tag="{Binding ToStop}" Tap="Route_GoToStops" toolkit:TiltEffect.IsTiltEnabled="True" Margin="0,-7.5,0,5">
-        <TextBlock FontFamily="{StaticResource PhoneFontFamilySemiLight}" Foreground="{StaticResource PhoneForegroundBrush}" Margin="0,-8,0,0" Height="91" VerticalAlignment="Top">
+        <TextBlock FontFamily="{StaticResource PhoneFontFamilySemiLight}" Foreground="{StaticResource PhoneForegroundBrush}" Margin="0,-8,0,0" Height="91" VerticalAlignment="Top" toolkit:SlideInEffect.LineIndex="1">
           <Run Text="{Binding Number}" FontSize="64" />
           <Run Text="{Binding Type}" FontSize="42" />
         </TextBlock>
 
-        <TextBlock Text="{Binding Desc}" FontSize="24" Foreground="{StaticResource PhoneSubtleBrush}" Margin="0,73,0,-1" />
+        <TextBlock Text="{Binding Desc}" FontSize="24" Foreground="{StaticResource PhoneSubtleBrush}" Margin="0,73,0,-1" toolkit:SlideInEffect.LineIndex="2" />
       </Grid>
     </DataTemplate>
 
@@ -35,7 +35,7 @@
             Width="76" Height="76" Margin="0,15,18,0" HorizontalAlignment="Left" Background="#FF455580"
             toolkit:TiltEffect.IsTiltEnabled="True">
           <TextBlock Text="{Binding Key}" Foreground="White" FontSize="48" Padding="6" 
-                 FontFamily="{StaticResource PhoneFontFamilySemiLight}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                     FontFamily="{StaticResource PhoneFontFamilySemiLight}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         </Border>
       </Border>
     </DataTemplate>
@@ -83,18 +83,20 @@
             LayoutMode="List"
             IsGroupingEnabled="true"
             HideEmptyGroups="true"
-            Margin="15,-16,-12,0"/>
+            Margin="15,-16,-12,0"
+            toolkit:SlideInEffect.LineIndex="1"
+            toolkit:TurnstileFeatherEffect.FeatheringIndex="0" />
 
-          <ListBox x:Name="Routes_Search_Result" Visibility="Collapsed" Margin="15,-16,-12,0" Grid.RowSpan="3">
+          <ListBox x:Name="Routes_Search_Result" Visibility="Collapsed" Margin="15,-16,-12,0" Grid.RowSpan="3" toolkit:SlideInEffect.LineIndex="1">
             <ListBox.ItemTemplate>
               <DataTemplate>
                 <Grid Tag="{Binding ToStop}" Tap="Route_GoToStops" toolkit:TiltEffect.IsTiltEnabled="True">
-                  <TextBlock FontFamily="{StaticResource PhoneFontFamilySemiLight}" Margin="0,-8,0,0" Height="91" VerticalAlignment="Top">
+                  <TextBlock FontFamily="{StaticResource PhoneFontFamilySemiLight}" Margin="0,-8,0,0" Height="91" VerticalAlignment="Top" toolkit:SlideInEffect.LineIndex="1">
                     <Run Text="{Binding Number}" FontSize="64" Foreground="{StaticResource PhoneForegroundBrush}" />
                     <Run Text="{Binding Type}" FontSize="42" Foreground="{StaticResource PhoneForegroundBrush}" />
                   </TextBlock>
 
-                  <TextBlock Text="{Binding Desc}" FontSize="24" Foreground="#FFAAAAAA" Margin="0,73,0,-1" toolkit:SlideInEffect.LineIndex="1" />
+                  <TextBlock Text="{Binding Desc}" FontSize="24" Foreground="#FFAAAAAA" Margin="0,73,0,-1" toolkit:SlideInEffect.LineIndex="2" />
                 </Grid>
               </DataTemplate>
             </ListBox.ItemTemplate>
@@ -148,7 +150,8 @@
                            FontFamily="Segoe WP SemiLight"
                            FontSize="36"
                            Foreground="{StaticResource PhoneForegroundBrush}"
-                           toolkit:TiltEffect.IsTiltEnabled="True" />
+                           toolkit:TiltEffect.IsTiltEnabled="True"
+                           toolkit:SlideInEffect.LineIndex="1" />
               </DataTemplate>
             </ListBox.ItemTemplate>
 

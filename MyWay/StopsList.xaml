@@ -31,7 +31,8 @@
                          FontFamily="Segoe WP SemiLight"
                          FontSize="36"
                          Foreground="{StaticResource PhoneForegroundBrush}"
-                         toolkit:TiltEffect.IsTiltEnabled="True" />
+                         toolkit:TiltEffect.IsTiltEnabled="True"
+                         toolkit:SlideInEffect.LineIndex="2" />
             </DataTemplate>
           </ListBox.ItemTemplate>
 
@@ -55,7 +56,8 @@
                          Margin="0,0,0,10"
                          FontFamily="Segoe WP SemiLight"
                          FontSize="36"
-                         toolkit:TiltEffect.IsTiltEnabled="True" />
+                         toolkit:TiltEffect.IsTiltEnabled="True"
+                         toolkit:SlideInEffect.LineIndex="2" />
             </DataTemplate>
           </ListBox.ItemTemplate>
 

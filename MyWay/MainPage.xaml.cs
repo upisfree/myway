@@ -457,7 +457,7 @@ namespace MyWay
       {
         public bool Equals(Model_List x, Model_List y)
         {
-          return (x.Name == y.Name); // сравнение по функции в util независит регистр///////////////////////////////////////////////////
+          return (Util.IsStringContains(x.Name, y.Name));
         }
 
         public int GetHashCode(Model_List obj)

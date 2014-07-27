@@ -2,6 +2,7 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace MyWay
@@ -36,6 +37,33 @@ namespace MyWay
       return s;
     }
 
+    public static Color ConvertStringToColor(String hex)
+    {
+      // remove the # at the front
+      hex = hex.Replace("#", "");
+
+      byte a = 255;
+      byte r = 255;
+      byte g = 255;
+      byte b = 255;
+
+      int start = 0;
+
+      // handle ARGB strings (8 characters long)
+      if (hex.Length == 8)
+      {
+        a = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+        start = 2;
+      }
+
+      // convert RGB characters to bytes
+      r = byte.Parse(hex.Substring(start, 2), System.Globalization.NumberStyles.HexNumber);
+      g = byte.Parse(hex.Substring(start + 2, 2), System.Globalization.NumberStyles.HexNumber);
+      b = byte.Parse(hex.Substring(start + 4, 2), System.Globalization.NumberStyles.HexNumber);
+
+      return Color.FromArgb(a, r, g, b);
+    }
+
     public static void Show(UIElement e)
     {
       e.Visibility = Visibility.Visible;
@@ -46,7 +74,23 @@ namespace MyWay
       e.Visibility = Visibility.Collapsed;
     }
 
-    public static void Animation(DependencyObject target, PropertyPath property, DoubleAnimation animation)
+    /*****************************************
+     Анимации 
+    *****************************************/
+
+    public static void DoubleAnimation(DependencyObject target, PropertyPath property, DoubleAnimation animation) // TODO: объединить
+    {
+      Storyboard sb = new Storyboard();
+
+      Storyboard.SetTarget(animation, target);
+      Storyboard.SetTargetProperty(animation, property);
+
+      sb.Children.Add(animation);
+
+      sb.Begin();
+    }
+
+    public static void ColorAnimation(DependencyObject target, PropertyPath property, ColorAnimation animation)
     {
       Storyboard sb = new Storyboard();
 

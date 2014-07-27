@@ -138,7 +138,7 @@ namespace MyWay
       da.To = to;
       da.Duration = new Duration(TimeSpan.FromSeconds(time));
 
-      Util.Animation(NoFuture, new PropertyPath("Opacity"), da);
+      Util.DoubleAnimation(NoFuture, new PropertyPath("Opacity"), da);
     }
   }
 }

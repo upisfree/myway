@@ -59,7 +59,7 @@
                       FontFamily="{StaticResource PhoneFontFamilySemiBold}"
                       FontSize="48" Padding="6,0,6,12" Margin="6,31,0,0"
                       Foreground="White"
-                      VerticalAlignment="Center"/>
+                      VerticalAlignment="Center" />
             </Border>
           </DataTemplate>
         </Setter.Value>
@@ -68,10 +68,15 @@
   </phone:PhoneApplicationPage.Resources>
 
   <!--LayoutRoot представляет корневую сетку, где размещается все содержимое страницы-->
-  <Grid x:Name="LayoutRoot" Background="Transparent">
+  <Grid x:Name="LayoutRoot" Background="Transparent" Margin="0,-1,0,0">
 
   <!--Элемент управления Pivot-->
-    <phone:Pivot Title="МОЙ МАРШРУТ" SelectionChanged="Pivot_SelectionChanged">
+    <phone:Pivot SelectionChanged="Pivot_SelectionChanged" Margin="0,-1,0,0">
+      <phone:Pivot.Title>
+        <Grid>
+          <TextBlock x:Name="Pivot_Title" Text="МОЙ МАРШРУТ" />
+        </Grid>
+      </phone:Pivot.Title>
       <phone:PivotItem Header="маршруты">
         <Grid>
           <phone:LongListSelector
@@ -186,9 +191,8 @@
             <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="99,342,98,232" Tap="Stops_Error_Button_Tap"/>
           </Grid>-->
         </Grid>
-
       </phone:PivotItem>
-
+      
       <phone:PivotItem Header="настройки">
         <ListBox Margin="15,-16,15,0">
           <ListBoxItem>
@@ -220,6 +224,15 @@
               </Grid>
           </ListBoxItem>
         </ListBox>
+      </phone:PivotItem>
+
+      <phone:PivotItem Foreground="White">
+        <phone:PivotItem.Header>
+          <Grid>
+            <TextBlock Foreground="White" Text="о программе" />
+          </Grid>
+        </phone:PivotItem.Header>
+      	<Image Margin="0,0,120,197" Source="/Assets/Tiles/Medium.png" Stretch="Fill"/>
       </phone:PivotItem>
     </phone:Pivot>
   </Grid>

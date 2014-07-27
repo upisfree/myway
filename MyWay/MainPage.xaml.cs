@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Navigation;
 
@@ -59,21 +60,50 @@ namespace MyWay
     }
 
     // Событие, вызываемое при прокрутке Pivot-ов
+    private string Pivot_Current = "Routes";
     private void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
       bool flag = true;
 
+      Pivot_About_Background_Animation(((SolidColorBrush)Application.Current.Resources["PhoneBackgroundBrush"]).Color, 250);
+      Pivot_Title.Foreground = (SolidColorBrush)Application.Current.Resources["PhoneForegroundBrush"];
+      
+      Microsoft.Phone.Shell.SystemTray.BackgroundColor = ((SolidColorBrush)Application.Current.Resources["PhoneBackgroundBrush"]).Color;
+
       switch (((Pivot)sender).SelectedIndex)
       {
         case 0:
+          Pivot_Current = "Routes";
+
           if (Routes_Search_Box.Text != "")
             flag = false;
+          else
+            flag = true;
+          break;
+        case 1:
+          Pivot_Current = "Stops";
+
           break;
         case 2:
+          Pivot_Current = "Settings";
+          
           flag = false;
+          
+          break;
+        case 3:
+          Pivot_Current = "About";
+
+          Pivot_About_Background_Animation(Util.ConvertStringToColor("#FF455580"), 250);
+          Pivot_Title.Foreground = new SolidColorBrush(Util.ConvertStringToColor("#FFFFFFFF"));
+          
+          Microsoft.Phone.Shell.SystemTray.BackgroundColor = Util.ConvertStringToColor("#FF455580");
+          
+          flag = false;
+
           break;
         default:
           flag = true;
+
           break;
       }
 
@@ -538,7 +568,7 @@ namespace MyWay
       webBrowserTask.Show();
     }
 
-    // Анимация
+    // Анимации
     private void Routes_Search_Box_Animation(double from, double to, double time, double amplitude = 0, EasingMode mode = EasingMode.EaseOut, IEasingFunction ea = null)
     {
       DoubleAnimation da = new DoubleAnimation();
@@ -559,7 +589,16 @@ namespace MyWay
         da.EasingFunction = b;
       }
 
-      Util.Animation(Routes_Search_Box_Transform, new PropertyPath("(TranslateTransform.Y)"), da);
+      Util.DoubleAnimation(Routes_Search_Box_Transform, new PropertyPath("(TranslateTransform.Y)"), da);
+    }
+
+    private void Pivot_About_Background_Animation(Color to, double time)
+    {
+      ColorAnimation ca = new ColorAnimation();
+      ca.To = to;
+      ca.Duration = TimeSpan.FromMilliseconds(time);
+
+      Util.ColorAnimation(LayoutRoot, new PropertyPath("(Panel.Background).(SolidColorBrush.Color)"), ca);
     }
   }
 }

@@ -70,7 +70,7 @@
   <!--LayoutRoot представляет корневую сетку, где размещается все содержимое страницы-->
   <Grid x:Name="LayoutRoot" Background="Transparent" Margin="0,-1,0,0">
 
-  <!--Элемент управления Pivot-->
+    <!--Элемент управления Pivot-->
     <phone:Pivot SelectionChanged="Pivot_SelectionChanged" Margin="0,-1,0,0">
       <phone:Pivot.Title>
         <Grid>
@@ -192,7 +192,7 @@
           </Grid>-->
         </Grid>
       </phone:PivotItem>
-      
+
       <phone:PivotItem Header="настройки">
         <ListBox Margin="15,-16,15,0">
           <ListBoxItem>
@@ -200,28 +200,8 @@
               <TextBlock Text="Удаляет все данные, сохранённые приложением: маршруты, остановки и т. д."
                          TextWrapping="Wrap"
                          Foreground="#FFAAAAAA" />
-              <Button Content="удалить кэш" Margin="-12,55,-12,0" Tap="DeleteCache" toolkit:TiltEffect.IsTiltEnabled="True" />                 
+              <Button Content="удалить кэш" Margin="-12,55,-12,0" Tap="DeleteCache" toolkit:TiltEffect.IsTiltEnabled="True" />
             </Grid>
-          </ListBoxItem>
-
-          <ListBoxItem>
-            <Grid Width="425">
-              <TextBlock Text="Автор приложения — Сеня Пугач / upisfree. Связаться со мной можно нажав на эти сексуальные кнопочки ниже."
-                         TextWrapping="Wrap"
-                         Foreground="#FFAAAAAA" />
-              <Button Content="почта" Margin="-12,82.5,205,0" Click="ContactEmail" toolkit:TiltEffect.IsTiltEnabled="True" />
-              <Button Content="вконтакте" Margin="205,82.5,-12,0" Click="ContactVK" toolkit:TiltEffect.IsTiltEnabled="True" />
-            </Grid>
-          </ListBoxItem>
-
-          <ListBoxItem>
-            <Grid Width="425">
-              <TextBlock Text="Если ждать автобус скучно, то можно попробовать поискать пасхальные яйца :)"
-                         TextWrapping="Wrap"
-                         Foreground="#FFAAAAAA">
-                
-              </TextBlock>
-              </Grid>
           </ListBoxItem>
         </ListBox>
       </phone:PivotItem>
@@ -232,7 +212,51 @@
             <TextBlock Foreground="White" Text="о программе" />
           </Grid>
         </phone:PivotItem.Header>
-      	<Image Margin="0,0,120,197" Source="/Assets/Tiles/Medium.png" Stretch="Fill"/>
+
+        <Grid>
+          <ListBox Margin="10,0,-10,0">
+            <ListBoxItem Height="289" Width="292" Margin="0,-50,0,0">
+              <Image Source="/Assets/Tiles/Medium.png" Stretch="Fill" Tap="About_BusImage_Tap" toolkit:TiltEffect.IsTiltEnabled="True"/>
+            </ListBoxItem>
+
+            <ListBoxItem Margin="0,-50,0,0">
+              <Grid>
+                <RichTextBox TextWrapping="Wrap"
+                             FontSize="23"
+                             Tap="About_LinkToAdministrationSite_Tap"
+                             Margin="-10,0,0,0"
+                             Foreground="White">
+                  <Paragraph>
+                    <Underline x:Name="About_LinkToAdministrationSite"
+                               Foreground="White">
+                      <Run Text="Мой маршрут" />
+                    </Underline>
+                    <Run Text=" — система, предсказывающая, когда на ту или иную остановку придёт тот или иной автобус." />
+                  </Paragraph>
+                </RichTextBox>
+              </Grid>
+            </ListBoxItem>
+
+            <ListBoxItem Margin="0,25,0,0">
+              <Grid Width="425">
+                <TextBlock Text="Автор приложения — Сеня Пугач / upisfree. Связаться со мной можно нажав на эти сексуальные кнопочки ниже."
+							             FontSize="21"
+                           TextWrapping="Wrap" Margin="0,0,-12,0"
+                           Foreground="White" />
+                <Button Content="почта" Margin="-12,83,224,-1" Click="ContactEmail" toolkit:TiltEffect.IsTiltEnabled="True" Width="225" />
+                <Button Content="вконтакте" Margin="213,83,-13,-1" Click="ContactVK" toolkit:TiltEffect.IsTiltEnabled="True" Width="225" />
+              </Grid>
+            </ListBoxItem>
+
+            <ListBoxItem Margin="0,12.5,0,0">
+              <Grid Width="425">
+                <TextBlock Text="Если ждать автобус совсем скучно, то можно попробовать поискать пасхальные яйца :)"
+							             TextWrapping="Wrap"
+                           Foreground="White" />
+              </Grid>
+            </ListBoxItem>
+          </ListBox>
+        </Grid>
       </phone:PivotItem>
     </phone:Pivot>
   </Grid>

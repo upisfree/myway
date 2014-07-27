@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Navigation;
@@ -109,6 +110,10 @@ namespace MyWay
 
       ApplicationBar.IsVisible = flag;
     }
+
+    /*****************************************
+     Загрузка & Кеширование & Демонстрация маршрутов / остановок
+    *****************************************/
 
     private class IO
     {
@@ -270,6 +275,10 @@ namespace MyWay
         }
       }
     }
+
+    /*****************************************
+     Маршруты
+    *****************************************/
 
     private class Routes
     {
@@ -466,7 +475,10 @@ namespace MyWay
       (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/StopsList.xaml?link=" + link + "&name=" + name, UriKind.Relative));
     }
 
-    // Остановки
+    /*****************************************
+     Остановки 
+    *****************************************/
+
     public class Stops
     {
       public class Model_Map
@@ -539,12 +551,63 @@ namespace MyWay
       //(Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + link + "&name=" + name, UriKind.Relative));
     }
 
+    /*****************************************
+     Настройки
+    *****************************************/
+
     // Очистка кэша
     private async void DeleteCache(object sender, System.Windows.Input.GestureEventArgs e)
     {
       await Data.Clear();
 
       MessageBox.Show("Удаление прошло успешно", "Кэш очищен", MessageBoxButton.OK);
+    }
+
+    /*****************************************
+     О программе
+    *****************************************/
+
+    // Ссылка на сайт мэрии
+    private void About_LinkToAdministrationSite_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+    {
+      var richTB = sender as RichTextBox;
+      var textPointer = richTB.GetPositionFromPoint(e.GetPosition(richTB));
+
+      var element = textPointer.Parent as TextElement;
+      while (element != null && !(element is Underline))
+      {
+        if (element.ContentStart != null && element != element.ElementStart.Parent)
+        {
+          element = element.ElementStart.Parent as TextElement;
+        }
+        else
+        {
+          element = null;
+        }
+      }
+
+      if (element == null) return;
+
+      var underline = element as Underline;
+      //underline.Foreground = new SolidColorBrush(Colors.LightGray);
+      switch (underline.Name)
+      {
+        case "About_LinkToAdministrationSite":
+          WebBrowserTask webBrowserTask = new WebBrowserTask();
+          webBrowserTask.Uri = new Uri("http://admomsk.ru/web/guest/services/transport", UriKind.Absolute);
+          webBrowserTask.Show();
+          break;
+      }
+    }
+
+    // Воспоизведение звуков
+    private int About_BusImage_RandomInt;
+    private void About_BusImage_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+    {
+      MediaElement sound = new MediaElement();
+      About_BusImage_RandomInt = new Random().Next(1, 2);
+      sound.Source = new Uri(@"Assets/Sounds/" + About_BusImage_RandomInt + ".wav", UriKind.Relative);
+      sound.Play();
     }
 
     // Контакты
@@ -568,7 +631,10 @@ namespace MyWay
       webBrowserTask.Show();
     }
 
-    // Анимации
+    /*****************************************
+     Анимации
+    *****************************************/
+
     private void Routes_Search_Box_Animation(double from, double to, double time, double amplitude = 0, EasingMode mode = EasingMode.EaseOut, IEasingFunction ea = null)
     {
       DoubleAnimation da = new DoubleAnimation();

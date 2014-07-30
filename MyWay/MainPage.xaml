@@ -77,6 +77,7 @@
           <TextBlock x:Name="Pivot_Title" Text="МОЙ МАРШРУТ" />
         </Grid>
       </phone:Pivot.Title>
+
       <phone:PivotItem Header="маршруты">
         <Grid>
           <phone:LongListSelector
@@ -121,7 +122,7 @@
           </Grid>
 
           <Grid x:Name="Routes_Search_Box_Container" Width="480" Height="80" Margin="-12,-1000,-12,0" Background="{StaticResource PhoneBackgroundBrush}">
-            <TextBox x:Name="Routes_Search_Box" TextChanged="Routes_Search_Box_TextChanged" Height="80" FontSize="32" AcceptsReturn="False" InputScope="Time" Tap="Routes_Search_Box_Tap" LostFocus="Routes_Search_Box_LostFocus" />
+            <TextBox x:Name="Routes_Search_Box" TextChanged="Element_Search_Box_TextChanged" Height="80" FontSize="32" AcceptsReturn="False" InputScope="Time" Tap="Element_Search_Box_Tap" LostFocus="Element_Search_Box_LostFocus" />
 
             <Grid.RenderTransform>
               <TranslateTransform x:Name="Routes_Search_Box_Transform" />
@@ -136,7 +137,7 @@
           <Grid x:Name="Routes_Error" Visibility="Collapsed" Margin="0,70,0,0">
             <TextBlock Text="Что-то пошло не так :(" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-90,0,0" />
             <TextBlock Text="Может, стоит проверить доступ к интернету?"  Foreground="#FFAAAAAA" HorizontalAlignment="Center" VerticalAlignment="Center" />
-            <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="99,342,98,232" Tap="Routes_Error_Button_Tap"/>
+            <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="99,342,98,232" Tap="Element_Error_Button_Tap"/>
           </Grid>
         </Grid>
       </phone:PivotItem>
@@ -167,29 +168,53 @@
             </ListBox.ItemContainerStyle>
           </ListBox>
 
-          <!--<Grid x:Name="Stops_Search_NoResults" Visibility="Collapsed" Margin="0,-100,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <ListBox  x:Name="Stops_Search_Result" Visibility="Collapsed" Margin="15,-16,15,0">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Name}"
+                           Tag="{Binding Link}"
+                           Tap="Stop_Open"
+                           Width="436"
+                           Height="55"
+                           Margin="0,0,0,10"
+                           FontFamily="Segoe WP SemiLight"
+                           FontSize="36"
+                           Foreground="{StaticResource PhoneForegroundBrush}"
+                           toolkit:TiltEffect.IsTiltEnabled="True"
+                           toolkit:SlideInEffect.LineIndex="1" />
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+
+            <ListBox.ItemContainerStyle>
+              <Style TargetType="ListBoxItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+              </Style>
+            </ListBox.ItemContainerStyle>
+          </ListBox>
+
+          <Grid x:Name="Stops_Search_NoResults" Visibility="Collapsed" Margin="0,-100,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock Text="Ничего не найдено" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-90,0,0" />
             <TextBlock Text="Может, попробовать поискать по-другому?"  Foreground="#FFAAAAAA" HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Grid>
 
           <Grid x:Name="Stops_Search_Box_Container" Width="480" Height="80" Margin="-12,-1000,-12,0" Background="{StaticResource PhoneBackgroundBrush}">
-            <TextBox x:Name="Stops_Search_Box" TextChanged="Routes_Search_Box_TextChanged" Height="80" FontSize="32" AcceptsReturn="False" InputScope="Time" Tap="Routes_Search_Box_Tap" LostFocus="Routes_Search_Box_LostFocus" />
+            <TextBox x:Name="Stops_Search_Box" TextChanged="Element_Search_Box_TextChanged" Height="80" FontSize="32" AcceptsReturn="False" InputScope="Search" Tap="Element_Search_Box_Tap" LostFocus="Element_Search_Box_LostFocus" />
 
             <Grid.RenderTransform>
               <TranslateTransform x:Name="Stops_Search_Box_Transform" />
             </Grid.RenderTransform>
-          </Grid>-->
+          </Grid>
 
           <Grid x:Name="Stops_Load" Visibility="Visible" Margin="0,25,0,0">
             <ProgressBar Visibility="Visible" IsIndeterminate="True" Foreground="#FF455580" />
             <TextBlock Text="Загрузка..." HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,0" />
           </Grid>
 
-          <!--<Grid x:Name="Stops_Error" Visibility="Collapsed" Margin="0,70,0,0">
+          <Grid x:Name="Stops_Error" Visibility="Collapsed" Margin="0,70,0,0">
             <TextBlock Text="Что-то пошло не так :(" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-90,0,0" />
             <TextBlock Text="Может, стоит проверить доступ к интернету?"  Foreground="#FFAAAAAA" HorizontalAlignment="Center" VerticalAlignment="Center" />
-            <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="99,342,98,232" Tap="Stops_Error_Button_Tap"/>
-          </Grid>-->
+            <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="99,342,98,232" Tap="Element_Error_Button_Tap"/>
+          </Grid>
         </Grid>
       </phone:PivotItem>
 
@@ -263,7 +288,7 @@
 
   <phone:PhoneApplicationPage.ApplicationBar>
     <shell:ApplicationBar IsVisible="True">
-      <shell:ApplicationBarIconButton IconUri="/Images/search.png" Text="поиск" Click="Routes_Search_Box_Open"/>
+      <shell:ApplicationBarIconButton IconUri="/Images/search.png" Text="поиск" Click="Element_Search_Box_Open"/>
     </shell:ApplicationBar>
   </phone:PhoneApplicationPage.ApplicationBar>
 </phone:PhoneApplicationPage>

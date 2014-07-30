@@ -4,11 +4,8 @@ using Microsoft.Phone.Tasks;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,15 +39,36 @@ namespace MyWay
     // Нажатие на клавишу «Назад»
     protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
     {
-      if (Routes_Search_Box.Text != "")
-      {
-        Routes_Search_Box_Animation(110, 0, 0.5, 0.25, EasingMode.EaseIn);
-        Routes_Search_Box.Text = "";
+      TextBox e1   = null;
+      Grid e2      = null;
+      ListBox e3   = null;
+      UIElement e4 = null;
 
-        Util.Hide(Routes_Search_NoResults);
-        Util.Hide(Routes_Search_Result);
-        Routes_Search_Result.Items.Clear();
-        Util.Show(Routes_Root);
+      switch (Pivot_Current)
+      {
+        case "Routes":
+          e1 = Routes_Search_Box;
+          e2 = Routes_Search_NoResults;
+          e3 = Routes_Search_Result;
+          e4 = Routes_Root;
+          break;
+        case "Stops":
+          e1 = Stops_Search_Box;
+          e2 = Stops_Search_NoResults;
+          e3 = Stops_Search_Result;
+          e4 = Stops_Root;
+          break;
+      }
+
+      if (e1.Text != "")
+      {
+        Element_Search_Box_Animation(110, 0, 0.5, 0.25, EasingMode.EaseIn);
+        e1.Text = "";
+
+        Util.Hide(e2);
+        Util.Hide(e3);
+        e3.Items.Clear();
+        Util.Show(e4);
 
         ApplicationBar.IsVisible = true;
 
@@ -61,7 +79,7 @@ namespace MyWay
     }
 
     // Событие, вызываемое при прокрутке Pivot-ов
-    private string Pivot_Current = "Routes";
+    private static string Pivot_Current = "Routes";
     private void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
       bool flag = true;
@@ -80,9 +98,15 @@ namespace MyWay
             flag = false;
           else
             flag = true;
+
           break;
         case 1:
           Pivot_Current = "Stops";
+
+          if (Stops_Search_Box.Text != "")
+            flag = false;
+          else
+            flag = true;
 
           break;
         case 2:
@@ -337,132 +361,6 @@ namespace MyWay
         Util.Show(Routes_Error);
     }
 
-    private void Routes_Error_Button_Tap(object sender, System.Windows.Input.GestureEventArgs e)
-    {
-      Routes_Show();
-    }
-
-    // Поиск маршрутов
-    private class Routes_Search
-    {
-      private async static Task<string> GetRoutes()
-      {
-        string db = await Data.File.Read("Routes.db");
-
-        return db;
-      }
-
-      //private async static Task<string> Routes()
-      //{
-      //  get { return await Data.File.Read("Routes.db"); }
-      //}
-
-      public async static Task<Array> GetEqualRoutes(string query)
-      {
-        string routes = await GetRoutes();
-        string[] b = routes.Split(new Char[] { '\n' });
-        List<string[]> list = new List<string[]>();
-
-        query = query.Trim();
-
-        foreach (string a in b)
-        {
-          try
-          {
-            string[] line = a.Split(new Char[] { '|' });
-
-            if (Util.IsStringContains(line[0], query) ||
-                Util.IsStringContains(line[1], query) ||
-                Util.IsStringContains(line[2], query) ||
-                Util.IsStringContains(line[0] + " " + line[1], query) ||
-                Util.IsStringContains(line[0] + " " + line[1] + " " + line[2], query))
-            {
-              list.Add(line);
-            }
-          }
-          catch { }
-        }
-
-        return list.ToArray();
-      }
-    }
-
-    private async void Routes_Search_Box_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-    {
-      TextBox s = (TextBox)sender;
-
-      Routes_Search_Result.Items.Clear();
-
-      if (s.Text != "")
-      {
-        Util.Show(Routes_Search_Result);
-        Util.Hide(Routes_Search_NoResults);
-        Util.Hide(Routes_Root);
-
-        try
-        {
-          Array b = await Routes_Search.GetEqualRoutes(s.Text);
-
-          if (b.Length != 0)
-          {
-            foreach (string[] a in b)
-            {
-              string number = a[0];
-              string type = " " + a[1];
-              string desc = a[2];
-              string toStop = a[3] + "|" + number + " " + type;
-
-              Routes_Search_Result.Items.Add(new Routes.Model() { Number = number, Type = type, Desc = desc, ToStop = toStop });
-            }
-          }
-          else
-          {
-            BounceEase be = new BounceEase();
-            be.Bounces = 2;
-            be.Bounciness = 1;
-            be.EasingMode = EasingMode.EaseOut;
-
-            Routes_Search_Box_Animation(75, 70, 1, ea: be);
-            Util.Show(Routes_Search_NoResults);
-          }
-        }
-        catch { }
-      }
-      else
-      {
-        Util.Hide(Routes_Search_Result);
-        Util.Show(Routes_Root);
-      }
-    }
-
-    private void Routes_Search_Box_Open(object sender, EventArgs e)
-    {
-      if (Routes_Search_Box.Text == "")
-        Routes_Search_Box_Animation(0, 70, 0.5, 0.5, EasingMode.EaseOut);
-
-      Routes_Search_Box.Focus();
-
-      ApplicationBar.IsVisible = false;
-    }
-
-    private void Routes_Search_Box_Tap(object sender, RoutedEventArgs e)
-    {
-      if (Routes_Search_Box_Transform.Y != 75)
-        Routes_Search_Box_Animation(70, 75, 0.5, 1, EasingMode.EaseOut);
-    }
-
-    private async void Routes_Search_Box_LostFocus(object sender, RoutedEventArgs e)
-    {
-      if (Routes_Search_Box.Text == "")
-      {
-        Routes_Search_Box_Animation(70, 0, 0.5, 0.25, EasingMode.EaseIn);
-        await Task.Delay(400);
-        ApplicationBar.IsVisible = true;
-      }
-      else
-        Routes_Search_Box_Animation(75, 70, 0.5, 1, EasingMode.EaseOut);
-    }
-
     private void Route_GoToStops(object sender, System.Windows.Input.GestureEventArgs e)
     {
       Grid text = (Grid)sender;
@@ -515,7 +413,7 @@ namespace MyWay
 
       if (b != null)
       {
-        //Util.Hide(Stops_Error);
+        Util.Hide(Stops_Error);
 
         List<Stops.Model_List> StopsList = new List<Stops.Model_List>();
 
@@ -537,8 +435,8 @@ namespace MyWay
 
         Stops_Root.ItemsSource = StopsList;
       }
-      //else
-        //Util.Show(Stops_Error);
+      else
+        Util.Show(Stops_Error);
     }
 
     private void Stop_Open(object sender, EventArgs e)
@@ -632,10 +530,249 @@ namespace MyWay
     }
 
     /*****************************************
+     Поиск
+    *****************************************/
+
+    private class Element_Search
+    {
+      private async static Task<string> GetData()
+      {
+        string way = null;
+
+        switch (Pivot_Current)
+        {
+          case "Routes":
+            way = "Routes";
+            break;
+          case "Stops":
+            way = "Stops_List";
+            break;
+        }
+
+        string db = await Data.File.Read(way + ".db");
+
+        return db;
+      }
+
+      //private async static Task<string> Routes()
+      //{
+      //  get { return await Data.File.Read("Routes.db"); }
+      //}
+
+      public async static Task<Array> GetEqualData(string query)
+      {
+        string data = await GetData();
+        string[] b = data.Split(new Char[] { '\n' });
+        List<string[]> list = new List<string[]>();
+
+        query = query.Trim();
+
+        foreach (string a in b)
+        {
+          try
+          {
+            string[] line = a.Split(new Char[] { '|' });
+            bool flag = false;
+
+            switch (Pivot_Current)
+            {
+              case "Routes":
+                if (Util.IsStringContains(line[0], query) ||
+                    Util.IsStringContains(line[1], query) ||
+                    Util.IsStringContains(line[2], query) ||
+                    Util.IsStringContains(line[0] + " " + line[1], query) ||
+                    Util.IsStringContains(line[0] + " " + line[1] + " " + line[2], query))
+                {
+                  flag = true;
+                }
+
+                break;
+              case "Stops":
+                if (Util.IsStringContains(line[0], query))
+                {
+                  flag = true;
+                }
+
+                break;
+            }
+
+            if (flag)
+            {
+              list.Add(line);
+            }
+          }
+          catch { }
+        }
+
+        return list.ToArray();
+      }
+    }
+
+    private async void Element_Search_Box_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+    {
+      TextBox s = (TextBox)sender;
+
+      ListBox e1 = null;
+      Grid e2 = null;
+      UIElement e3 = null;
+
+      switch (Pivot_Current)
+      {
+        case "Routes":
+          e1 = Routes_Search_Result;
+          e2 = Routes_Search_NoResults;
+          e3 = Routes_Root;
+          break;
+        case "Stops":
+          e1 = Stops_Search_Result;
+          e2 = Stops_Search_NoResults;
+          e3 = Stops_Root;
+          break;
+      }
+
+      e1.Items.Clear();
+
+      if (s.Text != "")
+      {
+        Util.Show(e1);
+        Util.Hide(e2);
+        Util.Hide(e3);
+
+        try
+        {
+          Array b = await Element_Search.GetEqualData(s.Text);
+
+          if (b.Length != 0)
+          {
+            foreach (string[] a in b)
+            {
+              switch (Pivot_Current)
+              {
+                case "Routes":
+                  string number = a[0];
+                  string type = " " + a[1];
+                  string desc = a[2];
+                  string toStop = a[3] + "|" + number + " " + type;
+
+                  e1.Items.Add(new Routes.Model() { Number = number, Type = type, Desc = desc, ToStop = toStop });
+
+                  break;
+                case "Stops":
+                  string name = a[0];
+                  string link = a[1];
+
+                  e1.Items.Add(new Stops.Model_List() { Name = name, Link = link });
+
+                  break;
+              }
+            }
+          }
+          else
+          {
+            BounceEase be = new BounceEase();
+            be.Bounces = 2;
+            be.Bounciness = 1;
+            be.EasingMode = EasingMode.EaseOut;
+
+            Element_Search_Box_Animation(75, 70, 1, ea: be);
+            Util.Show(e2);
+          }
+        }
+        catch { }
+      }
+      else
+      {
+        Util.Hide(e1);
+        Util.Show(e3);
+      }
+    }
+
+    /*****************************************
+     Единые колбэки (TODO: этот коммент надо переименовать)
+    *****************************************/
+
+    private void Element_Error_Button_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+    {
+      switch (Pivot_Current)
+      {
+        case "Routes":
+          Routes_Show();
+          break;
+        case "Stops":
+          Stops_Show();
+          break;
+      }
+    }
+
+    private void Element_Search_Box_Open(object sender, EventArgs e)
+    {
+      TextBox e1 = null;
+
+      switch (Pivot_Current)
+      {
+        case "Routes":
+          e1 = Routes_Search_Box;
+          break;
+        case "Stops":
+          e1 = Stops_Search_Box;
+          break;
+      }
+
+      if (e1.Text == "")
+        Element_Search_Box_Animation(0, 70, 0.5, 0.5, EasingMode.EaseOut);
+
+      e1.Focus();
+
+      ApplicationBar.IsVisible = false;
+    }
+
+    private void Element_Search_Box_Tap(object sender, RoutedEventArgs e)
+    {
+      TranslateTransform e1 = null;
+
+      switch (Pivot_Current)
+      {
+        case "Routes":
+          e1 = Routes_Search_Box_Transform;
+          break;
+        case "Stops":
+          e1 = Stops_Search_Box_Transform;
+          break;
+      }
+
+      if (e1.Y != 75)
+        Element_Search_Box_Animation(70, 75, 0.5, 1, EasingMode.EaseOut);
+    }
+
+    private async void Element_Search_Box_LostFocus(object sender, RoutedEventArgs e)
+    {
+      TextBox e1 = null;
+
+      switch (Pivot_Current)
+      {
+        case "Routes":
+          e1 = Routes_Search_Box;
+          break;
+        case "Stops":
+          e1 = Stops_Search_Box;
+          break;
+      }
+
+      if (e1.Text == "")
+      {
+        Element_Search_Box_Animation(70, 0, 0.5, 0.25, EasingMode.EaseIn);
+        await Task.Delay(400);
+        ApplicationBar.IsVisible = true;
+      }
+      else
+        Element_Search_Box_Animation(75, 70, 0.5, 1, EasingMode.EaseOut);
+    }
+
+    /*****************************************
      Анимации
     *****************************************/
 
-    private void Routes_Search_Box_Animation(double from, double to, double time, double amplitude = 0, EasingMode mode = EasingMode.EaseOut, IEasingFunction ea = null)
+    private void Element_Search_Box_Animation(double from, double to, double time, double amplitude = 0, EasingMode mode = EasingMode.EaseOut, IEasingFunction ea = null)
     {
       DoubleAnimation da = new DoubleAnimation();
 
@@ -655,7 +792,19 @@ namespace MyWay
         da.EasingFunction = b;
       }
 
-      Util.DoubleAnimation(Routes_Search_Box_Transform, new PropertyPath("(TranslateTransform.Y)"), da);
+      System.Windows.Media.TranslateTransform t = null;
+
+      switch (Pivot_Current)
+      {
+        case "Routes":
+          t = Routes_Search_Box_Transform;
+          break;
+        case "Stops":
+          t = Stops_Search_Box_Transform;
+          break;
+      }
+
+      Util.DoubleAnimation(t, new PropertyPath("(TranslateTransform.Y)"), da);
     }
 
     private void Pivot_About_Background_Animation(Color to, double time)

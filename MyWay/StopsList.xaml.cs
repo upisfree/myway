@@ -31,7 +31,7 @@ namespace MyWay
       if (NavigationContext.QueryString.TryGetValue("link", out link))
       {
         Array a = link.Split(new Char[] { '/' });
-        string b = Regex.Match(a.GetValue(a.Length - 1).ToString(), @"\d+").Value; // мне правда было лень создавать новые переменные. правда.
+        string b = Regex.Match(a.GetValue(a.Length - 1).ToString(), @"\d+").Value; // получаем последную часть ссылки, id прогноза
 
         LayoutRoot.Tag = link + "|" + b;
 

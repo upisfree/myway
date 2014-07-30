@@ -70,14 +70,13 @@
       </phone:PivotItem>
     </phone:Pivot>
 
-    <Grid x:Name="Load" Visibility="Visible" Margin="0,25,0,0">
+    <Grid x:Name="Load" Visibility="Visible">
       <ProgressBar Visibility="Visible" IsIndeterminate="True" Foreground="#FF455580" />
-      <TextBlock Text="Загрузка..." HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,30,0,0" />
     </Grid>
 
     <Grid x:Name="Error" Visibility="Collapsed" Margin="0,70,0,0">
       <TextBlock Text="Что-то пошло не так :(" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-90,0,0" />
-      <TextBlock Text="Может, стоит проверить доступ к интернету?"  Foreground="#FFAAAAAA" HorizontalAlignment="Center" VerticalAlignment="Center" />
+      <TextBlock Text="Может, стоит проверить доступ к интернету?"  Foreground="{StaticResource PhoneSubtleBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
       <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="99,342,98,232" Tap="ShowStopsAgain"/>
     </Grid>
   </Grid>

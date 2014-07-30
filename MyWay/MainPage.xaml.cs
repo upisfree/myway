@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -60,21 +61,25 @@ namespace MyWay
           break;
       }
 
-      if (e1.Text != "")
+      if (e1 != null) // что я вижу?
       {
-        Element_Search_Box_Animation(110, 0, 0.5, 0.25, EasingMode.EaseIn);
-        e1.Text = "";
+        if (e1.Text != "") // говнокод???
+        {                 // ого!
+          Element_Search_Box_Animation(70, 0, 0.5, 0.25, EasingMode.EaseIn);
+          e1.Text = "";
 
-        Util.Hide(e2);
-        Util.Hide(e3);
-        e3.Items.Clear();
-        Util.Show(e4);
+          Util.Hide(e2);
+          Util.Hide(e3);
+          e3.Items.Clear();
+          Util.Show(e4);
 
-        ApplicationBar.IsVisible = true;
+          ApplicationBar.IsVisible = true;
 
-        e.Cancel = true;
+          e.Cancel = true;
+        }
+
       }
-
+      
       base.OnBackKeyPress(e);
     }
 
@@ -94,7 +99,7 @@ namespace MyWay
         case 0:
           Pivot_Current = "Routes";
 
-          if (Routes_Search_Box.Text != "")
+          if (Routes_Search_Box.Text != "" || Routes_Error.Visibility == System.Windows.Visibility.Visible)
             flag = false;
           else
             flag = true;
@@ -103,7 +108,7 @@ namespace MyWay
         case 1:
           Pivot_Current = "Stops";
 
-          if (Stops_Search_Box.Text != "")
+          if (Stops_Search_Box.Text != "" || Stops_Error.Visibility == System.Windows.Visibility.Visible)
             flag = false;
           else
             flag = true;
@@ -239,7 +244,17 @@ namespace MyWay
             break;
 
           case "Stops_List":
-            string[] e = await IO.Get("Stops_Map");
+            string[] e = null;
+
+            try
+            {
+              e = await IO.Get("Stops_Map"); // проверка на отсутсвие интернета, так как основная не проходит (смотри проверку в начале функции)
+              int _e = e.Length;            // чтобы try catch поймал исключение, надо произвести какое-либо действие над «e»
+            }
+            catch
+            {
+              break; // ловим исключение? валим отсюда.
+            }
 
             List<Stops.Model_List> f = new List<Stops.Model_List>();
             List<string> j = new List<string>();
@@ -358,7 +373,10 @@ namespace MyWay
         Routes_Root.ItemsSource = new List<Routes.KeyedList<char, Routes.Model>>(groupedRoutesList);
       }
       else
+      {
         Util.Show(Routes_Error);
+        Util.Hide(Routes_Load);
+      }
     }
 
     private void Route_GoToStops(object sender, System.Windows.Input.GestureEventArgs e)
@@ -436,7 +454,10 @@ namespace MyWay
         Stops_Root.ItemsSource = StopsList;
       }
       else
+      {
         Util.Show(Stops_Error);
+        Util.Hide(Stops_Load);
+      }
     }
 
     private void Stop_Open(object sender, EventArgs e)
@@ -445,8 +466,8 @@ namespace MyWay
 
       string link = text.Tag.ToString();
       string name = text.Text;
-      MessageBox.Show(link);
-      //(Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + link + "&name=" + name, UriKind.Relative));
+
+      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/DirectionsList.xaml?link=" + link + "&name=" + name, UriKind.Relative));
     }
 
     /*****************************************

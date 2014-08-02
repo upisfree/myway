@@ -133,7 +133,7 @@
             <ProgressBar Visibility="Visible" IsIndeterminate="True" Foreground="#FF455580" />
           </Grid>
 
-          <Grid x:Name="Routes_Error" Visibility="Visible" Margin="0,-118,0,0">
+          <Grid x:Name="Routes_Error" Visibility="Collapsed" Margin="0,-118,0,0">
             <TextBlock Text="Что-то пошло не так :(" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-90,0,0" />
             <TextBlock Text="Может, стоит проверить доступ к интернету?"  Foreground="{StaticResource PhoneSubtleBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
             <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,342,0,232" Tap="Element_Error_Button_Tap"/>

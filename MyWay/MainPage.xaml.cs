@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using Windows.Devices.Geolocation;
+using HtmlAgilityPack;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Tasks;
 using Newtonsoft.Json;
@@ -115,12 +116,18 @@ namespace MyWay
 
           break;
         case 2:
+          Pivot_Current = "Map";
+
+          flag = true;
+
+          break;
+        case 3:
           Pivot_Current = "Settings";
           
           flag = false;
           
           break;
-        case 3:
+        case 4:
           Pivot_Current = "About";
 
           Pivot_About_Background_Animation(Util.ConvertStringToColor("#FF455580"), 250);
@@ -471,6 +478,26 @@ namespace MyWay
     }
 
     /*****************************************
+     Карта
+    *****************************************/
+
+    private void Map_Init()
+    {
+
+    }
+
+    //private void Map_SetCenter()
+    //{
+    //  Map_Root.Center
+    //}
+
+    private void Map_GetPhonePosition()
+    {
+
+    }
+
+
+    /*****************************************
      Настройки
     *****************************************/
 
@@ -556,7 +583,7 @@ namespace MyWay
 
     private class Element_Search
     {
-      private async static Task<string> GetData()
+      private async static Task<string> GetData() // сделать необязательный парамерт, дабы не зависить от номера пивота (ты понял)
       {
         string way = null;
 

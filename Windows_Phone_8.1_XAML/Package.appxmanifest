@@ -3,7 +3,7 @@
   <Identity Name="2a1d29ec-882a-4ee1-9b57-482c37de354e" Publisher="CN=Сеня" Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="2a1d29ec-882a-4ee1-9b57-482c37de354e" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>MyWay</DisplayName>
+    <DisplayName>Мой маршрут</DisplayName>
     <PublisherDisplayName>upisfree</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -16,7 +16,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="MyWay.App">
-      <m3:VisualElements DisplayName="MyWay" Square150x150Logo="Assets\Logo.png" Square44x44Logo="Assets\SmallLogo.png" Description="MyWay" ForegroundText="light" BackgroundColor="transparent">
+      <m3:VisualElements DisplayName="Мой маршрут" Square150x150Logo="Assets\Logo.png" Square44x44Logo="Assets\SmallLogo.png" Description="MyWay" ForegroundText="light" BackgroundColor="transparent">
         <m3:DefaultTile Wide310x150Logo="Assets\WideLogo.png" Square71x71Logo="Assets\Square71x71Logo.png">
           <m3:ShowNameOnTiles>
             <m3:ShowOn Tile="square150x150Logo" />

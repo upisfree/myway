@@ -8,6 +8,16 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows_Phone_8.1_Silverlight", "Windows_Phone_8.1_Silverlight\Windows_Phone_8.1_Silverlight.csproj", "{DDE67535-0892-4778-B5E9-4058135E0F26}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows_Phone_8.1_XAML", "Windows_Phone_8.1_XAML\Windows_Phone_8.1_XAML.csproj", "{7F606C9B-881B-4535-A592-1B2B54C5C592}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6B95098F-3E7C-405E-9996-8C50856E5424} = {6B95098F-3E7C-405E-9996-8C50856E5424}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{CD0F8A41-BC99-4AF2-A729-80E7ED7685CD}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

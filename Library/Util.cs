@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -8,6 +9,13 @@ namespace Library
 {
   public static class Util
   {
+    public static bool IsInternetAvailable()
+    {
+      bool isConnected = NetworkInterface.GetIsNetworkAvailable();
+
+      return isConnected;
+    }
+
     public static bool IsStringContains(this string source, string toCheck) // case insensitive
     {
       return source.IndexOf(toCheck, StringComparison.OrdinalIgnoreCase) >= 0;

@@ -1,36 +1,41 @@
-﻿using Windows_Phone.Common;
-using Windows_Phone.Data;
+﻿using Fizzler.Systems.HtmlAgilityPack;
+using HtmlAgilityPack;
+using Newtonsoft.Json;
+using QKit.JumpList;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
-using System.IO;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Graphics.Display;
+using Windows.UI.Core;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-
-// Документацию по шаблону "Приложение с Pivot" см. по адресу http://go.microsoft.com/fwlink/?LinkID=391641
+using Windows_Phone.Common;
 
 namespace Windows_Phone
 {
+    // Прокручиваем, чтобы новый элемент оказался видимым.
+    // var container = this.pivot.ContainerFromIndex(this.pivot.SelectedIndex) as ContentControl;
+    // var listView = container.ContentTemplateRoot as ListView;
+    // listView.ScrollIntoView(newItem, ScrollIntoViewAlignment.Leading);
+
     public sealed partial class PivotPage : Page
     {
-        private const string FirstGroupName = "FirstGroup";
-        private const string SecondGroupName = "SecondGroup";
-
         private readonly NavigationHelper navigationHelper;
         private readonly ObservableDictionary defaultViewModel = new ObservableDictionary();
         private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
+
+        public CollectionViewSource Routes_Data { get; set; }
 
         public PivotPage()
         {
@@ -41,8 +46,103 @@ namespace Windows_Phone
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+
+            DataContext = this;
+
+            Routes_Data_Get();
         }
 
+        /*****************************************
+         Маршруты
+        *****************************************/
+
+        public class KeyedList<TKey, TItem> : List<TItem>
+        {
+          public TKey Key { protected set; get; }
+          public TKey KeyDisplay { protected set; get; }
+          public KeyedList(TKey key, IEnumerable<TItem> items) : base(items) { Key = key; KeyDisplay = key; }
+          public KeyedList(IGrouping<TKey, TItem> grouping) : base(grouping) { Key = grouping.Key; KeyDisplay = grouping.Key; }
+        }
+
+        private async void Routes_Data_Get()
+        {
+          string[] b = await Library.IO.MainPage.Get("Routes");
+          b = b.Where(item => item != "").ToArray(); // отлавливаем пустой элемент, чтобы не вызывать ошибку и задерживать выполнение
+
+          if (b != null)
+          {
+            //Library.Util.Hide(Routes_Error);
+
+            List<Library.Model.Route> list = new List<Library.Model.Route>();
+
+            foreach (string a in b)
+            {
+              string[] line = a.Split(new Char[] { '|' });
+
+              string number = Library.Util.TypographString(line[0]);
+              string type   = Library.Util.TypographString(line[1]);
+              string desc   = Library.Util.TypographString(line[2]);
+              string toStop = Library.Util.TypographString(line[3] + "|" + number + " " + type);
+
+              list.Add(new Library.Model.Route(number, " " + type, desc, toStop));
+            }
+
+            //Library.Util.Hide(Routes_Load);
+
+            var groupedRoutesList =
+              from _list in list
+              group _list by _list.Number[0] into listByGroup
+              select new KeyedList<char, Library.Model.Route>(listByGroup);
+
+            CollectionViewSource _data = new CollectionViewSource();
+            _data.Source = groupedRoutesList;
+            _data.IsSourceGrouped = true;
+            Routes_Data = _data;
+          }
+          else
+          {
+            //Library.Util.Show(Routes_Error);
+            //Library.Util.Hide(Routes_Load);
+          }
+        }
+
+        private async void Route_GoToStops(object sender, TappedRoutedEventArgs e)
+        {
+          Grid text = (Grid)sender;
+
+          string[] a = text.Tag.ToString().Split(new char[] { '|' });
+
+          string link = a[0];
+          string name = a[1].ToUpper();
+
+          await new MessageDialog(link + "\n" + name).ShowAsync();
+
+          //(Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/StopsList.xaml?link=" + link + "&name=" + name, UriKind.Relative));
+        }
+
+
+        /*****************************************
+         Единые колбэки (TODO: этот коммент надо переименовать) 
+        *****************************************/
+
+        private void Element_Search_Box_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void Element_Search_Box_Tap(object sender, TappedRoutedEventArgs e)
+        {
+
+        }
+
+        private void Element_Search_Box_LostFocus(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+
+        }
+
+
+
+        // Непонятные штучки, сделанные Студией
         /// <summary>
         /// Получает объект <see cref="NavigationHelper"/>, связанный с данным объектом <see cref="Page"/>.
         /// </summary>
@@ -60,83 +160,15 @@ namespace Windows_Phone
             get { return this.defaultViewModel; }
         }
 
-        /// <summary>
-        /// Заполняет страницу содержимым, передаваемым в процессе навигации. Также предоставляется (при наличии) сохраненное состояние
-        /// при повторном создании страницы из предыдущего сеанса.
-        /// </summary>
-        /// <param name="sender">
-        /// Источник события; как правило, <see cref="NavigationHelper"/>.
-        /// </param>
-        /// <param name="e">Данные события, предоставляющие параметр навигации, который передается
-        /// <see cref="Frame.Navigate(Type, Object)"/> при первоначальном запросе этой страницы и
-        /// словарь состояний, сохраненных этой страницей в ходе предыдущего
-        /// сеанса. Состояние будет равно значению NULL при первом посещении страницы.</param>
         private async void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             // TODO: Создание соответствующей модели данных для области проблемы, чтобы заменить пример данных
-            var sampleDataGroup = await SampleDataSource.GetGroupAsync("Group-1");
-            this.DefaultViewModel[FirstGroupName] = sampleDataGroup;
         }
 
-        /// <summary>
-        /// Сохраняет состояние, связанное с данной страницей, в случае приостановки приложения или
-        /// удаления страницы из кэша навигации. Значения должны соответствовать требованиям сериализации
-        /// <see cref="SuspensionManager.SessionState"/>.
-        /// </summary>
-        /// <param name="sender">Источник события; как правило, <see cref="NavigationHelper"/>.</param>
-        /// <param name="e">Данные события, которые предоставляют пустой словарь для заполнения
-        /// сериализуемым состоянием.</param>
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
             // TODO: Сохраните здесь уникальное состояние страницы.
-        }
-
-        /// <summary>
-        /// Добавляет элемент в список при нажатии кнопки на панели приложения.
-        /// </summary>
-        private void AddAppBarButton_Click(object sender, RoutedEventArgs e)
-        {
-            string groupName = this.pivot.SelectedIndex == 0 ? FirstGroupName : SecondGroupName;
-            var group = this.DefaultViewModel[groupName] as SampleDataGroup;
-            var nextItemId = group.Items.Count + 1;
-            var newItem = new SampleDataItem(
-                string.Format(CultureInfo.InvariantCulture, "Group-{0}-Item-{1}", this.pivot.SelectedIndex + 1, nextItemId),
-                string.Format(CultureInfo.CurrentCulture, this.resourceLoader.GetString("NewItemTitle"), nextItemId),
-                string.Empty,
-                string.Empty,
-                this.resourceLoader.GetString("NewItemDescription"),
-                string.Empty);
-
-            group.Items.Add(newItem);
-
-            // Прокручиваем, чтобы новый элемент оказался видимым.
-            var container = this.pivot.ContainerFromIndex(this.pivot.SelectedIndex) as ContentControl;
-            var listView = container.ContentTemplateRoot as ListView;
-            listView.ScrollIntoView(newItem, ScrollIntoViewAlignment.Leading);
-        }
-
-        /// <summary>
-        /// Вызывается при нажатии элемента внутри раздела.
-        /// </summary>
-        private void ItemView_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            // Переход к соответствующей странице назначения и настройка новой страницы
-            // путем передачи необходимой информации в виде параметра навигации
-            var itemId = ((SampleDataItem)e.ClickedItem).UniqueId;
-            if (!Frame.Navigate(typeof(ItemPage), itemId))
-            {
-                throw new Exception(this.resourceLoader.GetString("NavigationFailedExceptionMessage"));
-            }
-        }
-
-        /// <summary>
-        /// Загружает содержимое для второго элемента Pivot, когда он становится видимым в результате прокрутки.
-        /// </summary>
-        private async void SecondPivot_Loaded(object sender, RoutedEventArgs e)
-        {
-            var sampleDataGroup = await SampleDataSource.GetGroupAsync("Group-2");
-            this.DefaultViewModel[SecondGroupName] = sampleDataGroup;
-        }
+        }////////////////////////////////////////////////////////////////////////////////???????????????????????????????????????????????????????????????
 
         #region Регистрация NavigationHelper
 
@@ -164,5 +196,10 @@ namespace Windows_Phone
         }
 
         #endregion
+
+        private async void AddAppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+          //await new MessageDialog("count: " + Routes_List.ItemsSource.ToString()).ShowAsync();
+        }
     }
 }

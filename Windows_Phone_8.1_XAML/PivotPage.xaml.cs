@@ -71,7 +71,7 @@ namespace Windows_Phone
 
           if (b != null)
           {
-            //Library.Util.Hide(Routes_Error);
+            Library.Util.Hide(Routes_Error);
 
             List<Library.Model.Route> list = new List<Library.Model.Route>();
 
@@ -87,7 +87,7 @@ namespace Windows_Phone
               list.Add(new Library.Model.Route(number, " " + type, desc, toStop));
             }
 
-            //Library.Util.Hide(Routes_Load);
+            Library.Util.Hide(Routes_Load);
 
             var groupedRoutesList =
               from _list in list
@@ -101,8 +101,8 @@ namespace Windows_Phone
           }
           else
           {
-            //Library.Util.Show(Routes_Error);
-            //Library.Util.Hide(Routes_Load);
+            Library.Util.Show(Routes_Error);
+            Library.Util.Hide(Routes_Load);
           }
         }
 

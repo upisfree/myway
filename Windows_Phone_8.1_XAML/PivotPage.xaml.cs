@@ -98,12 +98,19 @@ namespace Windows_Phone
             _data.Source = groupedRoutesList;
             _data.IsSourceGrouped = true;
             Routes_Data = _data;
+
+            Debug.WriteLine(_data);
           }
           else
           {
             Library.Util.Show(Routes_Error);
             Library.Util.Hide(Routes_Load);
           }
+        }
+
+        private void Element_Error_Button_Tap(object sender, RoutedEventArgs e)
+        {
+          Routes_Data_Get();
         }
 
         private async void Route_GoToStops(object sender, TappedRoutedEventArgs e)
@@ -140,6 +147,33 @@ namespace Windows_Phone
 
         }
 
+        /*****************************************
+         Настройки
+        *****************************************/
+
+        private async void Settings_Delete_Cache(object sender, RoutedEventArgs e)
+        {
+          await Library.Data.Clear();
+
+          // Диалог
+          MessageDialog dialog = new MessageDialog("Удаление прошло успешно", "Кэш очищен");
+
+          // Кнопка закрытия диалога
+          UICommand cancel = new UICommand("ок"); // самое эпичное, что никакой команды для кнопки нет.
+          dialog.Commands.Add(cancel);
+
+          // Показываем диалог
+          await dialog.ShowAsync();
+        }
+
+
+
+
+
+
+
+
+
 
 
         // Непонятные штучки, сделанные Студией
@@ -168,7 +202,7 @@ namespace Windows_Phone
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
             // TODO: Сохраните здесь уникальное состояние страницы.
-        }////////////////////////////////////////////////////////////////////////////////???????????????????????????????????????????????????????????????
+        }
 
         #region Регистрация NavigationHelper
 

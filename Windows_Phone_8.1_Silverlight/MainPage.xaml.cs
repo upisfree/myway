@@ -18,6 +18,8 @@ using System.Windows.Navigation;
 using System.Device.Location;
 using Microsoft.Phone.Maps.Controls;
 using System.Windows.Shapes;
+using System.Diagnostics;
+using System.Windows.Media.Imaging;
 
 namespace MyWay
 {
@@ -487,36 +489,44 @@ namespace MyWay
 
     private async void Map_Init()
     {
-      // Get my current location.
-      Geolocator myGeolocator = new Geolocator();
-      Geoposition myGeoposition = await myGeolocator.GetGeopositionAsync();
-      Geocoordinate myGeocoordinate = myGeoposition.Coordinate;
-      GeoCoordinate myGeoCoordinate =
-          ConvertGeocoordinate(myGeocoordinate);
+      GeoCoordinate currentPosition = await Map_GetCurrentPosition();
 
-      // Make my current location the center of the Map.
-      Map.Center = myGeoCoordinate;
+      Map.Center = currentPosition;
       Map.ZoomLevel = 13;
 
-      // Create a small circle to mark the current location.
-      Ellipse myCircle = new Ellipse();
-      myCircle.Fill = new SolidColorBrush(Colors.Blue);
-      myCircle.Height = 20;
-      myCircle.Width = 20;
-      myCircle.Opacity = 50;
+      Map_DrawImageOnCurrentPosition(currentPosition);
 
-      // Create a MapOverlay to contain the circle.
-      MapOverlay myLocationOverlay = new MapOverlay();
-      myLocationOverlay.Content = myCircle;
-      myLocationOverlay.PositionOrigin = new Point(0.5, 0.5);
-      myLocationOverlay.GeoCoordinate = myGeoCoordinate;
+      await Data.Clear();
+      Util.MapRoute.Model a = await Util.MapRoute.Get(1);
+      Debug.WriteLine(a.Stations.Count.ToString());
+    }
 
-      // Create a MapLayer to contain the MapOverlay.
-      MapLayer myLocationLayer = new MapLayer();
-      myLocationLayer.Add(myLocationOverlay);
+    private void Map_DrawImageOnCurrentPosition(GeoCoordinate coordinate)
+    {
+      Image img = new Image();
+      BitmapImage b = new BitmapImage();
+      b.UriSource = new Uri("/Assets/MapUser.png", UriKind.Relative);
+      img.Source = b;
+      img.Height = 75;
+      img.Width = 40;
 
-      // Add the MapLayer to the Map.
-      Map.Layers.Add(myLocationLayer);
+      MapOverlay overlay = new MapOverlay();
+      overlay.Content = img;
+      overlay.PositionOrigin = new Point(0.5, 0.5);
+      overlay.GeoCoordinate = coordinate;
+
+      MapLayer layer = new MapLayer();
+      layer.Add(overlay);
+
+      Map.Layers.Add(layer);
+    }
+
+    private async Task<GeoCoordinate> Map_GetCurrentPosition()
+    {
+      Geolocator locator = new Geolocator();
+      Geoposition position = await locator.GetGeopositionAsync();
+      Geocoordinate coordinate = position.Coordinate;
+      return ConvertGeocoordinate(coordinate);
     }
 
     public static GeoCoordinate ConvertGeocoordinate(Geocoordinate geocoordinate)
@@ -532,17 +542,6 @@ namespace MyWay
           geocoordinate.Heading ?? Double.NaN
           );
     }
-
-    //private void Map_SetCenter()
-    //{
-    //  Map_Root.Center
-    //}
-
-    private void Map_GetPhonePosition()
-    {
-
-    }
-
 
     /*****************************************
      Настройки

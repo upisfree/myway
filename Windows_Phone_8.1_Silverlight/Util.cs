@@ -1,6 +1,11 @@
-﻿using Microsoft.Phone.Net.NetworkInformation;
+﻿using HtmlAgilityPack;
+using Microsoft.Phone.Net.NetworkInformation;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -100,6 +105,77 @@ namespace MyWay
       sb.Children.Add(animation);
 
       sb.Begin();
+    }
+
+    /*****************************************
+     Карты
+    *****************************************/
+    public static class MapRoute
+    {
+      public class Model
+      {
+        [JsonProperty("coordinates")]
+        public string[] Coordinates { get; set; }
+
+        [JsonProperty("stations")]
+        public List<Stations> Stations { get; set; }
+      }
+
+      public class Stations
+      {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string[] Coordinates { get; set; }
+      }
+
+      // Методы
+      private async static Task<HtmlDocument> Download(int id)
+      {
+        if (Util.IsInternetAvailable())
+        {
+          string link = "http://bus.admomsk.ru/index.php/getroute/routecol_geo/" + id + "/undefined/";
+          string htmlPage = "";
+
+          try
+          {
+            htmlPage = await new HttpClient().GetStringAsync(link);
+          }
+          catch
+          {
+            return null;
+          }
+
+          HtmlDocument htmlDocument = new HtmlDocument();
+          htmlDocument.LoadHtml(htmlPage);
+          return htmlDocument;
+        }
+        else
+          return null;
+      }
+
+      private async static Task<string> WriteAndGet(HtmlDocument html, int id)
+      {
+        string json = Regex.Replace(html.DocumentNode.InnerText, "«|»", "\"");
+
+        if (await Data.Folder.IsExists("Map") == false)
+          await Data.Folder.Create("Map");
+
+        await Data.File.Write("Map/" + id + ".db", json);
+
+        return json;
+      }
+
+      public async static Task<Model> Get(int id)
+      {
+        string json;
+
+        if (Data.File.IsExists("Map/" + id + ".db") == false)
+          json = await WriteAndGet(await Download(id), id);
+        else
+          json = await Data.File.Read("Map/" + id + ".db");
+
+        return JsonConvert.DeserializeObject<Model>(json);
+      }
     }
   }
 }

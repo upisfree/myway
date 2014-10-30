@@ -160,6 +160,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\MapUser.png" />
     <Content Include="Assets\Sounds\1.wav" />
     <Content Include="Assets\Sounds\2.wav" />
     <Content Include="Assets\ApplicationIcon.png">

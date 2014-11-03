@@ -224,9 +224,21 @@
           </Grid>
         </phone:PivotItem.Header>
 
-        <Canvas>
-          <maps:Map x:Name="Map" CartographicMode="Road" Canvas.ZIndex="1" Canvas.Left="-15" Width="482" Height="552" />
-        </Canvas>
+        <Grid>
+          <maps:Map x:Name="Map" CartographicMode="Road" Center="54.9917226936668,73.351555718109" ZoomLevel="12" Canvas.ZIndex="1" Canvas.Left="-15" Width="482" Margin="-14,0,-12,-93" />
+
+          <Grid x:Name="Map_Search_Box_Container" Width="480" Height="80" Margin="-12,-825,-12,0" Background="{StaticResource PhoneBackgroundBrush}">
+            <toolkit:PhoneTextBox x:Name="Map_Search_Box" TextChanged="Element_Search_Box_TextChanged" Height="80" FontSize="32" AcceptsReturn="False" InputScope="Search" Tap="Element_Search_Box_Tap" LostFocus="Element_Search_Box_LostFocus" Hint="поиск" />
+
+            <Grid.RenderTransform>
+              <TranslateTransform x:Name="Map_Search_Box_Transform" />
+            </Grid.RenderTransform>
+          </Grid>
+
+          <!--<Grid x:Name="Map_Load" Visibility="Visible" Margin="-10,-144,-12,-93">
+            <ProgressBar Visibility="Visible" IsIndeterminate="True" Foreground="#FF455580" Margin="-10,0,0,0" />
+          </Grid>-->
+        </Grid>
       </phone:PivotItem>
 
       <phone:PivotItem Header="настройки">
@@ -279,8 +291,8 @@
 							             FontSize="21"
                            TextWrapping="Wrap" Margin="0,0,-12,0"
                            Foreground="White" />
-                <Button Content="почта" Margin="-12,83,224,-1" Click="ContactEmail" toolkit:TiltEffect.IsTiltEnabled="True" Width="225" />
-                <Button Content="вконтакте" Margin="213,83,-13,-1" Click="ContactVK" toolkit:TiltEffect.IsTiltEnabled="True" Width="225" />
+                <Button Content="почта" Margin="-12,83,224,-1" Click="ContactEmail" toolkit:TiltEffect.IsTiltEnabled="True" Width="225" BorderBrush="White" Foreground="White" />
+                <Button Content="вконтакте" Margin="213,83,-13,-1" Click="ContactVK" toolkit:TiltEffect.IsTiltEnabled="True" Width="225" BorderBrush="White" Foreground="White" />
               </Grid>
             </ListBoxItem>
 

@@ -20,6 +20,7 @@ using Microsoft.Phone.Maps.Controls;
 using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Windows.Media.Imaging;
+using Windows.System;
 
 namespace MyWay
 {
@@ -124,7 +125,7 @@ namespace MyWay
         case 2:
           Pivot_Current = "Map";
 
-          flag = true;
+          flag = false;
 
           break;
         case 3:
@@ -489,16 +490,27 @@ namespace MyWay
 
     private async void Map_Init()
     {
-      GeoCoordinate currentPosition = await Map_GetCurrentPosition();
+      try
+      {
+        GeoCoordinate currentPosition = await Map_GetCurrentPosition();
 
-      Map.Center = currentPosition;
-      Map.ZoomLevel = 13;
+        Map.Center = currentPosition;
+        Map.ZoomLevel = 13;
 
-      Map_DrawImageOnCurrentPosition(currentPosition);
+        Map_DrawImageOnCurrentPosition(currentPosition);
+      }
+      catch (Exception e)
+      {
+        MessageBoxResult mbr = MessageBox.Show("Не могу отобразить тебя на карте, так как у тебя отключено определение местоположения.\nОткрыть настройки, чтобы включить его?", "Местоположение", MessageBoxButton.OKCancel);
 
-      await Data.Clear();
-      Util.MapRoute.Model a = await Util.MapRoute.Get(1);
-      Debug.WriteLine(a.Stations.Count.ToString());
+        if (mbr == MessageBoxResult.OK)
+        {
+          Launcher.LaunchUriAsync(new Uri("ms-settings-location:"));
+        }
+      }
+
+      //Util.MapRoute.Model a = await Util.MapRoute.Get(1);
+      //Debug.WriteLine(a.Stations.Count.ToString());
     }
 
     private void Map_DrawImageOnCurrentPosition(GeoCoordinate coordinate)
@@ -832,6 +844,13 @@ namespace MyWay
         case "Stops":
           e1 = Stops_Search_Box_Transform;
           break;
+        case "Map":
+          e1 = Map_Search_Box_Transform;
+
+          if (e1.Y != 5)
+            Element_Search_Box_Animation(0, 5, 0.5, 1, EasingMode.EaseOut);
+
+          return;
       }
 
       if (e1.Y != 75)
@@ -850,6 +869,15 @@ namespace MyWay
         case "Stops":
           e1 = Stops_Search_Box;
           break;
+        case "Map":
+          e1 = Map_Search_Box;
+
+          Element_Search_Box_Animation(5, 0, 0.5, 1, EasingMode.EaseOut);
+
+          if (Map_Search_Box.Text == null)
+            Map_Search_Box.Hint = "поиск";ыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыы // моё местоположение по кнопке в аппбаре => двигать карту (убирать анимацию поля?). ставить иконку поиска, чтобы забить на Hint / поискать в инете. ЧЕРТИ МАРШРУТЫ, БЛИН
+          
+          return;
       }
 
       if (e1.Text == "")
@@ -895,6 +923,9 @@ namespace MyWay
           break;
         case "Stops":
           t = Stops_Search_Box_Transform;
+          break;
+        case "Map":
+          t = Map_Search_Box_Transform;
           break;
       }
 

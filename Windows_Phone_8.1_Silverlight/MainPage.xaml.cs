@@ -124,8 +124,8 @@ namespace MyWay
           break;
         case 2:
           Pivot_Current = "Map";
-
-          flag = false;
+          
+          flag = true;
 
           break;
         case 3:
@@ -813,53 +813,7 @@ namespace MyWay
     private void Element_Search_Box_Open(object sender, EventArgs e)
     {
       TextBox e1 = null;
-
-      switch (Pivot_Current)
-      {
-        case "Routes":
-          e1 = Routes_Search_Box;
-          break;
-        case "Stops":
-          e1 = Stops_Search_Box;
-          break;
-      }
-
-      if (e1.Text == "")
-        Element_Search_Box_Animation(0, 70, 0.5, 0.5, EasingMode.EaseOut);
-
-      e1.Focus();
-
-      ApplicationBar.IsVisible = false;
-    }
-
-    private void Element_Search_Box_Tap(object sender, RoutedEventArgs e)
-    {
-      TranslateTransform e1 = null;
-
-      switch (Pivot_Current)
-      {
-        case "Routes":
-          e1 = Routes_Search_Box_Transform;
-          break;
-        case "Stops":
-          e1 = Stops_Search_Box_Transform;
-          break;
-        case "Map":
-          e1 = Map_Search_Box_Transform;
-
-          if (e1.Y != 5)
-            Element_Search_Box_Animation(0, 5, 0.5, 1, EasingMode.EaseOut);
-
-          return;
-      }
-
-      if (e1.Y != 75)
-        Element_Search_Box_Animation(70, 75, 0.5, 1, EasingMode.EaseOut);
-    }
-
-    private async void Element_Search_Box_LostFocus(object sender, RoutedEventArgs e)
-    {
-      TextBox e1 = null;
+      int a = 70;
 
       switch (Pivot_Current)
       {
@@ -871,23 +825,69 @@ namespace MyWay
           break;
         case "Map":
           e1 = Map_Search_Box;
+          a = 125;
+          break;
+      }
 
-          Element_Search_Box_Animation(5, 0, 0.5, 1, EasingMode.EaseOut);
+      if (e1.Text == "")
+        Element_Search_Box_Animation(0, a, 0.5, 0.5, EasingMode.EaseOut);
 
-          if (Map_Search_Box.Text == null)
-            Map_Search_Box.Hint = "поиск";ыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыыы // моё местоположение по кнопке в аппбаре => двигать карту (убирать анимацию поля?). ставить иконку поиска, чтобы забить на Hint / поискать в инете. ЧЕРТИ МАРШРУТЫ, БЛИН
-          
-          return;
+      e1.Focus();
+
+      if (Pivot_Current != "Map")
+        ApplicationBar.IsVisible = false;
+    }
+
+    private void Element_Search_Box_Tap(object sender, RoutedEventArgs e)
+    {
+      TranslateTransform e1 = null;
+      int a = 70;
+
+      switch (Pivot_Current)
+      {
+        case "Routes":
+          e1 = Routes_Search_Box_Transform;
+          break;
+        case "Stops":
+          e1 = Stops_Search_Box_Transform;
+          break;
+        case "Map":
+          e1 = Map_Search_Box_Transform;
+          a = 125;
+          break;
+      }
+
+      if (e1.Y != a + 5)
+        Element_Search_Box_Animation(a, a + 5, 0.5, 1, EasingMode.EaseOut);
+    }
+
+    private async void Element_Search_Box_LostFocus(object sender, RoutedEventArgs e)
+    {
+      TextBox e1 = null;
+      int a = 70;
+
+      switch (Pivot_Current)
+      {
+        case "Routes":
+          e1 = Routes_Search_Box;
+          break;
+        case "Stops":
+          e1 = Stops_Search_Box;
+          break;
+        case "Map":
+          e1 = Map_Search_Box;
+          a = 125;
+          break;
       }
 
       if (e1.Text == "")
       {
-        Element_Search_Box_Animation(70, 0, 0.5, 0.25, EasingMode.EaseIn);
+        Element_Search_Box_Animation(a, 0, 0.5, 0.25, EasingMode.EaseIn);
         await Task.Delay(400);
         ApplicationBar.IsVisible = true;
       }
       else
-        Element_Search_Box_Animation(75, 70, 0.5, 1, EasingMode.EaseOut);
+        Element_Search_Box_Animation(a + 5, a, 0.5, 1, EasingMode.EaseOut);
     }
 
     /*****************************************

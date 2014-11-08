@@ -86,10 +86,10 @@ namespace MyWay
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
             // Убедитесь, что состояние приложения восстановлено правильно
-            if (!App.ViewModel.IsDataLoaded)
-            {
-                App.ViewModel.LoadData();
-            }
+            //if (!App.ViewModel.IsDataLoaded)
+            //{
+            //    App.ViewModel.LoadData();
+            //}
         }
 
         // Код для выполнения при деактивации приложения (отправляется в фоновый режим)
@@ -118,11 +118,13 @@ namespace MyWay
         // Код для выполнения на необработанных исключениях
         private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
         {
-            if (Debugger.IsAttached)
-            {
-                // Произошло необработанное исключение; перейти в отладчик
-                Debugger.Break();
-            }
+          //MessageBox.Show(e.ExceptionObject.Message);
+
+          if (Debugger.IsAttached)
+          {
+            // Произошло необработанное исключение; перейти в отладчик
+            Debugger.Break();
+          }
         }
 
         #region Инициализация приложения телефона

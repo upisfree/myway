@@ -3,6 +3,7 @@ using Microsoft.Phone.Net.NetworkInformation;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -38,6 +39,7 @@ namespace MyWay
       s = Regex.Replace(s, "\"([а-яА-Я0-9\\s\\-]+)\"", "«$1»"); // "слово" -> «слово»
       s = Regex.Replace(s, "([^0-9]|-[0-9])-((?!([а-я0-9]|Омск|Восточное))|[а-я]\\.)", "$1 — $2"); // текст-текст -> текст — текст
       s = Regex.Replace(s, " - ", " — "); // текст - текст -> текст — текст
+      s = Regex.Replace(s, "[\\n\\t\\s]{2,}", " "); // текст  текст -> текст текст
 
       return s;
     }
@@ -67,6 +69,26 @@ namespace MyWay
       b = byte.Parse(hex.Substring(start + 4, 2), System.Globalization.NumberStyles.HexNumber);
 
       return Color.FromArgb(a, r, g, b);
+    }
+
+    public static double StringToDouble(string s)
+    {
+      return Double.Parse(Regex.Replace(s, "\\.", ","));
+    }
+
+    public static string GetThemeColor()
+    {
+      Visibility v = (Visibility)Application.Current.Resources["PhoneDarkThemeVisibility"];
+
+      // Write the theme background value.
+      if (v == Visibility.Visible)
+      {
+        return "dark";
+      }
+      else
+      {
+        return "light";
+      }
     }
 
     public static void Show(UIElement e)
@@ -112,20 +134,56 @@ namespace MyWay
     *****************************************/
     public static class MapRoute
     {
+      // Публичная модель
       public class Model
       {
-        [JsonProperty("coordinates")]
-        public string[] Coordinates { get; set; }
-
-        [JsonProperty("stations")]
-        public List<Stations> Stations { get; set; }
+        public IList<string[]> Coordinates { get; set; }
+        public IList<_Models.Stations> Stations { get; set; }
       }
 
-      public class Stations
+      // Внутренние модели, нужная для преобразования Json'а в .NET объект
+      public class _Models
       {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string[] Coordinates { get; set; }
+        public class Main
+        {
+          [JsonProperty("features")]
+          public IList<Features> Features { get; set; }
+
+          [JsonProperty("stations")]
+          public IList<Stations> Stations { get; set; }
+        }
+
+        // Маршрут
+        public class Features
+        {
+          [JsonProperty("geometry")]
+          public Geometry Geometry { get; set; }
+        }
+
+        public class Geometry
+        {
+          [JsonProperty("geometries")]
+          public IList<Geometries> Geometries { get; set; }
+        }
+
+        public class Geometries
+        {
+          [JsonProperty("coordinates")]
+          public IList<string[]> Coordinates { get; set; }
+        }
+
+        // Остановки
+        public class Stations
+        {
+          [JsonProperty("id")]
+          public int Id { get; set; }
+
+          [JsonProperty("name")]
+          public string Name { get; set; }
+
+          [JsonProperty("coordinates")]
+          public string[] Coordinates { get; set; }
+        }
       }
 
       // Методы
@@ -145,6 +203,8 @@ namespace MyWay
             return null;
           }
 
+          Debug.WriteLine(id);
+
           HtmlDocument htmlDocument = new HtmlDocument();
           htmlDocument.LoadHtml(htmlPage);
           return htmlDocument;
@@ -155,7 +215,7 @@ namespace MyWay
 
       private async static Task<string> WriteAndGet(HtmlDocument html, int id)
       {
-        string json = Regex.Replace(html.DocumentNode.InnerText, "«|»", "\"");
+        string json = html.DocumentNode.InnerText;
 
         if (await Data.Folder.IsExists("Map") == false)
           await Data.Folder.Create("Map");
@@ -174,7 +234,21 @@ namespace MyWay
         else
           json = await Data.File.Read("Map/" + id + ".db");
 
-        return JsonConvert.DeserializeObject<Model>(json);
+        json = Regex.Replace(json, "[«»]", "\"");
+
+        Debug.WriteLine(json);
+
+        try
+        {
+          Debug.WriteLine(json);
+          _Models.Main _m = JsonConvert.DeserializeObject<_Models.Main>(json);
+          return new Model() { Coordinates = _m.Features[0].Geometry.Geometries[0].Coordinates, Stations = _m.Stations };
+        }
+        catch (Exception e)
+        {
+          Debug.WriteLine(e.Message);
+          return null;
+        }
       }
     }
   }

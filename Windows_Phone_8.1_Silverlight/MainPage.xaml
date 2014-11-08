@@ -1,4 +1,5 @@
-﻿<phone:PhoneApplicationPage xmlns:Controls="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps" 
+﻿<phone:PhoneApplicationPage
+  xmlns:Controls="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps" 
   x:Class="MyWay.MainPage"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -66,6 +67,23 @@
         </Setter.Value>
       </Setter>
     </Style>
+
+    <!-- ApplicationBars -->
+    <shell:ApplicationBar x:Name="ApplicationBar_Routes" IsVisible="True">
+      <shell:ApplicationBarIconButton IconUri="/Images/search.png" Text="поиск" Click="Element_Search_Box_Open"/>
+    </shell:ApplicationBar>
+
+    <shell:ApplicationBar x:Name="ApplicationBar_Stops" IsVisible="True">
+      <shell:ApplicationBarIconButton IconUri="/Images/search.png" Text="поиск" Click="Element_Search_Box_Open"/>
+      <shell:ApplicationBarIconButton IconUri="/Images/me.png" Text="близжайшая остановка" Click="Element_Search_Box_Open"/>
+    </shell:ApplicationBar>
+
+    <shell:ApplicationBar x:Name="ApplicationBar_Map" IsVisible="True">
+      <shell:ApplicationBarIconButton IconUri="/Images/search.png" Text="поиск" Click="Element_Search_Box_Open"/>
+      <shell:ApplicationBarIconButton IconUri="/Images/me.png" Text="я" Click="Element_Search_Box_Open"/>
+    </shell:ApplicationBar>
+
+    <shell:ApplicationBar x:Name="ApplicationBar_Hidden" IsVisible="False"></shell:ApplicationBar>
   </phone:PhoneApplicationPage.Resources>
 
   <!--LayoutRoot представляет корневую сетку, где размещается все содержимое страницы-->
@@ -123,7 +141,7 @@
           </Grid>
 
           <Grid x:Name="Routes_Search_Box_Container" Width="480" Height="80" Margin="-12,-1000,-12,0" Background="{StaticResource PhoneBackgroundBrush}">
-            <TextBox x:Name="Routes_Search_Box" TextChanged="Element_Search_Box_TextChanged" Height="80" FontSize="32" AcceptsReturn="False" InputScope="Time" Tap="Element_Search_Box_Tap" LostFocus="Element_Search_Box_LostFocus" />
+            <TextBox x:Name="Routes_Search_Box" TextChanged="Element_Search_Box_TextChanged" Height="80" FontSize="32" AcceptsReturn="False" InputScope="NameOrPhoneNumber" Tap="Element_Search_Box_Tap" LostFocus="Element_Search_Box_LostFocus" />
 
             <Grid.RenderTransform>
               <TranslateTransform x:Name="Routes_Search_Box_Transform" />
@@ -198,7 +216,7 @@
           </Grid>
 
           <Grid x:Name="Stops_Search_Box_Container" Width="480" Height="80" Margin="-12,-1000,-12,0" Background="{StaticResource PhoneBackgroundBrush}">
-            <TextBox x:Name="Stops_Search_Box" TextChanged="Element_Search_Box_TextChanged" Height="80" FontSize="32" AcceptsReturn="False" InputScope="Search" Tap="Element_Search_Box_Tap" LostFocus="Element_Search_Box_LostFocus" />
+            <TextBox x:Name="Stops_Search_Box" TextChanged="Element_Search_Box_TextChanged" Height="80" FontSize="32" AcceptsReturn="False" InputScope="NameOrPhoneNumber" Tap="Element_Search_Box_Tap" LostFocus="Element_Search_Box_LostFocus" />
 
             <Grid.RenderTransform>
               <TranslateTransform x:Name="Stops_Search_Box_Transform" />
@@ -219,16 +237,37 @@
 
       <phone:PivotItem Margin="14,10,10,18">
         <phone:PivotItem.Header>
-          <Grid Canvas.ZIndex="2">
+          <Grid>
             <TextBlock Text="карта" />
           </Grid>
         </phone:PivotItem.Header>
 
         <Grid>
-          <maps:Map x:Name="Map" CartographicMode="Road" Center="54.9917226936668,73.351555718109" ZoomLevel="12" Canvas.ZIndex="1" Canvas.Left="-15" Width="482" Margin="-14,0,-12,-93" />
+          <maps:Map x:Name="Map" CartographicMode="Road" LandmarksEnabled="False" Center="54.9856846220791,73.3648522663862" ZoomLevel="12" Canvas.ZIndex="1" Canvas.Left="-15" Width="482" Margin="-14,0,-12,-93" />
 
           <Grid x:Name="Map_Search_Box_Container" Width="480" Height="80" Margin="-12,-1000,-12,0" Background="{StaticResource PhoneBackgroundBrush}">
-            <TextBox x:Name="Map_Search_Box" TextChanged="Element_Search_Box_TextChanged" Height="80" FontSize="32" AcceptsReturn="False" InputScope="Search" Tap="Element_Search_Box_Tap" LostFocus="Element_Search_Box_LostFocus" />
+            <toolkit:AutoCompleteBox
+                x:Name="Map_Search_Box"
+                Height="80"
+                FontSize="32"
+                InputScope="NameOrPhoneNumber"
+                Tap="Element_Search_Box_Tap"
+                FilterMode="Contains"
+                ValueMemberPath="Title"
+                SelectionChanged="Map_Search_Box_SelectionChanged">
+              <toolkit:AutoCompleteBox.ItemTemplate>
+                <DataTemplate>
+                  <StackPanel Margin="0,7" Tag="{Binding Id}">
+                    <TextBlock Margin="8,0"
+                               Text="{Binding Title}" />
+                    <TextBlock FontSize="{StaticResource PhoneFontSizeNormal}"
+                               Foreground="{StaticResource PhoneSubtleBrush}"
+                               Margin="8,-6,8,2"
+                               Text="{Binding Desc}" />
+                  </StackPanel>
+                </DataTemplate>
+              </toolkit:AutoCompleteBox.ItemTemplate>
+            </toolkit:AutoCompleteBox>
 
             <Grid.RenderTransform>
               <TranslateTransform x:Name="Map_Search_Box_Transform" />

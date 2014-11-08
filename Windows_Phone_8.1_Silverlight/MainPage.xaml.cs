@@ -1,10 +1,14 @@
-﻿using Windows.Devices.Geolocation;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 using Microsoft.Phone.Controls;
+using Microsoft.Phone.Maps.Controls;
+using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Device.Location;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -14,12 +18,9 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Navigation;
-using System.Device.Location;
-using Microsoft.Phone.Maps.Controls;
-using System.Windows.Shapes;
-using System.Diagnostics;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using Windows.Devices.Geolocation;
 using Windows.System;
 
 namespace MyWay
@@ -33,16 +34,15 @@ namespace MyWay
     }
 
     // Загрузка данных для элементов ViewModel
-    protected override void OnNavigatedTo(NavigationEventArgs e)
+    protected async override void OnNavigatedTo(NavigationEventArgs e)
     {
-      if (!App.ViewModel.IsDataLoaded)
-      {
-        App.ViewModel.LoadData();
+      ApplicationBar = ApplicationBar_Routes;
 
-        Routes_Show();
-        Stops_Show();
-        Map_Init();
-      }
+      await Routes_Init();
+      await Map_Search_SetSource();
+
+      await Stops_Init();
+      await Map_Init();
     }
 
     // Нажатие на клавишу «Назад»
@@ -52,6 +52,7 @@ namespace MyWay
       Grid e2      = null;
       ListBox e3   = null;
       UIElement e4 = null;
+      string r     = null;
 
       switch (Pivot_Current)
       {
@@ -60,12 +61,14 @@ namespace MyWay
           e2 = Routes_Search_NoResults;
           e3 = Routes_Search_Result;
           e4 = Routes_Root;
+          r = "ApplicationBar_Routes";
           break;
         case "Stops":
           e1 = Stops_Search_Box;
           e2 = Stops_Search_NoResults;
           e3 = Stops_Search_Result;
           e4 = Stops_Root;
+          r = "ApplicationBar_Stops";
           break;
       }
 
@@ -81,11 +84,11 @@ namespace MyWay
           e3.Items.Clear();
           Util.Show(e4);
 
+          ApplicationBar = (ApplicationBar)Resources[r];
           ApplicationBar.IsVisible = true;
 
           e.Cancel = true;
         }
-
       }
       
       base.OnBackKeyPress(e);
@@ -93,65 +96,70 @@ namespace MyWay
 
     // Событие, вызываемое при прокрутке Pivot-ов
     private static string Pivot_Current = "Routes";
+    private static Color _StandartFontColor = Microsoft.Phone.Shell.SystemTray.ForegroundColor;
     private void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-      bool flag = true;
+      string resource = "ApplicationBar_Routes";
+      string color;
 
+      if (Util.GetThemeColor() == "dark")
+        color = "#99999999";
+      else
+        color = "#55555555";
+
+      Microsoft.Phone.Shell.SystemTray.BackgroundColor = ((SolidColorBrush)Application.Current.Resources["PhoneBackgroundBrush"]).Color;
+      Microsoft.Phone.Shell.SystemTray.ForegroundColor = Util.ConvertStringToColor(color);
       Pivot_About_Background_Animation(((SolidColorBrush)Application.Current.Resources["PhoneBackgroundBrush"]).Color, 250);
       Pivot_Title.Foreground = (SolidColorBrush)Application.Current.Resources["PhoneForegroundBrush"];
-      
-      Microsoft.Phone.Shell.SystemTray.BackgroundColor = ((SolidColorBrush)Application.Current.Resources["PhoneBackgroundBrush"]).Color;
 
       switch (((Pivot)sender).SelectedIndex)
       {
         case 0:
           Pivot_Current = "Routes";
 
+          resource = "ApplicationBar_Routes";
+
           if (Routes_Search_Box.Text != "" || Routes_Error.Visibility == System.Windows.Visibility.Visible)
-            flag = false;
-          else
-            flag = true;
+            resource = "ApplicationBar_Hidden";
 
           break;
         case 1:
           Pivot_Current = "Stops";
 
+          resource = "ApplicationBar_Stops";
+
           if (Stops_Search_Box.Text != "" || Stops_Error.Visibility == System.Windows.Visibility.Visible)
-            flag = false;
-          else
-            flag = true;
+            resource = "ApplicationBar_Hidden";
 
           break;
         case 2:
           Pivot_Current = "Map";
-          
-          flag = true;
+
+          resource = "ApplicationBar_Map";
 
           break;
         case 3:
           Pivot_Current = "Settings";
-          
-          flag = false;
+
+          resource = "ApplicationBar_Hidden";
           
           break;
         case 4:
           Pivot_Current = "About";
 
+          resource = "ApplicationBar_Hidden";
+
+          Microsoft.Phone.Shell.SystemTray.BackgroundColor = Util.ConvertStringToColor("#FF455580");
+          Microsoft.Phone.Shell.SystemTray.ForegroundColor = Util.ConvertStringToColor("#FFFFFFFF");
           Pivot_About_Background_Animation(Util.ConvertStringToColor("#FF455580"), 250);
           Pivot_Title.Foreground = new SolidColorBrush(Util.ConvertStringToColor("#FFFFFFFF"));
-          
-          Microsoft.Phone.Shell.SystemTray.BackgroundColor = Util.ConvertStringToColor("#FF455580");
-          
-          flag = false;
-
-          break;
-        default:
-          flag = true;
 
           break;
       }
 
-      ApplicationBar.IsVisible = flag;
+      ApplicationBar = (ApplicationBar)Resources[resource];
+      if (resource != "ApplicationBar_Hidden")
+        ApplicationBar.IsVisible = true;
     }
 
     /*****************************************
@@ -351,7 +359,7 @@ namespace MyWay
       }
     }
 
-    private async void Routes_Show()
+    private async Task Routes_Init()
     {
       string[] b = await IO.Get("Routes");
 
@@ -439,7 +447,7 @@ namespace MyWay
       }
     }
 
-    private async void Stops_Show()
+    private async Task Stops_Init()
     {
       string[] b = await IO.Get("Stops_List");
 
@@ -488,9 +496,18 @@ namespace MyWay
      Карта
     *****************************************/
 
-    private async void Map_Init()
+    private async Task Map_Init()
     {
-      try
+      //for (int i = 0; i <= a.Coordinates.Count - 1; i++)
+      //{
+      //  string[] b = a.Coordinates.ElementAt(i);
+
+      //  Debug.WriteLine(b[0] + ", " + b[1]);
+      //}
+      
+      //Debug.WriteLine(a.Count());
+
+      try // определение местоположения
       {
         GeoCoordinate currentPosition = await Map_GetCurrentPosition();
 
@@ -508,9 +525,101 @@ namespace MyWay
           Launcher.LaunchUriAsync(new Uri("ms-settings-location:"));
         }
       }
+    }
 
-      //Util.MapRoute.Model a = await Util.MapRoute.Get(1);
-      //Debug.WriteLine(a.Stations.Count.ToString());
+    public class Map_Search_Model
+    {
+      public string Title { get; set; }
+      public string Desc  { get; set; }
+      public int Id       { get; set; }
+    }
+
+    private void Map_Search_Box_SelectionChanged(object sender, SelectionChangedEventArgs e) // сделать Worker + try catch + карту на странице маршрута + на странице остановки + нажатие кнопки назад в карте + ОБЪЕДИНЕНИЕ В ПОИСКЕ ОСТАНОВОК И МАРШРУТОВ
+    {
+      if (e.AddedItems.Count <= 0) // ничего не найдено? валим.
+      {
+        return;
+      }
+
+      Map_Search_Box.Text += " — загрузка";
+      Map_Search_Box.IsEnabled = false;
+
+      Map_Search_Model m = (Map_Search_Model)e.AddedItems[0];
+      int id = m.Id;
+
+      // я разделил загрузку и UI, так как BackgroundWorker работает в «без интерфейсном» (no UI) режиме
+      BackgroundWorker worker = new BackgroundWorker();
+      worker.WorkerSupportsCancellation = true;
+      worker.DoWork += new DoWorkEventHandler(async (sender2, e2) => // грузим данные
+      {
+        e2.Result = await Util.MapRoute.Get(id);
+      });
+      worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler((sender2, e2) => // подставляем данные в UI
+      {
+        if (e2.Result == null) // не можем загрузить? не можем нормально распарсить? валим. (у меня, например, если нет денег, Билайн отдаёт html страницу и json.net умирает)
+        {
+          MessageBox.Show("Произошла ошибка при загрузке маршрута.\nМожет, нет подключения к сети?\n\nОшибка не пропадает? Очисти кэш (в настройках).", "Ошибка!", MessageBoxButton.OK);
+
+          Map_Search_Box.Text = "";
+          Map_Search_Box.IsEnabled = true;
+
+          worker.CancelAsync();
+          return;
+        }
+
+        Util.MapRoute.Model data = (Util.MapRoute.Model)e2.Result;
+
+        Debug.WriteLine("Гружу айди " + id);
+
+        // Рисуем линию
+        MapPolyline line = new MapPolyline();
+        line.StrokeColor = Util.ConvertStringToColor("#FF455580");
+        line.StrokeThickness = 7;
+
+        for (int i = 0; i <= data.Coordinates.Count - 1; i++)
+        {
+          string[] b = data.Coordinates[i];
+
+          line.Path.Add(new GeoCoordinate() { Longitude = Util.StringToDouble(b[0]), Latitude = Util.StringToDouble(b[1]) });
+        }
+
+        Map.MapElements.Add(line);
+
+        Map_Search_Box.Text = "";
+        Map_Search_Box.IsEnabled = true;
+      });
+
+      worker.RunWorkerAsync();
+    }
+
+    public async Task Map_Search_SetSource()
+    {
+      string[] b = await IO.Get("Routes");
+
+      if (b != null)
+      {
+        List<Map_Search_Model> list = new List<Map_Search_Model>();
+
+        foreach (string a in b)
+        {
+          try
+          {
+            string[] line = a.Split(new Char[] { '|' });
+
+            string number = Util.TypographString(line[0]);
+            string type = Util.TypographString(line[1]);
+            string desc = Util.TypographString(line[2]);
+            int id = Int32.Parse(line[3].Split(new Char[] { '/' }).Last());
+
+            list.Add(new Map_Search_Model() { Title = line[0] + " " + line[1], Desc = line[2], Id = id });
+          }
+          catch { }
+        }
+
+        Map_Search_Box.ItemsSource = list;
+      }
+      else
+        MessageBox.Show("Маршруты ещё не загрузились, подожди пожалуйста.");
     }
 
     private void Map_DrawImageOnCurrentPosition(GeoCoordinate coordinate)
@@ -621,7 +730,7 @@ namespace MyWay
 
       emailComposeTask.To = "upisfree@outlook.com";
       emailComposeTask.Subject = "fromapp@myway";
-      emailComposeTask.Body = "Можно удалить фразу про то, с какого устройства было отправлено письмо. Я попробую угадать.";
+      emailComposeTask.Body = "Можно удалить фразу про то, с какого устройства было отправлено письмо, если есть. Я попробую угадать.";
 
       emailComposeTask.Show();
     }
@@ -641,7 +750,7 @@ namespace MyWay
 
     private class Element_Search
     {
-      private async static Task<string> GetData() // сделать необязательный парамерт, дабы не зависить от номера пивота (ты понял)
+      private async static Task<string> GetData() // сделать необязательный парамерт, дабы не зависить от номера пивота (ты понял (нет)) — для истории оставлю
       {
         string way = null;
 
@@ -668,6 +777,10 @@ namespace MyWay
       public async static Task<Array> GetEqualData(string query)
       {
         string data = await GetData();
+
+        if (data == null)
+          MessageBox.Show("Загрузка ещё не закончилась, подожди пожалуйста.");
+
         string[] b = data.Split(new Char[] { '\n' });
         List<string[]> list = new List<string[]>();
 
@@ -797,23 +910,32 @@ namespace MyWay
      Единые колбэки (TODO: этот коммент надо переименовать)
     *****************************************/
 
-    private void Element_Error_Button_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+    private async void Element_Error_Button_Tap(object sender, System.Windows.Input.GestureEventArgs e)
     {
       switch (Pivot_Current)
       {
         case "Routes":
-          Routes_Show();
+          await Routes_Init();
           break;
         case "Stops":
-          Stops_Show();
+          await Stops_Init();
           break;
       }
     }
 
     private void Element_Search_Box_Open(object sender, EventArgs e)
     {
+      if (Pivot_Current == "Map") // так вышло. «Невозможно преобразовать AutoCompleteBox в TextBox»
+      {
+        if (Map_Search_Box.Text == "")
+          Element_Search_Box_Animation(0, 125, 0.5, 0.5, EasingMode.EaseOut);
+
+        Map_Search_Box.Focus(); // что за херня? какого чёрта?
+
+        return;
+      }
+
       TextBox e1 = null;
-      int a = 70;
 
       switch (Pivot_Current)
       {
@@ -823,19 +945,14 @@ namespace MyWay
         case "Stops":
           e1 = Stops_Search_Box;
           break;
-        case "Map":
-          e1 = Map_Search_Box;
-          a = 125;
-          break;
       }
 
       if (e1.Text == "")
-        Element_Search_Box_Animation(0, a, 0.5, 0.5, EasingMode.EaseOut);
+        Element_Search_Box_Animation(0, 70, 0.5, 0.5, EasingMode.EaseOut);
 
       e1.Focus();
 
-      if (Pivot_Current != "Map")
-        ApplicationBar.IsVisible = false;
+      ApplicationBar.IsVisible = false;
     }
 
     private void Element_Search_Box_Tap(object sender, RoutedEventArgs e)
@@ -863,8 +980,17 @@ namespace MyWay
 
     private async void Element_Search_Box_LostFocus(object sender, RoutedEventArgs e)
     {
+      //if (Pivot_Current == "Map") // см. коммент в Element_Search_Box_Open
+      //{
+      //  if (Map_Search_Box.Text == "")
+      //    Element_Search_Box_Animation(125, 0, 0.5, 0.25, EasingMode.EaseIn);
+      //  else
+      //    Element_Search_Box_Animation(130, 125, 0.5, 1, EasingMode.EaseOut);
+
+      //  return;
+      //}
+
       TextBox e1 = null;
-      int a = 70;
 
       switch (Pivot_Current)
       {
@@ -874,20 +1000,16 @@ namespace MyWay
         case "Stops":
           e1 = Stops_Search_Box;
           break;
-        case "Map":
-          e1 = Map_Search_Box;
-          a = 125;
-          break;
       }
 
       if (e1.Text == "")
       {
-        Element_Search_Box_Animation(a, 0, 0.5, 0.25, EasingMode.EaseIn);
+        Element_Search_Box_Animation(70, 0, 0.5, 0.25, EasingMode.EaseIn);
         await Task.Delay(400);
         ApplicationBar.IsVisible = true;
       }
       else
-        Element_Search_Box_Animation(a + 5, a, 0.5, 1, EasingMode.EaseOut);
+        Element_Search_Box_Animation(75, 70, 0.5, 1, EasingMode.EaseOut);
     }
 
     /*****************************************
@@ -914,7 +1036,7 @@ namespace MyWay
         da.EasingFunction = b;
       }
 
-      System.Windows.Media.TranslateTransform t = null;
+      TranslateTransform t = null;
 
       switch (Pivot_Current)
       {

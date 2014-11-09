@@ -38,10 +38,12 @@ namespace MyWay
     {
       ApplicationBar = ApplicationBar_Routes;
 
-      await Routes_Init();
+      Favourite_Init();
+
+      Routes_Init();
       await Map_Search_SetSource();
 
-      await Stops_Init();
+      Stops_Init();
       await Map_Init();
     }
 
@@ -155,6 +157,12 @@ namespace MyWay
           Pivot_Title.Foreground = new SolidColorBrush(Util.ConvertStringToColor("#FFFFFFFF"));
 
           break;
+        case 5:
+          Pivot_Current = "Favourite";
+
+          resource = "ApplicationBar_Hidden";
+
+          break;
       }
 
       ApplicationBar = (ApplicationBar)Resources[resource];
@@ -223,7 +231,7 @@ namespace MyWay
               string number = b[0].InnerText.Trim();
               string type = b[1].InnerText.Trim();
               string desc = b[2].InnerText.Trim();
-              string toStop = a.Attributes["href"].Value + "|" + number + " " + type;
+              string toStop = a.Attributes["href"].Value + "|" + number + " " + type + "|" + desc;
 
               string c = number + "|" + type + "|" + desc + "|" + a.Attributes["href"].Value;
 
@@ -293,7 +301,7 @@ namespace MyWay
                 string name = line[3];
                 string link = "http://t.bus55.ru/index.php/app/get_dir/" + line[0];
 
-                Stops.Model_List i = new Stops.Model_List() { Name = name, Link = link };
+                Stops.Model_List i = new Stops.Model_List() { Name = name, Link = link, All = name + "|" + link };
 
                 if (!f.Contains(i, mc))
                 {
@@ -341,7 +349,7 @@ namespace MyWay
      Маршруты
     *****************************************/
 
-    private class Routes
+    public class Routes
     {
       public class Model
       {
@@ -359,46 +367,61 @@ namespace MyWay
       }
     }
 
-    private async Task Routes_Init()
+    private string[] _routesList = null;
+    private void Routes_Init()
     {
-      string[] b = await IO.Get("Routes");
-
-      if (b != null)
+      BackgroundWorker worker = new BackgroundWorker();
+      worker.WorkerSupportsCancellation = false;
+      worker.DoWork += new DoWorkEventHandler(async (sender, e) =>
       {
-        Util.Hide(Routes_Error);
+        _routesList = await IO.Get("Routes");
+      });
 
-        List<Routes.Model> RoutesList = new List<Routes.Model>();
+      worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler((sender, e) =>
+      {
+        string[] b = _routesList;
 
-        foreach (string a in b)
+        if (b != null)
         {
-          try
+          Util.Hide(Routes_Error);
+
+          List<Routes.Model> RoutesList = new List<Routes.Model>();
+
+          foreach (string a in b)
           {
-            string[] line = a.Split(new Char[] { '|' });
+            try
+            {
+              string[] line = a.Split(new Char[] { '|' });
 
-            string number = Util.TypographString(line[0]);
-            string type   = Util.TypographString(line[1]);
-            string desc   = Util.TypographString(line[2]);
-            string toStop = Util.TypographString(line[3] + "|" + number + " " + type);
+              string number = Util.TypographString(line[0]);
+              string type   = Util.TypographString(line[1]);
+              string desc   = Util.TypographString(line[2]);
+              string toStop = Util.TypographString(line[3] + "|" + number + " " + type + "|" + desc);
 
-            RoutesList.Add(new Routes.Model() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
+              RoutesList.Add(new Routes.Model() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
+            }
+            catch { }
           }
-          catch { }
+
+          var groupedRoutesList =
+                from list in RoutesList
+                group list by list.Number[0] into listByGroup
+                select new Routes.KeyedList<char, Routes.Model>(listByGroup);
+
+          Util.Hide(Routes_Load);
+
+          Routes_Root.ItemsSource = new List<Routes.KeyedList<char, Routes.Model>>(groupedRoutesList);
         }
+        else
+        {
+          Util.Show(Routes_Error);
+          Util.Hide(Routes_Load);
 
-        var groupedRoutesList =
-              from list in RoutesList
-              group list by list.Number[0] into listByGroup
-              select new Routes.KeyedList<char, Routes.Model>(listByGroup);
+          Routes_Init();
+        }
+      });
 
-        Util.Hide(Routes_Load);
-
-        Routes_Root.ItemsSource = new List<Routes.KeyedList<char, Routes.Model>>(groupedRoutesList);
-      }
-      else
-      {
-        Util.Show(Routes_Error);
-        Util.Hide(Routes_Load);
-      }
+      worker.RunWorkerAsync();
     }
 
     private void Route_GoToStops(object sender, System.Windows.Input.GestureEventArgs e)
@@ -431,6 +454,7 @@ namespace MyWay
       {
         public string Name { get; set; }
         public string Link { get; set; }
+        public string All  { get; set; }
       }
 
       public class Model_List_Comparer : IEqualityComparer<Model_List>
@@ -447,39 +471,54 @@ namespace MyWay
       }
     }
 
-    private async Task Stops_Init()
+    private string[] _stopsList = null;
+    private void Stops_Init()
     {
-      string[] b = await IO.Get("Stops_List");
-
-      if (b != null)
+      BackgroundWorker worker = new BackgroundWorker();
+      worker.WorkerSupportsCancellation = false;
+      worker.DoWork += new DoWorkEventHandler(async (sender, e) =>
       {
-        Util.Hide(Stops_Error);
+        _stopsList = await IO.Get("Stops_List");
+      });
 
-        List<Stops.Model_List> StopsList = new List<Stops.Model_List>();
+      worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler((sender, e) =>
+      {
+        string[] b = _stopsList;
 
-        foreach (string a in b)
+        if (b != null)
         {
-          try
+          Util.Hide(Stops_Error);
+
+          List<Stops.Model_List> StopsList = new List<Stops.Model_List>();
+
+          foreach (string a in b)
           {
-            string[] line = a.Split(new Char[] { '|' });
+            try
+            {
+              string[] line = a.Split(new Char[] { '|' });
 
-            string name = Util.TypographString(line[0]);
-            string link = Util.TypographString(line[1]);
+              string name = Util.TypographString(line[0]);
+              string link = Util.TypographString(line[1]);
 
-            StopsList.Add(new Stops.Model_List() { Name = name, Link = link });
+              StopsList.Add(new Stops.Model_List() { Name = name, Link = link, All = name + "|" + link });
+            }
+            catch { }
           }
-          catch { }
+
+          Util.Hide(Stops_Load);
+
+          Stops_Root.ItemsSource = StopsList;
         }
+        else
+        {
+          Util.Show(Stops_Error);
+          Util.Hide(Stops_Load);
 
-        Util.Hide(Stops_Load);
+          Stops_Init();
+        }
+      });
 
-        Stops_Root.ItemsSource = StopsList;
-      }
-      else
-      {
-        Util.Show(Stops_Error);
-        Util.Hide(Stops_Load);
-      }
+      worker.RunWorkerAsync();
     }
 
     private void Stop_Open(object sender, EventArgs e)
@@ -498,15 +537,6 @@ namespace MyWay
 
     private async Task Map_Init()
     {
-      //for (int i = 0; i <= a.Coordinates.Count - 1; i++)
-      //{
-      //  string[] b = a.Coordinates.ElementAt(i);
-
-      //  Debug.WriteLine(b[0] + ", " + b[1]);
-      //}
-      
-      //Debug.WriteLine(a.Count());
-
       try // определение местоположения
       {
         GeoCoordinate currentPosition = await Map_GetCurrentPosition();
@@ -745,6 +775,90 @@ namespace MyWay
     }
 
     /*****************************************
+     Избранное
+    *****************************************/
+
+    private void Favourite_Init()
+    {
+      // Вставляю картинку в зависимости от цвета темы
+      BitmapImage _bi = new BitmapImage();
+
+      if (Util.GetThemeColor() == "dark")
+        _bi.UriSource = new Uri("/Images/favs.png", UriKind.Relative);
+      else
+        _bi.UriSource = new Uri("/Images/favs.dark.png", UriKind.Relative);
+
+      Favourite_Image.Source = _bi;
+    }
+
+    public class Favourite_Model
+    {
+      public List<Routes.Model> Routes { get; set; }
+      public List<Stops.Model_List> Stops { get; set; }
+    }
+
+    private async Task<Favourite_Model> Favourite_ReadFile() // исключение в очищении кэша
+    {
+      if (Data.File.IsExists("favourite.json") == false)
+        return null;
+
+      string json = await Data.File.Read("favourite.json");
+
+      Debug.WriteLine(json);
+
+      return JsonConvert.DeserializeObject<Favourite_Model>(json);
+    }
+
+    private async Task Favourite_WriteToFile(string str, string mode)
+    {
+      Favourite_Model data = await Favourite_ReadFile();
+
+      if (data == null)
+        data = new Favourite_Model() { Routes = new List<Routes.Model>(), Stops = new List<Stops.Model_List>() }; /////////// переписать всё (маршруты, остановки, страницы) при помощи BackgroundWorker + дописать избранное + отладить и доделать карту
+
+      switch (mode)
+      {
+        case "Route":
+          string[] a = str.Split(new Char[] { '|' });
+          string[] b = a[1].Split(new Char[] { ' ' });
+          string c = b[1];
+
+          if (b.Length == 3)
+            c += " " + b[2];
+
+          Debug.WriteLine(c);
+
+          Routes.Model model = new Routes.Model() { Number = b[0], Type = c, Desc = a[2], ToStop = str };
+          data.Routes.Add(model);
+          break;
+        case "Stop":
+          string[] a2 = str.Split(new Char[] { '|' });
+
+          Stops.Model_List model2 = new Stops.Model_List() { Name = a2[0], Link = a2[1], All = str };
+          data.Stops.Add(model2);
+          break;
+      }
+
+      await Data.File.Write("favourite.json", JsonConvert.SerializeObject(data), false, false);
+    }
+
+    private async void Favourite_ContextMenu_Add_Route(object sender, System.Windows.Input.GestureEventArgs e)
+    {
+      string str = ((MenuItem)sender).Tag.ToString();
+      MessageBox.Show(str);
+
+      await Favourite_WriteToFile(str, "Route");
+    }
+
+    private async void Favourite_ContextMenu_Add_Stop(object sender, System.Windows.Input.GestureEventArgs e)
+    {
+      string str = ((MenuItem)sender).Tag.ToString();
+      MessageBox.Show(str);
+
+      await Favourite_WriteToFile(str, "Stop");
+    }
+
+    /*****************************************
      Поиск
     *****************************************/
 
@@ -871,7 +985,7 @@ namespace MyWay
                   string number = a[0];
                   string type = " " + a[1];
                   string desc = a[2];
-                  string toStop = a[3] + "|" + number + " " + type;
+                  string toStop = a[3] + "|" + number + " " + type + "|" + desc;
 
                   e1.Items.Add(new Routes.Model() { Number = number, Type = type, Desc = desc, ToStop = toStop });
 
@@ -880,7 +994,7 @@ namespace MyWay
                   string name = a[0];
                   string link = a[1];
 
-                  e1.Items.Add(new Stops.Model_List() { Name = name, Link = link });
+                  e1.Items.Add(new Stops.Model_List() { Name = name, Link = link , All = name + "|" + link });
 
                   break;
               }
@@ -910,15 +1024,21 @@ namespace MyWay
      Единые колбэки (TODO: этот коммент надо переименовать)
     *****************************************/
 
-    private async void Element_Error_Button_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+    private void Element_Error_Button_Tap(object sender, System.Windows.Input.GestureEventArgs e)
     {
       switch (Pivot_Current)
       {
         case "Routes":
-          await Routes_Init();
+          Util.Hide(Routes_Error);
+          Util.Show(Routes_Load);
+
+          Routes_Init();
           break;
         case "Stops":
-          await Stops_Init();
+          Util.Hide(Stops_Error);
+          Util.Show(Stops_Load);
+          
+          Stops_Init();
           break;
       }
     }
@@ -1061,6 +1181,11 @@ namespace MyWay
       ca.Duration = TimeSpan.FromMilliseconds(time);
 
       Util.ColorAnimation(LayoutRoot, new PropertyPath("(Panel.Background).(SolidColorBrush.Color)"), ca);
+    }
+
+    private async void Grid_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+    {
+      await Favourite_ReadFile();
     }
   }
 }

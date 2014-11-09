@@ -21,6 +21,12 @@
     <!-- Шаблон маршрута в списке маршрутов -->
     <DataTemplate x:Key="RoutesItemTemplate">
       <Grid Tag="{Binding ToStop}" Tap="Route_GoToStops" toolkit:TiltEffect.IsTiltEnabled="True" Margin="0,-7.5,0,5">
+        <toolkit:ContextMenuService.ContextMenu>
+          <toolkit:ContextMenu IsZoomEnabled="True">
+            <toolkit:MenuItem Header="добавить в избранное" Tap="Favourite_ContextMenu_Add_Route" Tag="{Binding ToStop}" /> <!-- Ай, хитрюга! -->
+          </toolkit:ContextMenu>
+        </toolkit:ContextMenuService.ContextMenu>
+
         <TextBlock FontFamily="{StaticResource PhoneFontFamilySemiLight}" Foreground="{StaticResource PhoneForegroundBrush}" Margin="0,-8,0,0" Height="91" VerticalAlignment="Top" toolkit:SlideInEffect.LineIndex="1">
           <Run Text="{Binding Number}" FontSize="64" />
           <Run Text="{Binding Type}" FontSize="42" />
@@ -149,7 +155,7 @@
           </Grid>
 
           <Grid x:Name="Routes_Load" Visibility="Visible">
-            <ProgressBar Visibility="Visible" IsIndeterminate="True" Foreground="#FF455580" />
+            <TextBlock Text="Загрузка..." Foreground="{StaticResource PhoneSubtleBrush}" FontSize="36" FontFamily="Segoe WP SemiLight" Margin="15,-20,-15,20" />
           </Grid>
 
           <Grid x:Name="Routes_Error" Visibility="Collapsed" Margin="0,-118,0,0">
@@ -175,7 +181,13 @@
                            FontSize="36"
                            Foreground="{StaticResource PhoneForegroundBrush}"
                            toolkit:TiltEffect.IsTiltEnabled="True"
-                           toolkit:SlideInEffect.LineIndex="1" />
+                           toolkit:SlideInEffect.LineIndex="1">
+                   <toolkit:ContextMenuService.ContextMenu>
+                    <toolkit:ContextMenu IsZoomEnabled="True">
+                      <toolkit:MenuItem Header="добавить в избранное" Tap="Favourite_ContextMenu_Add_Stop" Tag="{Binding All}" /> <!-- Ай, хитрюга! -->
+                    </toolkit:ContextMenu>
+                  </toolkit:ContextMenuService.ContextMenu>
+                </TextBlock>
               </DataTemplate>
             </ListBox.ItemTemplate>
 
@@ -224,7 +236,7 @@
           </Grid>
 
           <Grid x:Name="Stops_Load" Visibility="Visible">
-            <ProgressBar Visibility="Visible" IsIndeterminate="True" Foreground="#FF455580" />
+            <TextBlock Text="Загрузка..." Foreground="{StaticResource PhoneSubtleBrush}" FontSize="36" FontFamily="Segoe WP SemiLight" Margin="15,-20,-15,20" />
           </Grid>
 
           <Grid x:Name="Stops_Error" Visibility="Collapsed" Margin="0,-118,0,0">
@@ -343,6 +355,71 @@
               </Grid>
             </ListBoxItem>
           </ListBox>
+        </Grid>
+      </phone:PivotItem>
+
+      <phone:PivotItem Header="избранное">
+        <Grid Tap="Grid_Tap">
+          <Grid>
+            <TextBlock Text="Пустоватенько" Margin="10,100,0,417" TextAlignment="Center" VerticalAlignment="Center" FontSize="52" HorizontalAlignment="Center" Width="446"/>
+            <TextBlock Foreground="{StaticResource PhoneSubtleBrush}" Text="Тут должны быть маршруты и остановки, которые ты используешь чаще всего" TextAlignment="Center" TextWrapping="Wrap" Margin="38,174,38,-174" HorizontalAlignment="Center"></TextBlock>
+
+            <TextBlock Text="А как добавить?" TextAlignment="Center" Margin="107,280,106,261" HorizontalAlignment="Center" VerticalAlignment="Center" Width="243" FontSize="26" FontFamily="Segoe WP SemiLight"/>
+            <Image x:Name="Favourite_Image" HorizontalAlignment="Left" Height="100" Margin="178,345,0,0" VerticalAlignment="Top" Source="/Images/favs.png" Width="100"/>
+
+            <TextBlock Text="Зажать маршрут или остановку и выбрать «добавить в избранное»" TextWrapping="Wrap" TextAlignment="Right" FontSize="20" Margin="10,333,278,10" FontFamily="Segoe UI"/>
+            <TextBlock Text="Нажать на кнопку со звёздочкой на странице маршрута или остановки" TextWrapping="Wrap" TextAlignment="Left" FontSize="20" Margin="278,333,10,10" FontFamily="Segoe UI"/>
+          </Grid>
+
+          <Grid Visibility="Collapsed">
+            <ListBox x:Name="Favourive_Routes" Visibility="Collapsed" Margin="15,-16,-12,0" Grid.RowSpan="3" toolkit:SlideInEffect.LineIndex="1">
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <Grid Tag="{Binding ToStop}" Tap="Route_GoToStops" toolkit:TiltEffect.IsTiltEnabled="True">
+                    <TextBlock FontFamily="{StaticResource PhoneFontFamilySemiLight}" Margin="0,-8,0,0" Height="91" VerticalAlignment="Top" toolkit:SlideInEffect.LineIndex="1">
+                        <Run Text="{Binding Number}" FontSize="64" Foreground="{StaticResource PhoneForegroundBrush}" />
+                        <Run Text="{Binding Type}" FontSize="42" Foreground="{StaticResource PhoneForegroundBrush}" />
+                    </TextBlock>
+
+                    <TextBlock Text="{Binding Desc}" FontSize="24" Foreground="{StaticResource PhoneSubtleBrush}" Margin="0,73,0,-1" toolkit:SlideInEffect.LineIndex="2" />
+                  </Grid>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+
+              <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                  <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                  <Setter Property="IsHitTestVisible" Value="True" />
+                  <Setter Property="Margin" Value="0,-10,0,10" />
+                </Style>
+              </ListBox.ItemContainerStyle>
+            </ListBox>
+
+            <ListBox  x:Name="Favourive_Stops" Visibility="Collapsed" Margin="15,-16,15,0">
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Name}"
+                             Tag="{Binding Link}"
+                             Tap="Stop_Open"
+                             Width="436"
+                             Height="55"
+                             Margin="0,0,0,10"
+                             FontFamily="Segoe WP SemiLight"
+                             FontSize="36"
+                             Foreground="{StaticResource PhoneForegroundBrush}"
+                             toolkit:TiltEffect.IsTiltEnabled="True"
+                             toolkit:SlideInEffect.LineIndex="1" />
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+
+              <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                  <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+              </ListBox.ItemContainerStyle>
+            </ListBox>
+          </Grid>
+
         </Grid>
       </phone:PivotItem>
     </phone:Pivot>

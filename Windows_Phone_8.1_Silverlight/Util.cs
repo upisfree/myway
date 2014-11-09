@@ -236,8 +236,6 @@ namespace MyWay
 
         json = Regex.Replace(json, "[«»]", "\"");
 
-        Debug.WriteLine(json);
-
         try
         {
           Debug.WriteLine(json);

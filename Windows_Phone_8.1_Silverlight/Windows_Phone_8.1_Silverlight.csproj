@@ -194,6 +194,7 @@
     <Content Include="Images\close.png" />
     <Content Include="Images\delete.png" />
     <Content Include="Images\favs.addto.png" />
+    <Content Include="Images\favs.dark.png" />
     <Content Include="Images\favs.png" />
     <Content Include="Images\me.png" />
     <Content Include="Images\search.png" />

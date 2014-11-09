@@ -53,7 +53,7 @@
       </ListBox>
 
       <Grid x:Name="Directions_Load" Visibility="Visible">
-        <ProgressBar Visibility="Visible" IsIndeterminate="True" Foreground="#FF455580" />
+        <TextBlock Text="Загрузка..." Foreground="{StaticResource PhoneSubtleBrush}" FontSize="36" FontFamily="Segoe WP SemiLight" Margin="13,-25,10,181" />
       </Grid>
 
       <Grid x:Name="Directions_Error" Visibility="Collapsed" Margin="0,-118,0,0">

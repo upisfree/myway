@@ -164,6 +164,9 @@ namespace MyWay
 
     private async void Directions_ShowAgain(object sender, System.Windows.Input.GestureEventArgs e)
     {
+      Util.Show(Directions_Load);
+      Util.Hide(Directions_Error);
+
       await Directions_Show(Directions_Root.Tag.ToString());
     }
 

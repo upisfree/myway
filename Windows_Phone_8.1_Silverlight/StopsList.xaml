@@ -71,7 +71,7 @@
     </phone:Pivot>
 
     <Grid x:Name="Load" Visibility="Visible">
-      <ProgressBar Visibility="Visible" IsIndeterminate="True" Foreground="#FF455580" />
+      <TextBlock Text="Загрузка..." Foreground="{StaticResource PhoneSubtleBrush}" FontSize="36" FontFamily="Segoe WP SemiLight" Margin="23,142,0,39" />
     </Grid>
 
     <Grid x:Name="Error" Visibility="Collapsed" Margin="0,70,0,0">

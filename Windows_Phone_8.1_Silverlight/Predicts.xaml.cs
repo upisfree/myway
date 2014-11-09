@@ -94,6 +94,9 @@ namespace MyWay
     {
       Predicts.Items.Clear();
 
+      Util.Show(Load);
+      Util.Hide(Error);
+
       ShowPredicts(Predicts.Tag.ToString());
     }
 

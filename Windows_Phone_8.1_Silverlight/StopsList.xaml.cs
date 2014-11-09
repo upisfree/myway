@@ -202,6 +202,9 @@ namespace MyWay
       string a = tag[0];
       string b = tag[1];
 
+      Util.Show(Load);
+      Util.Hide(Error);
+
       ShowStopsOnline(a, b);
     }
 

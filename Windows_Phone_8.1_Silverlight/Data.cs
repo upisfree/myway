@@ -16,7 +16,7 @@ namespace MyWay
 
     public class File
     {
-      public static async Task Write(string path, string text, bool isTypography = true)
+      public static async Task Write(string path, string text, bool isTypography = true, bool needNewLine = true)
       {
         path = Regex.Replace(path, "/", "\\");
 
@@ -27,7 +27,10 @@ namespace MyWay
           text = Util.TypographString(text);
         }
 
-        await FileIO.AppendTextAsync(file, text + "\n");
+        if (needNewLine)
+          text += "\n";
+
+        await FileIO.AppendTextAsync(file, text);
       }
 
       public static async Task<string> Read(string path)

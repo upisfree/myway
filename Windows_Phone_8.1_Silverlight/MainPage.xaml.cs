@@ -564,7 +564,7 @@ namespace MyWay
       public int Id       { get; set; }
     }
 
-    private void Map_Search_Box_SelectionChanged(object sender, SelectionChangedEventArgs e) // сделать Worker + try catch + карту на странице маршрута + на странице остановки + нажатие кнопки назад в карте + ОБЪЕДИНЕНИЕ В ПОИСКЕ ОСТАНОВОК И МАРШРУТОВ
+    private void Map_Search_Box_SelectionChanged(object sender, SelectionChangedEventArgs e) // карту на странице маршрута + на странице остановки + нажатие кнопки назад в карте + ОБЪЕДИНЕНИЕ В ПОИСКЕ ОСТАНОВОК И МАРШРУТОВ
     {
       if (e.AddedItems.Count <= 0) // ничего не найдено? валим.
       {
@@ -703,7 +703,7 @@ namespace MyWay
     {
       await Data.Clear();
 
-      MessageBox.Show("Удаление прошло успешно", "Кэш очищен", MessageBoxButton.OK);
+      MessageBox.Show("Всё прошло хорошо.", "Кэш очищен", MessageBoxButton.OK);
     }
 
     /*****************************************
@@ -778,7 +778,7 @@ namespace MyWay
      Избранное
     *****************************************/
 
-    private void Favourite_Init()
+    private async Task Favourite_Init()
     {
       // Вставляю картинку в зависимости от цвета темы
       BitmapImage _bi = new BitmapImage();
@@ -789,6 +789,25 @@ namespace MyWay
         _bi.UriSource = new Uri("/Images/favs.dark.png", UriKind.Relative);
 
       Favourite_Image.Source = _bi;
+
+      Debug.WriteLine("gytyftfjtftfhffyffkhfkhgfhjgfjhfjyhf");
+
+      // Инициализация, собственно
+      Favourite_Model data = await Favourite_ReadFile();
+
+      if (data == null)
+      {
+        Util.Hide(Favourite_Items);
+        Util.Show(Favourite_NoItems);
+
+        return;
+      }
+
+      Favourive_Routes.ItemsSource = data.Routes;
+      Favourive_Stops.ItemsSource  = data.Stops;
+
+      Util.Hide(Favourite_NoItems);
+      Util.Show(Favourite_Items);
     }
 
     public class Favourite_Model
@@ -814,7 +833,7 @@ namespace MyWay
       Favourite_Model data = await Favourite_ReadFile();
 
       if (data == null)
-        data = new Favourite_Model() { Routes = new List<Routes.Model>(), Stops = new List<Stops.Model_List>() }; /////////// переписать всё (маршруты, остановки, страницы) при помощи BackgroundWorker + дописать избранное + отладить и доделать карту
+        data = new Favourite_Model() { Routes = new List<Routes.Model>(), Stops = new List<Stops.Model_List>() }; /////////// дописать избранное + отладить и доделать карту
 
       switch (mode)
       {
@@ -839,23 +858,43 @@ namespace MyWay
           break;
       }
 
-      await Data.File.Write("favourite.json", JsonConvert.SerializeObject(data), false, false);
+      Debug.WriteLine(data);
+
+      await Data.File.WriteJson("favourite.json", JsonConvert.SerializeObject(data));
     }
 
-    private async void Favourite_ContextMenu_Add_Route(object sender, System.Windows.Input.GestureEventArgs e)
+    private async void Favourite_ContextMenu_Add_Route(object sender, RoutedEventArgs e)
     {
       string str = ((MenuItem)sender).Tag.ToString();
       MessageBox.Show(str);
 
+
+      Debug.WriteLine(str);
+      
+      
       await Favourite_WriteToFile(str, "Route");
+
+      await Favourite_Init();
     }
 
-    private async void Favourite_ContextMenu_Add_Stop(object sender, System.Windows.Input.GestureEventArgs e)
+    private async void Favourite_ContextMenu_Add_Stop(object sender, RoutedEventArgs e)
     {
       string str = ((MenuItem)sender).Tag.ToString();
       MessageBox.Show(str);
 
       await Favourite_WriteToFile(str, "Stop");
+
+      await Favourite_Init();
+    }
+
+    private async void Favourite_Clear(object sender, System.Windows.Input.GestureEventArgs e)
+    {
+      await Data.File.Delete("favourite.json");
+
+      Util.Hide(Favourite_Items);
+      Util.Show(Favourite_NoItems);
+
+      MessageBox.Show("Всё прошло хорошо.", "Избранное очищено", MessageBoxButton.OK);
     }
 
     /*****************************************
@@ -1181,11 +1220,6 @@ namespace MyWay
       ca.Duration = TimeSpan.FromMilliseconds(time);
 
       Util.ColorAnimation(LayoutRoot, new PropertyPath("(Panel.Background).(SolidColorBrush.Color)"), ca);
-    }
-
-    private async void Grid_Tap(object sender, System.Windows.Input.GestureEventArgs e)
-    {
-      await Favourite_ReadFile();
     }
   }
 }

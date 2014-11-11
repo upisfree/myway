@@ -26,11 +26,8 @@ namespace MyWay
         {
           text = Util.TypographString(text);
         }
-
-        if (needNewLine)
-          text += "\n";
-
-        await FileIO.AppendTextAsync(file, text);
+        
+        await FileIO.AppendTextAsync(file, text += "\n");
       }
 
       public static async Task<string> Read(string path)
@@ -66,6 +63,15 @@ namespace MyWay
 
         return System.IO.File.Exists(path);
       }
+
+      public static async Task WriteJson(string path, string text)
+      {
+        path = Regex.Replace(path, "/", "\\");
+
+        StorageFile file = await storage.CreateFileAsync(path, CreationCollisionOption.OpenIfExists);
+        
+        await FileIO.WriteTextAsync(file, text);
+      }
     }
 
     public class Folder
@@ -100,8 +106,9 @@ namespace MyWay
       var folders = await storage.GetFoldersAsync();
 
       foreach (var file in files)
-        await file.DeleteAsync();
-
+        if (file.Name != "favourite.json")
+          await file.DeleteAsync();
+        
       foreach (var folder in folders)
         await folder.DeleteAsync();
     }

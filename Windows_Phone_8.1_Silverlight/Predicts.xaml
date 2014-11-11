@@ -79,7 +79,7 @@
       </Grid>
 
       <Grid x:Name="Load" Visibility="Visible">
-        <TextBlock Text="Загрузка..." Foreground="{StaticResource PhoneSubtleBrush}" FontSize="36" FontFamily="Segoe WP SemiLight" Margin="0,0,23,181" HorizontalAlignment="Right" Width="401" />
+        <TextBlock Text="Загрузка..." Foreground="{StaticResource PhoneSubtleBrush}" FontSize="36" FontFamily="Segoe WP SemiLight" Margin="-26,0,26,181" HorizontalAlignment="Right" Width="401" />
       </Grid>
 
       <Grid x:Name="Error" Visibility="Collapsed" Margin="0,70,0,0">

@@ -6,13 +6,10 @@ using Microsoft.Phone.Tasks;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Device.Location;
 using System.Diagnostics;
-using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -39,14 +36,16 @@ namespace MyWay
     {
       // this.Loaded += new RoutedEventHandler(MainPage_Loaded); ?
 
+      await Data.Clear();
+
       ApplicationBar = ApplicationBar_Routes;
 
       await Favourite_Init();
 
-      Routes_Init();
+      await Routes_Init();
       await Map_Search_SetSource();
-      
-      Stops_Init();
+
+      await Stops_Init();
       await Map_Init();
     }
 
@@ -399,61 +398,48 @@ namespace MyWay
       }
     }
 
-    private string[] _routesList = null;
-    private void Routes_Init()
+    private async Task Routes_Init()
     {
-      BackgroundWorker worker = new BackgroundWorker();
-      worker.WorkerSupportsCancellation = false;
-      worker.DoWork += new DoWorkEventHandler(async (sender, e) =>
-      {
-        _routesList = await IO.Get("Routes");
-      });
+      string[] b = await IO.Get("Routes");
 
-      worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler((sender, e) =>
+      if (b != null)
       {
-        string[] b = _routesList;
+        Util.Hide(Routes_Error);
 
-        if (b != null)
+        List<Routes.Model> RoutesList = new List<Routes.Model>();
+
+        foreach (string a in b)
         {
-          Util.Hide(Routes_Error);
-
-          List<Routes.Model> RoutesList = new List<Routes.Model>();
-
-          foreach (string a in b)
+          try
           {
-            try
-            {
-              string[] line = a.Split(new Char[] { '|' });
+            string[] line = a.Split(new Char[] { '|' });
 
-              string number = Util.TypographString(line[0]);
-              string type   = Util.TypographString(line[1]);
-              string desc   = Util.TypographString(line[2]);
-              string toStop = Util.TypographString(line[3] + "|" + number + " " + type + "|" + desc);
+            string number = Util.TypographString(line[0]);
+            string type   = Util.TypographString(line[1]);
+            string desc   = Util.TypographString(line[2]);
+            string toStop = Util.TypographString(line[3] + "|" + number + " " + type + "|" + desc);
 
-              RoutesList.Add(new Routes.Model() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
-            }
-            catch { }
+            RoutesList.Add(new Routes.Model() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
           }
-
-          var groupedRoutesList =
-                from list in RoutesList
-                group list by list.Number[0] into listByGroup
-                select new Routes.KeyedList<char, Routes.Model>(listByGroup);
-
-          Util.Hide(Routes_Load);
-
-          Routes_Root.ItemsSource = new List<Routes.KeyedList<char, Routes.Model>>(groupedRoutesList);
+          catch { }
         }
-        else
-        {
-          Util.Show(Routes_Error);
-          Util.Hide(Routes_Load);
 
-          Routes_Init();
-        }
-      });
+        var groupedRoutesList =
+              from list in RoutesList
+              group list by list.Number[0] into listByGroup
+              select new Routes.KeyedList<char, Routes.Model>(listByGroup);
 
-      worker.RunWorkerAsync();
+        Util.Hide(Routes_Load);
+
+        Routes_Root.ItemsSource = new List<Routes.KeyedList<char, Routes.Model>>(groupedRoutesList);
+      }
+      else
+      {
+        Util.Show(Routes_Error);
+        Util.Hide(Routes_Load);
+
+        await Routes_Init();
+      }
     }
 
     private void Route_GoToStops(object sender, System.Windows.Input.GestureEventArgs e)
@@ -503,54 +489,41 @@ namespace MyWay
       }
     }
 
-    private string[] _stopsList = null;
-    private void Stops_Init()
+    private async Task Stops_Init()
     {
-      BackgroundWorker worker = new BackgroundWorker();
-      worker.WorkerSupportsCancellation = false;
-      worker.DoWork += new DoWorkEventHandler(async (sender, e) =>
-      {
-        _stopsList = await IO.Get("Stops_List");
-      });
+      string[] b = await IO.Get("Stops_List");
 
-      worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler((sender, e) =>
+      if (b != null)
       {
-        string[] b = _stopsList;
+        Util.Hide(Stops_Error);
 
-        if (b != null)
+        List<Stops.Model_List> StopsList = new List<Stops.Model_List>();
+
+        foreach (string a in b)
         {
-          Util.Hide(Stops_Error);
-
-          List<Stops.Model_List> StopsList = new List<Stops.Model_List>();
-
-          foreach (string a in b)
+          try
           {
-            try
-            {
-              string[] line = a.Split(new Char[] { '|' });
+            string[] line = a.Split(new Char[] { '|' });
 
-              string name = Util.TypographString(line[0]);
-              string link = Util.TypographString(line[1]);
+            string name = Util.TypographString(line[0]);
+            string link = Util.TypographString(line[1]);
 
-              StopsList.Add(new Stops.Model_List() { Name = name, Link = link, All = name + "|" + link });
-            }
-            catch { }
+            StopsList.Add(new Stops.Model_List() { Name = name, Link = link, All = name + "|" + link });
           }
-
-          Util.Hide(Stops_Load);
-
-          Stops_Root.ItemsSource = StopsList;
+          catch { }
         }
-        else
-        {
-          Util.Show(Stops_Error);
-          Util.Hide(Stops_Load);
 
-          Stops_Init();
-        }
-      });
+        Util.Hide(Stops_Load);
 
-      worker.RunWorkerAsync();
+        Stops_Root.ItemsSource = StopsList;
+      }
+      else
+      {
+        Util.Show(Stops_Error);
+        Util.Hide(Stops_Load);
+
+        await Stops_Init();
+      }
     }
 
     private void Stop_Open(object sender, EventArgs e)
@@ -596,7 +569,7 @@ namespace MyWay
       public int Id       { get; set; }
     }
 
-    private void Map_Search_Box_SelectionChanged(object sender, SelectionChangedEventArgs e) // карту на странице маршрута + на странице остановки + нажатие кнопки назад в карте + ОБЪЕДИНЕНИЕ В ПОИСКЕ ОСТАНОВОК И МАРШРУТОВ
+    private async void Map_Search_Box_SelectionChanged(object sender, SelectionChangedEventArgs e) // карту на странице маршрута + на странице остановки + нажатие кнопки назад в карте + ОБЪЕДИНЕНИЕ В ПОИСКЕ ОСТАНОВОК И МАРШРУТОВ
     {
       if (e.AddedItems.Count <= 0) // ничего не найдено? валим.
       {
@@ -609,49 +582,36 @@ namespace MyWay
       Map_Search_Model m = (Map_Search_Model)e.AddedItems[0];
       int id = m.Id;
 
-      // я разделил загрузку и UI, так как BackgroundWorker работает в «без интерфейсном» (no UI) режиме
-      BackgroundWorker worker = new BackgroundWorker();
-      worker.WorkerSupportsCancellation = true;
-      worker.DoWork += new DoWorkEventHandler(async (sender2, e2) => // грузим данные
+      Util.MapRoute.Model data = await Util.MapRoute.Get(id);
+
+      if (data == null) // не можем загрузить? не можем нормально распарсить? валим. (у меня, например, если нет денег, Билайн отдаёт html страницу и json.net умирает)
       {
-        e2.Result = await Util.MapRoute.Get(id);
-      });
-      worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler((sender2, e2) => // подставляем данные в UI
-      {
-        if (e2.Result == null) // не можем загрузить? не можем нормально распарсить? валим. (у меня, например, если нет денег, Билайн отдаёт html страницу и json.net умирает)
-        {
-          MessageBox.Show("Произошла ошибка при загрузке маршрута.\nМожет, нет подключения к сети?\n\nОшибка не пропадает? Очисти кэш (в настройках).", "Ошибка!", MessageBoxButton.OK);
-
-          Map_Search_Box.Text = "";
-          Map_Search_Box.IsEnabled = true;
-
-          worker.CancelAsync();
-          return;
-        }
-
-        Util.MapRoute.Model data = (Util.MapRoute.Model)e2.Result;
-
-        Debug.WriteLine("Гружу айди " + id);
-
-        // Рисуем линию
-        MapPolyline line = new MapPolyline();
-        line.StrokeColor = Util.ConvertStringToColor("#FF455580");
-        line.StrokeThickness = 7;
-
-        for (int i = 0; i <= data.Coordinates.Count - 1; i++)
-        {
-          string[] b = data.Coordinates[i];
-
-          line.Path.Add(new GeoCoordinate() { Longitude = Util.StringToDouble(b[0]), Latitude = Util.StringToDouble(b[1]) });
-        }
-
-        Map.MapElements.Add(line);
+        MessageBox.Show("Произошла ошибка при загрузке маршрута.\nМожет, нет подключения к сети?\n\nОшибка не пропадает? Очисти кэш (в настройках).", "Ошибка!", MessageBoxButton.OK);
 
         Map_Search_Box.Text = "";
         Map_Search_Box.IsEnabled = true;
-      });
 
-      worker.RunWorkerAsync();
+        return;
+      }
+
+      Debug.WriteLine("Гружу айди " + id);
+
+      // Рисуем линию
+      MapPolyline line = new MapPolyline();
+      line.StrokeColor = Util.ConvertStringToColor("#FF455580");
+      line.StrokeThickness = 7;
+
+      for (int i = 0; i <= data.Coordinates.Count - 1; i++)
+      {
+        string[] b = data.Coordinates[i];
+
+        line.Path.Add(new GeoCoordinate() { Longitude = Util.StringToDouble(b[0]), Latitude = Util.StringToDouble(b[1]) });
+      }
+
+      Map.MapElements.Add(line);
+
+      Map_Search_Box.Text = "";
+      Map_Search_Box.IsEnabled = true;
     }
 
     public async Task Map_Search_SetSource()
@@ -885,7 +845,7 @@ namespace MyWay
       public List<Stops.Model_List> Stops { get; set; }
     }
 
-    private async Task<Favourite_Model> Favourite_ReadFile() // исключение в очищении кэша
+    private async Task<Favourite_Model> Favourite_ReadFile()
     {
       if (Data.File.IsExists("favourite.json") == false)
         return null;
@@ -903,7 +863,6 @@ namespace MyWay
 
       if (data == null)
         data = new Favourite_Model() { Routes = new List<Routes.Model>(), Stops = new List<Stops.Model_List>() }; /////////// дописать избранное + отладить и доделать карту + выпилить BackgroundWorker
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// дописать переключатель в настройках скролл к избранное если отмечен и не пусто
 
       switch (mode)
       {

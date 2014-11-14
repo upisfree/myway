@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Device.Location;
 using System.Diagnostics;
+using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -36,13 +37,15 @@ namespace MyWay
     // Загрузка данных для элементов ViewModel
     protected async override void OnNavigatedTo(NavigationEventArgs e)
     {
+      // this.Loaded += new RoutedEventHandler(MainPage_Loaded); ?
+
       ApplicationBar = ApplicationBar_Routes;
 
-      Favourite_Init();
+      await Favourite_Init();
 
       Routes_Init();
       await Map_Search_SetSource();
-
+      
       Stops_Init();
       await Map_Init();
     }
@@ -168,6 +171,35 @@ namespace MyWay
       ApplicationBar = (ApplicationBar)Resources[resource];
       if (resource != "ApplicationBar_Hidden")
         ApplicationBar.IsVisible = true;
+    }
+
+    private int GetPivotItemIntByName(string name)
+    {
+      int a = 0;
+
+      switch (name)
+      {
+        case "Routes":
+          a = 0;
+          break;
+        case "Stops":
+          a = 1;
+          break;
+        case "Map":
+          a = 2;
+          break;
+        case "Settings":
+          a = 3;
+          break;
+        case "About":
+          a = 4;
+          break;
+        case "Favourite":
+          a = 5;
+          break;
+      }
+
+      return a;
     }
 
     /*****************************************
@@ -706,6 +738,33 @@ namespace MyWay
       MessageBox.Show("Всё прошло хорошо.", "Кэш очищен", MessageBoxButton.OK);
     }
 
+    // Очистка избранного
+    private async void Favourite_Clear(object sender, System.Windows.Input.GestureEventArgs e)
+    {
+      await Data.File.Delete("favourite.json");
+
+      Util.Hide(Favourite_Items);
+      Util.Show(Favourite_NoItems);
+
+      MessageBox.Show("Всё прошло хорошо.", "Избранное очищено", MessageBoxButton.OK);
+    }
+
+    // Скролл к избранному: вкл
+    private void Favourite_Scroll_Changed(object sender, RoutedEventArgs e)
+    {
+      ((ToggleSwitch)sender).Content = "да";
+
+      Data.Settings.AddOrUpdate("ScrollToFavouriteOnStart", "true");
+    }
+
+    // Скролл к избранному: выкл
+    private void Favourite_Scroll_Unchanged(object sender, RoutedEventArgs e)
+    {
+      ((ToggleSwitch)sender).Content = "нет";
+
+      Data.Settings.AddOrUpdate("ScrollToFavouriteOnStart", "false");
+    }
+
     /*****************************************
      О программе
     *****************************************/
@@ -790,8 +849,6 @@ namespace MyWay
 
       Favourite_Image.Source = _bi;
 
-      Debug.WriteLine("gytyftfjtftfhffyffkhfkhgfhjgfjhfjyhf");
-
       // Инициализация, собственно
       Favourite_Model data = await Favourite_ReadFile();
 
@@ -808,6 +865,18 @@ namespace MyWay
 
       Util.Hide(Favourite_NoItems);
       Util.Show(Favourite_Items);
+
+      // Скролл к избранному, если выбранно и установка нужного значения в настройках
+      if (Data.Settings.GetOrDefault("ScrollToFavouriteOnStart", "true") == "true")
+      {
+        Pivot_Main.SelectedIndex = GetPivotItemIntByName("Favourite");
+        // менять ничего в настройках не надо, всё выставлено по умолчанию на «да»
+      }
+      else
+      {
+        Favourite_Scroll_ToggleSwicth.Content = "нет";
+        Favourite_Scroll_ToggleSwicth.IsChecked = false;
+      }
     }
 
     public class Favourite_Model
@@ -833,7 +902,8 @@ namespace MyWay
       Favourite_Model data = await Favourite_ReadFile();
 
       if (data == null)
-        data = new Favourite_Model() { Routes = new List<Routes.Model>(), Stops = new List<Stops.Model_List>() }; /////////// дописать избранное + отладить и доделать карту
+        data = new Favourite_Model() { Routes = new List<Routes.Model>(), Stops = new List<Stops.Model_List>() }; /////////// дописать избранное + отладить и доделать карту + выпилить BackgroundWorker
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// дописать переключатель в настройках скролл к избранное если отмечен и не пусто
 
       switch (mode)
       {
@@ -863,14 +933,9 @@ namespace MyWay
       await Data.File.WriteJson("favourite.json", JsonConvert.SerializeObject(data));
     }
 
-    private async void Favourite_ContextMenu_Add_Route(object sender, RoutedEventArgs e)
+    private async void Favourite_ContextMenu_Add_Route(object sender, RoutedEventArgs e) // удаление из избранного и карту допилить + все остановки наносить
     {
       string str = ((MenuItem)sender).Tag.ToString();
-      MessageBox.Show(str);
-
-
-      Debug.WriteLine(str);
-      
       
       await Favourite_WriteToFile(str, "Route");
 
@@ -880,21 +945,10 @@ namespace MyWay
     private async void Favourite_ContextMenu_Add_Stop(object sender, RoutedEventArgs e)
     {
       string str = ((MenuItem)sender).Tag.ToString();
-      MessageBox.Show(str);
 
       await Favourite_WriteToFile(str, "Stop");
 
       await Favourite_Init();
-    }
-
-    private async void Favourite_Clear(object sender, System.Windows.Input.GestureEventArgs e)
-    {
-      await Data.File.Delete("favourite.json");
-
-      Util.Hide(Favourite_Items);
-      Util.Show(Favourite_NoItems);
-
-      MessageBox.Show("Всё прошло хорошо.", "Избранное очищено", MessageBoxButton.OK);
     }
 
     /*****************************************

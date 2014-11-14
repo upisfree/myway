@@ -112,5 +112,39 @@ namespace MyWay
       foreach (var folder in folders)
         await folder.DeleteAsync();
     }
+
+    public class Settings
+    {
+      static IsolatedStorageSettings _settings = IsolatedStorageSettings.ApplicationSettings;
+
+      public static void AddOrUpdate(string key, string value)
+      {
+        if (_settings.Contains(key))
+        {
+          if (_settings[key] != value)
+          {
+            _settings[key] = value;
+          }
+        }
+        else
+        {
+          _settings.Add(key, value);
+        }
+
+        _settings.Save();
+      }
+
+      public static string GetOrDefault(string key, string defaultValue)
+      {
+        if (_settings.Contains(key))
+        {
+          return (string)_settings[key];
+        }
+        else
+        {
+          return defaultValue;
+        }
+      }
+    }
   }
 }

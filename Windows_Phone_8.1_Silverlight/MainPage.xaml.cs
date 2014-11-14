@@ -3,7 +3,7 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Maps.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
-using Newtonsoft.Json;
+using Newtonsoft.Json;//////////////////////////////////////////////////////////////// TODO: удаление из избранного
 using System;
 using System.Collections.Generic;
 using System.Device.Location;
@@ -549,7 +549,7 @@ namespace MyWay
         Map.Center = currentPosition;
         Map.ZoomLevel = 13;
 
-        Map_DrawImageOnCurrentPosition(currentPosition);
+        Map_DrawUser(currentPosition);
       }
       catch (Exception e)
       {
@@ -576,6 +576,7 @@ namespace MyWay
         return;
       }
 
+      string oldText = Map_Search_Box.Text;
       Map_Search_Box.Text += " — загрузка";
       Map_Search_Box.IsEnabled = false;
 
@@ -594,23 +595,9 @@ namespace MyWay
         return;
       }
 
-      Debug.WriteLine("Гружу айди " + id);
+      Map_DrawRoute(data);
 
-      // Рисуем линию
-      MapPolyline line = new MapPolyline();
-      line.StrokeColor = Util.ConvertStringToColor("#FF455580");
-      line.StrokeThickness = 7;
-
-      for (int i = 0; i <= data.Coordinates.Count - 1; i++)
-      {
-        string[] b = data.Coordinates[i];
-
-        line.Path.Add(new GeoCoordinate() { Longitude = Util.StringToDouble(b[0]), Latitude = Util.StringToDouble(b[1]) });
-      }
-
-      Map.MapElements.Add(line);
-
-      Map_Search_Box.Text = "";
+      Map_Search_Box.Text = oldText;
       Map_Search_Box.IsEnabled = true;
     }
 
@@ -644,7 +631,8 @@ namespace MyWay
         MessageBox.Show("Маршруты ещё не загрузились, подожди пожалуйста.");
     }
 
-    private void Map_DrawImageOnCurrentPosition(GeoCoordinate coordinate)
+    private int _mapUsersLayerInt = -1;
+    private void Map_DrawUser(GeoCoordinate coordinate)
     {
       Image img = new Image();
       BitmapImage b = new BitmapImage();
@@ -661,7 +649,38 @@ namespace MyWay
       MapLayer layer = new MapLayer();
       layer.Add(overlay);
 
-      Map.Layers.Add(layer);
+      if (_mapUsersLayerInt == -1)
+      {
+        Map.Layers.Add(layer);
+
+        _mapUsersLayerInt = Map.Layers.Count - 1;
+      }
+      else
+        Map.Layers[_mapUsersLayerInt] = layer;
+    }
+
+    private int _mapRoadLayerInt = -1;
+    private void Map_DrawRoute(Util.MapRoute.Model data)
+    {
+      MapPolyline line = new MapPolyline();
+      line.StrokeColor = Util.ConvertStringToColor("#FF455580");
+      line.StrokeThickness = 7;
+
+      for (int i = 0; i <= data.Coordinates.Count - 1; i++)
+      {
+        string[] b = data.Coordinates[i];
+
+        line.Path.Add(new GeoCoordinate() { Longitude = Util.StringToDouble(b[0]), Latitude = Util.StringToDouble(b[1]) });
+      }
+
+      if (_mapRoadLayerInt == -1)
+      {
+        Map.MapElements.Add(line);
+
+        _mapRoadLayerInt = Map.MapElements.Count - 1;
+      }
+      else
+        Map.MapElements[_mapRoadLayerInt] = line;
     }
 
     private async Task<GeoCoordinate> Map_GetCurrentPosition()
@@ -862,7 +881,7 @@ namespace MyWay
       Favourite_Model data = await Favourite_ReadFile();
 
       if (data == null)
-        data = new Favourite_Model() { Routes = new List<Routes.Model>(), Stops = new List<Stops.Model_List>() }; /////////// дописать избранное + отладить и доделать карту + выпилить BackgroundWorker
+        data = new Favourite_Model() { Routes = new List<Routes.Model>(), Stops = new List<Stops.Model_List>() };
 
       switch (mode)
       {

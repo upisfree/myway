@@ -102,7 +102,8 @@ namespace MyWay
     // Событие, вызываемое при прокрутке Pivot-ов
     private static string Pivot_Current = "Routes";
     private static Color _StandartFontColor = Microsoft.Phone.Shell.SystemTray.ForegroundColor;
-    private void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+
+    private void PivotItem_Init()
     {
       string resource = "ApplicationBar_Routes";
       string color;
@@ -117,7 +118,7 @@ namespace MyWay
       Pivot_About_Background_Animation(((SolidColorBrush)Application.Current.Resources["PhoneBackgroundBrush"]).Color, 250);
       Pivot_Title.Foreground = (SolidColorBrush)Application.Current.Resources["PhoneForegroundBrush"];
 
-      switch (((Pivot)sender).SelectedIndex)
+      switch (Pivot_Main.SelectedIndex)
       {
         case 0:
           Pivot_Current = "Routes";
@@ -163,14 +164,22 @@ namespace MyWay
         case 5:
           Pivot_Current = "Favourite";
 
-          resource = "ApplicationBar_Hidden";
-
+          if (Favourite_Items.Visibility == System.Windows.Visibility.Visible)
+            resource = "ApplicationBar_Favourite";
+          else
+            resource = "ApplicationBar_Hidden";
+          
           break;
       }
 
       ApplicationBar = (ApplicationBar)Resources[resource];
       if (resource != "ApplicationBar_Hidden")
         ApplicationBar.IsVisible = true;
+    }
+
+    private void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+      PivotItem_Init();
     }
 
     private int GetPivotItemIntByName(string name)
@@ -728,14 +737,9 @@ namespace MyWay
     }
 
     // Очистка избранного
-    private async void Favourite_Clear(object sender, System.Windows.Input.GestureEventArgs e)
+    private async void Favourite_Settings_Clear(object sender, System.Windows.Input.GestureEventArgs e)
     {
-      await Data.File.Delete("favourite.json");
-
-      Util.Hide(Favourite_Items);
-      Util.Show(Favourite_NoItems);
-
-      MessageBox.Show("Всё прошло хорошо.", "Избранное очищено", MessageBoxButton.OK);
+      await Favourite_Clear();  
     }
 
     // Скролл к избранному: вкл
@@ -924,6 +928,27 @@ namespace MyWay
       Debug.WriteLine(data);
 
       await Data.File.WriteJson("favourite.json", JsonConvert.SerializeObject(data));
+    }
+
+    private async Task Favourite_Clear()
+    {
+      MessageBoxResult mbr = MessageBox.Show("Очищение удалит из избранного все добавленные маршруты и остановки.\nОчистить избранное?", "Очистка избранного", MessageBoxButton.OKCancel);
+
+      if (mbr == MessageBoxResult.OK)
+      {
+        await Data.File.Delete("favourite.json");
+
+        Util.Hide(Favourite_Items);
+        Util.Show(Favourite_NoItems);
+
+        MessageBox.Show("Всё прошло хорошо.", "Избранное очищено", MessageBoxButton.OK);
+      }
+    }
+
+    private async void Favourite_AppBar_Clear(object sender, EventArgs e)
+    {
+      await Favourite_Clear();
+      PivotItem_Init();
     }
 
     private async void Favourite_ContextMenu_Add_Route(object sender, RoutedEventArgs e) // удаление из избранного и карту допилить + все остановки наносить

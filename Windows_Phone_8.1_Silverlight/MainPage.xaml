@@ -89,6 +89,12 @@
       <shell:ApplicationBarIconButton IconUri="/Images/me.png" Text="я" Click="Element_Search_Box_Open"/>
     </shell:ApplicationBar>
 
+    <shell:ApplicationBar x:Name="ApplicationBar_Favourite" IsVisible="True" IsMenuEnabled="True" Mode="Minimized">
+      <shell:ApplicationBar.MenuItems>
+        <shell:ApplicationBarMenuItem Text="удалить всё" Click="Favourite_AppBar_Clear" />
+      </shell:ApplicationBar.MenuItems>
+    </shell:ApplicationBar>
+
     <shell:ApplicationBar x:Name="ApplicationBar_Hidden" IsVisible="False"></shell:ApplicationBar>
   </phone:PhoneApplicationPage.Resources>
 
@@ -316,7 +322,7 @@
               <TextBlock Text="Удалить из избранного все маршруты и остановки."
                          TextWrapping="Wrap"
                          Foreground="{StaticResource PhoneSubtleBrush}" />
-              <Button Content="очистить избранное" Margin="-12,55,-12,0" Tap="Favourite_Clear" toolkit:TiltEffect.IsTiltEnabled="True" />
+              <Button Content="очистить избранное" Margin="-12,55,-12,0" Tap="Favourite_Settings_Clear" toolkit:TiltEffect.IsTiltEnabled="True" />
             </Grid>
           </ListBoxItem>
 
@@ -383,11 +389,11 @@
 
       <phone:PivotItem Header="избранное" Margin="12,10,12,0">
         <Grid>
-          <Grid Visibility="Collapsed" x:Name="Favourite_NoItems">
-            <TextBlock Text="Пустоватенько" Margin="10,100,0,417" TextAlignment="Center" VerticalAlignment="Center" FontSize="52" HorizontalAlignment="Center" Width="446"/>
+          <Grid Visibility="Visible" x:Name="Favourite_NoItems">
+            <TextBlock Text="Пустоватенько" Margin="10,80,0,417" TextAlignment="Center" VerticalAlignment="Center" FontSize="52" HorizontalAlignment="Center" Width="446"/>
             <TextBlock Foreground="{StaticResource PhoneSubtleBrush}" Text="Тут должны быть маршруты и остановки, которые ты используешь чаще всего" TextAlignment="Center" TextWrapping="Wrap" Margin="38,174,38,-174" HorizontalAlignment="Center"></TextBlock>
 
-            <TextBlock Text="А как добавить?" TextAlignment="Center" Margin="107,280,106,261" HorizontalAlignment="Center" VerticalAlignment="Center" Width="243" FontSize="26" FontFamily="Segoe WP SemiLight"/>
+            <TextBlock Text="А как добавить?" TextAlignment="Center" Margin="107,260,106,261" HorizontalAlignment="Center" VerticalAlignment="Center" Width="243" FontSize="26" FontFamily="Segoe WP SemiLight"/>
             <Image x:Name="Favourite_Image" HorizontalAlignment="Left" Height="100" Margin="178,345,0,0" VerticalAlignment="Top" Source="/Images/favs.png" Width="100"/>
 
             <TextBlock Text="Зажать маршрут или остановку и выбрать «добавить в избранное»" TextWrapping="Wrap" TextAlignment="Right" FontSize="20" Margin="10,333,278,10" FontFamily="Segoe UI"/>
@@ -395,7 +401,7 @@
           </Grid>
 
           <ScrollViewer>
-            <Grid Visibility="Visible" VerticalAlignment="Stretch" x:Name="Favourite_Items" Margin="10,0,0,0">
+            <Grid Visibility="Collapsed" VerticalAlignment="Stretch" x:Name="Favourite_Items" Margin="10,0,0,0">
               <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />

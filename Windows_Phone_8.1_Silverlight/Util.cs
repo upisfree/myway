@@ -196,7 +196,7 @@ namespace MyWay
 
           try
           {
-            htmlPage = await new HttpClient().GetStringAsync(link);
+            htmlPage = await new HttpClient().GetStringAsync(link).ConfigureAwait(false);
           }
           catch
           {

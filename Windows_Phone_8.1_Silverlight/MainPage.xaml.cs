@@ -28,25 +28,26 @@ namespace MyWay
     // Конструктор
     public MainPage()
     {
+      ApplicationBar = ApplicationBar_Routes;
+
+      Routes_Init();
+
+      Stops_Init();
+      Map_Init();
+
       InitializeComponent();
+
+      this.Loaded += new RoutedEventHandler(async (sender, e2) =>
+      {
+        await Favourite_Init(true);
+        await Map_Search_SetSource();
+      });
     }
 
     // Загрузка данных для элементов ViewModel
-    protected async override void OnNavigatedTo(NavigationEventArgs e)
+    protected override void OnNavigatedTo(NavigationEventArgs e)
     {
-      // this.Loaded += new RoutedEventHandler(MainPage_Loaded); ?
 
-      await Data.Clear();
-
-      ApplicationBar = ApplicationBar_Routes;
-
-      await Favourite_Init();
-
-      await Routes_Init();
-      await Map_Search_SetSource();
-
-      await Stops_Init();
-      await Map_Init();
     }
 
     // Нажатие на клавишу «Назад»
@@ -569,6 +570,7 @@ namespace MyWay
       public int Id       { get; set; }
     }
 
+    int _mapSearchId = -1;
     private async void Map_Search_Box_SelectionChanged(object sender, SelectionChangedEventArgs e) // карту на странице маршрута + на странице остановки + нажатие кнопки назад в карте + ОБЪЕДИНЕНИЕ В ПОИСКЕ ОСТАНОВОК И МАРШРУТОВ
     {
       if (e.AddedItems.Count <= 0) // ничего не найдено? валим.
@@ -581,13 +583,19 @@ namespace MyWay
       Map_Search_Box.IsEnabled = false;
 
       Map_Search_Model m = (Map_Search_Model)e.AddedItems[0];
-      int id = m.Id;
+      
+      if (_mapSearchId == m.Id)
+        return;
 
-      Util.MapRoute.Model data = await Util.MapRoute.Get(id);
+      _mapSearchId = m.Id;
+
+      Util.MapRoute.Model data = await Util.MapRoute.Get(_mapSearchId);
 
       if (data == null) // не можем загрузить? не можем нормально распарсить? валим. (у меня, например, если нет денег, Билайн отдаёт html страницу и json.net умирает)
       {
         MessageBox.Show("Произошла ошибка при загрузке маршрута.\nМожет, нет подключения к сети?\n\nОшибка не пропадает? Очисти кэш (в настройках).", "Ошибка!", MessageBoxButton.OK);
+        _mapRoadLayerInt = -1;
+        //(MapPolyline)Map.MapElements.ElementAt(_mapRoadLayerInt) = null;
 
         Map_Search_Box.Text = "";
         Map_Search_Box.IsEnabled = true;
@@ -599,6 +607,8 @@ namespace MyWay
 
       Map_Search_Box.Text = oldText;
       Map_Search_Box.IsEnabled = true;
+
+      Map.Focus();
     }
 
     public async Task Map_Search_SetSource()
@@ -816,7 +826,7 @@ namespace MyWay
      Избранное
     *****************************************/
 
-    private async Task Favourite_Init()
+    private async Task Favourite_Init(bool scroll)
     {
       // Вставляю картинку в зависимости от цвета темы
       BitmapImage _bi = new BitmapImage();
@@ -848,7 +858,9 @@ namespace MyWay
       // Скролл к избранному, если выбранно и установка нужного значения в настройках
       if (Data.Settings.GetOrDefault("ScrollToFavouriteOnStart", "true") == "true")
       {
-        Pivot_Main.SelectedIndex = GetPivotItemIntByName("Favourite");
+        if (scroll)
+          Pivot_Main.SelectedIndex = GetPivotItemIntByName("Favourite");
+  
         // менять ничего в настройках не надо, всё выставлено по умолчанию на «да»
       }
       else
@@ -870,6 +882,9 @@ namespace MyWay
         return null;
 
       string json = await Data.File.Read("favourite.json");
+
+      if (json == "" || json == null)
+        return null;
 
       Debug.WriteLine(json);
 
@@ -917,7 +932,7 @@ namespace MyWay
       
       await Favourite_WriteToFile(str, "Route");
 
-      await Favourite_Init();
+      await Favourite_Init(false);
     }
 
     private async void Favourite_ContextMenu_Add_Stop(object sender, RoutedEventArgs e)
@@ -926,7 +941,7 @@ namespace MyWay
 
       await Favourite_WriteToFile(str, "Stop");
 
-      await Favourite_Init();
+      await Favourite_Init(false);
     }
 
     /*****************************************
@@ -1095,7 +1110,7 @@ namespace MyWay
      Единые колбэки (TODO: этот коммент надо переименовать)
     *****************************************/
 
-    private void Element_Error_Button_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+    private async void Element_Error_Button_Tap(object sender, System.Windows.Input.GestureEventArgs e)
     {
       switch (Pivot_Current)
       {
@@ -1103,13 +1118,13 @@ namespace MyWay
           Util.Hide(Routes_Error);
           Util.Show(Routes_Load);
 
-          Routes_Init();
+          await Routes_Init();
           break;
         case "Stops":
           Util.Hide(Stops_Error);
           Util.Show(Stops_Load);
-          
-          Stops_Init();
+
+          await Stops_Init();
           break;
       }
     }

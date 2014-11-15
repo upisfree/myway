@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Phone.Controls;
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
@@ -29,6 +30,16 @@ namespace MyWay
         Predicts.Tag = link;
 
       ShowPredicts(Predicts.Tag.ToString());
+
+      System.Windows.Threading.DispatcherTimer dt = new System.Windows.Threading.DispatcherTimer();
+
+      dt.Interval = TimeSpan.FromMilliseconds(30000);
+      dt.Tick += new EventHandler((sender, e2) =>
+      {
+        _refresh();
+        Debug.WriteLine("ok");
+      });
+      dt.Start();
     }
 
     public class Predict
@@ -60,7 +71,7 @@ namespace MyWay
 
           var b = htmlDocument.DocumentNode.SelectNodes("//li[@class=\"item_predict\"]");
 
-          if (b != null)
+          if (b != null || e.Result == null)
           {
             foreach (var a in b)
             {
@@ -90,7 +101,7 @@ namespace MyWay
       }
     }
 
-    private void Refresh(object sender, System.EventArgs e)
+    private void _refresh()
     {
       Predicts.Items.Clear();
 
@@ -98,6 +109,11 @@ namespace MyWay
       Util.Hide(Error);
 
       ShowPredicts(Predicts.Tag.ToString());
+    }
+
+    private void Refresh(object sender, System.EventArgs e)
+    {
+      _refresh();
     }
 
     // Анимации

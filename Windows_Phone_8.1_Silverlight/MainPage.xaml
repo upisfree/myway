@@ -210,7 +210,7 @@
             </ListBox.ItemContainerStyle>
           </ListBox>
 
-          <ListBox  x:Name="Stops_Search_Result" Visibility="Collapsed" Margin="15,-16,15,0">
+          <ListBox x:Name="Stops_Search_Result" Visibility="Collapsed" Margin="15,-16,15,0">
             <ListBox.ItemTemplate>
               <DataTemplate>
                 <TextBlock Text="{Binding Name}"
@@ -284,6 +284,7 @@
                 Tap="Element_Search_Box_Tap"
                 FilterMode="Contains"
                 ValueMemberPath="Title"
+                GotFocus="Map_Search_Box_GotFocus"
                 SelectionChanged="Map_Search_Box_SelectionChanged">
               <toolkit:AutoCompleteBox.ItemTemplate>
                 <DataTemplate>

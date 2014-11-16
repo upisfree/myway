@@ -196,7 +196,7 @@ namespace MyWay
 
           try
           {
-            htmlPage = await new HttpClient().GetStringAsync(link).ConfigureAwait(false);
+            htmlPage = await new HttpClient().GetStringAsync(link);
           }
           catch
           {
@@ -215,14 +215,21 @@ namespace MyWay
 
       private async static Task<string> WriteAndGet(HtmlDocument html, int id)
       {
-        string json = html.DocumentNode.InnerText;
+        try
+        {
+          string json = html.DocumentNode.InnerText;
 
-        if (await Data.Folder.IsExists("Map") == false)
-          await Data.Folder.Create("Map");
+          if (await Data.Folder.IsExists("Map") == false)
+            await Data.Folder.Create("Map");
 
-        await Data.File.Write("Map/" + id + ".db", json);
+          await Data.File.Write("Map/" + id + ".db", json);
 
-        return json;
+          return json;
+        }
+        catch
+        {
+          return null;
+        }
       }
 
       public async static Task<Model> Get(int id)
@@ -234,11 +241,10 @@ namespace MyWay
         else
           json = await Data.File.Read("Map/" + id + ".db");
 
-        json = Regex.Replace(json, "[«»]", "\"");
-
         try
         {
-          Debug.WriteLine(json);
+          json = Regex.Replace(json, "[«»]", "\"");
+
           _Models.Main _m = JsonConvert.DeserializeObject<_Models.Main>(json);
           return new Model() { Coordinates = _m.Features[0].Geometry.Geometries[0].Coordinates, Stations = _m.Stations };
         }

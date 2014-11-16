@@ -1,8 +1,0 @@
-﻿ * Переписать анимации поля поиска  (в MainPage.xaml) на C# в виде функции с аргументами
- * Перенести код из App.xaml в MainPage.xaml
- * Убраться в MainPage.xaml
-
- * Больше анимаций. Во всём
-
- * Всем кнопкам фон при нажатии определить фирменным цветом и toolkit:TiltEffect.IsTiltEnabled="True" (в App.xaml)
- * Фирменный фон запихать в StaticResource

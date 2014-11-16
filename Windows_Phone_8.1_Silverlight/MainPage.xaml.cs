@@ -3,7 +3,7 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Maps.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
-using Newtonsoft.Json;//////////////////////////////////////////////////////////////// TODO: удаление из избранного
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Device.Location;
@@ -23,8 +23,8 @@ using Windows.System;
 
 namespace MyWay
 {
-  public partial class MainPage : PhoneApplicationPage
-  {
+  public partial class MainPage : PhoneApplicationPage//////////////////////////////////////////////////////////////// TODO: удаление из избранного
+  {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////        убирание дубликатов в поиске маршрутов
     // Конструктор
     public MainPage()
     {
@@ -75,6 +75,18 @@ namespace MyWay
           e4 = Stops_Root;
           r = "ApplicationBar_Stops";
           break;
+        case "Map":
+          if (Map_Search_Box.Text != "")
+          {
+            Map_DrawRoute(null);
+            Map_Search_Box.Text = "";
+
+            e.Cancel = true;
+          }
+          
+          base.OnBackKeyPress(e);
+
+          return;
       }
 
       if (e1 != null) // что я вижу?
@@ -440,7 +452,7 @@ namespace MyWay
               select new Routes.KeyedList<char, Routes.Model>(listByGroup);
 
         Util.Hide(Routes_Load);
-
+        
         Routes_Root.ItemsSource = new List<Routes.KeyedList<char, Routes.Model>>(groupedRoutesList);
       }
       else
@@ -603,8 +615,8 @@ namespace MyWay
       if (data == null) // не можем загрузить? не можем нормально распарсить? валим. (у меня, например, если нет денег, Билайн отдаёт html страницу и json.net умирает)
       {
         MessageBox.Show("Произошла ошибка при загрузке маршрута.\nМожет, нет подключения к сети?\n\nОшибка не пропадает? Очисти кэш (в настройках).", "Ошибка!", MessageBoxButton.OK);
-        _mapRoadLayerInt = -1;
-        //(MapPolyline)Map.MapElements.ElementAt(_mapRoadLayerInt) = null;
+
+        Map_DrawRoute(null);
 
         Map_Search_Box.Text = "";
         Map_Search_Box.IsEnabled = true;
@@ -617,7 +629,13 @@ namespace MyWay
       Map_Search_Box.Text = oldText;
       Map_Search_Box.IsEnabled = true;
 
+      Map_Search_Box.Focus();
       Map.Focus();
+    }
+
+    private void Map_Search_Box_GotFocus(object sender, RoutedEventArgs e)
+    {
+      //Map_Search_Box.Text = "";
     }
 
     public async Task Map_Search_SetSource()
@@ -681,6 +699,23 @@ namespace MyWay
     private int _mapRoadLayerInt = -1;
     private void Map_DrawRoute(Util.MapRoute.Model data)
     {
+      if (data == null)
+      {
+        MapPolyline _line = new MapPolyline();
+        _line.StrokeThickness = 0;
+
+        if (_mapRoadLayerInt == -1) // да, дубляция, знаю.
+        {
+          Map.MapElements.Add(_line);
+
+          _mapRoadLayerInt = Map.MapElements.Count - 1;
+        }
+        else
+          Map.MapElements[_mapRoadLayerInt] = _line;
+
+        return;
+      }
+
       MapPolyline line = new MapPolyline();
       line.StrokeColor = Util.ConvertStringToColor("#FF455580");
       line.StrokeThickness = 7;
@@ -830,7 +865,7 @@ namespace MyWay
      Избранное
     *****************************************/
 
-    private async Task Favourite_Init(bool scroll)
+    private async Task Favourite_Init(bool scroll) //////////////////////////////////////////// TODO: удаление из избранного
     {
       // Вставляю картинку в зависимости от цвета темы
       BitmapImage _bi = new BitmapImage();
@@ -1048,7 +1083,7 @@ namespace MyWay
           catch { }
         }
 
-        return list.ToArray();
+        return list.Distinct().ToArray();
       }
     }
 

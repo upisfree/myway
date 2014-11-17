@@ -86,7 +86,7 @@
 
     <shell:ApplicationBar x:Name="ApplicationBar_Map" IsVisible="True">
       <shell:ApplicationBarIconButton IconUri="/Images/search.png" Text="поиск" Click="Element_Search_Box_Open"/>
-      <shell:ApplicationBarIconButton IconUri="/Images/me.png" Text="я" Click="Element_Search_Box_Open"/>
+      <shell:ApplicationBarIconButton IconUri="/Images/me.png" Text="я" Click="Map_AppBar_ShowUser"/>
     </shell:ApplicationBar>
 
     <shell:ApplicationBar x:Name="ApplicationBar_Favourite" IsVisible="True" IsMenuEnabled="True" Mode="Minimized">

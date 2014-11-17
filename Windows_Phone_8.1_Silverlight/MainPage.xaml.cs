@@ -9,7 +9,9 @@ using System.Collections.Generic;
 using System.Device.Location;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,7 +27,7 @@ namespace MyWay
 {
   public partial class MainPage : PhoneApplicationPage//////////////////////////////////////////////////////////////// TODO: удаление из избранного
   {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////        убирание дубликатов в поиске маршрутов
-    // Конструктор
+    // Конструктор//////////////////////////////////////////////////////////////////////////////////////////////////         настройки карты
     public MainPage()
     {
       ApplicationBar = ApplicationBar_Routes;
@@ -80,8 +82,12 @@ namespace MyWay
           {
             Map_DrawRoute(null);
             Map_DrawStops(null);
+            Map_DrawBuses(0);
+
+            _busTimer.Stop();
 
             Map_Search_Box.Text = "";
+            Map_Search_Box.IsEnabled = true;
 
             e.Cancel = true;
           }
@@ -565,25 +571,16 @@ namespace MyWay
     *****************************************/
 
     private async Task Map_Init()
-    {      
-      try // определение местоположения
+    {
+      await Map_ShowUser();
+
+      System.Windows.Threading.DispatcherTimer userTimer = new System.Windows.Threading.DispatcherTimer();
+      userTimer.Interval = TimeSpan.FromMilliseconds(30000);
+      userTimer.Tick += new EventHandler(async (sender, e) =>
       {
-        GeoCoordinate currentPosition = await Map_GetCurrentPosition();
-
-        Map.Center = currentPosition;
-        Map.ZoomLevel = 13;
-
-        Map_DrawUser(currentPosition);
-      }
-      catch (Exception e)
-      {
-        MessageBoxResult mbr = MessageBox.Show("Не могу отобразить тебя на карте, так как у тебя отключено определение местоположения.\nОткрыть настройки, чтобы включить его?", "Местоположение", MessageBoxButton.OKCancel);
-
-        if (mbr == MessageBoxResult.OK)
-        {
-          Launcher.LaunchUriAsync(new Uri("ms-settings-location:"));
-        }
-      }
+        await Map_ShowUser();
+      });
+      userTimer.Start();
     }
 
     public class Map_Search_Model
@@ -593,13 +590,15 @@ namespace MyWay
       public int Id       { get; set; }
     }
 
-    int _mapSearchId = -1;
-    private async void Map_Search_Box_SelectionChanged(object sender, SelectionChangedEventArgs e) // карту на странице маршрута + на странице остановки + нажатие кнопки назад в карте + ОБЪЕДИНЕНИЕ В ПОИСКЕ ОСТАНОВОК И МАРШРУТОВ
+    private int _mapSearchId = -1;
+    private async void Map_Search_Box_SelectionChanged(object sender, SelectionChangedEventArgs e) // карту на странице маршрута + на странице остановки + ОБЪЕДИНЕНИЕ В ПОИСКЕ ОСТАНОВОК И МАРШРУТОВ
     {
       if (e.AddedItems.Count <= 0) // ничего не найдено? валим.
       {
         return;
       }
+
+      _busTimer.Stop();
 
       string oldText = Map_Search_Box.Text;
       Map_Search_Box.Text += " — загрузка";
@@ -628,12 +627,20 @@ namespace MyWay
 
       Map_DrawRoute(data);
       Map_DrawStops(data);
+      Map_DrawBuses(_mapSearchId);
 
       Map_Search_Box.Text = oldText;
       Map_Search_Box.IsEnabled = true;
 
       Map_Search_Box.Focus();
       Map.Focus();
+
+      _busTimer.Interval = TimeSpan.FromMilliseconds(30000);
+      _busTimer.Tick += new EventHandler((sender2, e2) =>
+      {
+        Map_DrawBuses(_mapSearchId);
+      });
+      _busTimer.Start();
     }
 
     private void Map_Search_Box_GotFocus(object sender, RoutedEventArgs e)
@@ -697,6 +704,31 @@ namespace MyWay
       }
       else
         Map.Layers[_mapUsersLayerInt] = layer;
+    }
+    private async Task Map_ShowUser()
+    {
+      try // определение местоположения
+      {
+        GeoCoordinate currentPosition = await Map_GetCurrentPosition();
+
+        Map.Center = currentPosition;
+        Map.ZoomLevel = 13;
+
+        Map_DrawUser(currentPosition);
+      }
+      catch (Exception e)
+      {
+        MessageBoxResult mbr = MessageBox.Show("Не могу отобразить тебя на карте, так как у тебя отключено определение местоположения.\nОткрыть настройки, чтобы включить его?", "Местоположение", MessageBoxButton.OKCancel);
+
+        if (mbr == MessageBoxResult.OK)
+        {
+          Launcher.LaunchUriAsync(new Uri("ms-settings-location:"));
+        }
+      }
+    }
+    private async void Map_AppBar_ShowUser(object sender, EventArgs e)
+    {
+      await Map_ShowUser();
     }
 
     private int _mapRoadLayerInt = -1;
@@ -795,6 +827,123 @@ namespace MyWay
       }
       else
         Map.Layers[_mapStopsLayerInt] = layer;
+    }
+
+    private System.Windows.Threading.DispatcherTimer _busTimer = new System.Windows.Threading.DispatcherTimer();
+    private int _mapBusesLayerInt = -1;
+    private class Map_BusesModel
+    {
+      public class Main
+      {
+        [JsonProperty("vehicles")]
+        public IList<Vehicle> Vehicles { get; set; }
+      }
+
+      public class Vehicle
+      {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("type")]
+        public int Type { get; set; }
+
+        [JsonProperty("coordinates")]
+        public string[] Coordinates { get; set; }
+
+        [JsonProperty("info")]
+        public string Info { get; set; }
+
+        [JsonProperty("course")]
+        public int Course { get; set; }
+      }
+    }
+    private void Map_DrawBuses(int id)
+    {
+      if (id == 0)
+      {
+        if (_mapBusesLayerInt == -1) // да, дубляция, знаю.
+        {
+          Map.Layers.Add(new MapLayer());
+
+          _mapBusesLayerInt = Map.Layers.Count - 1;
+        }
+        else
+          Map.Layers[_mapBusesLayerInt] = new MapLayer();
+
+        return;
+      }
+
+      // Отрисовка автобусов
+
+      MapLayer layer = new MapLayer();
+
+      var client = new WebClient();
+
+      client.Headers["If-Modified-Since"] = DateTimeOffset.Now.ToString(); // отключение кэширования
+
+      client.DownloadStringCompleted += (sender, e) =>
+      {
+        HtmlDocument htmlDocument = new HtmlDocument();
+        try
+        {
+          htmlDocument.LoadHtml(e.Result);
+          string json = htmlDocument.DocumentNode.InnerText;
+          json = Regex.Replace(json, "[«»]", "\"");
+
+          Map_BusesModel.Main b = JsonConvert.DeserializeObject<Map_BusesModel.Main>(json);
+
+          if (b.Vehicles.Count == 0)
+          {
+            if (_mapBusesLayerInt == -1) // да, уже три раза!
+            {
+              Map.Layers.Add(new MapLayer());
+
+              _mapBusesLayerInt = Map.Layers.Count - 1;
+            }
+            else
+              Map.Layers[_mapBusesLayerInt] = new MapLayer();
+
+            return;
+          }
+
+          foreach (Map_BusesModel.Vehicle a in b.Vehicles)
+          {
+            Image img = new Image();
+            BitmapImage bi = new BitmapImage();
+            bi.UriSource = new Uri("/Assets/ApplicationIcon.png", UriKind.Relative);
+            img.Source = bi;
+            img.Height = 25;
+            img.Width = 100;
+            img.RenderTransform = new RotateTransform() { Angle = a.Course };
+            img.Tag = "http://t.bus55.ru/index.php/app/get_stations/" + id + "|" + Util.TypographString(a.Info);
+            img.Tap += (sender2, e2) =>
+            {
+              string str = ((Image)sender2).Tag.ToString();
+              MessageBox.Show(str);
+              //(Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/DirectionsList.xaml?link=" + str[0] + "&name=" + str[1], UriKind.Relative));
+            };
+
+            MapOverlay overlay = new MapOverlay();
+            overlay.Content = img;
+            overlay.PositionOrigin = new Point(0.5, 0.5);
+            overlay.GeoCoordinate = new GeoCoordinate() { Longitude = Util.StringToDouble(a.Coordinates[0]), Latitude = Util.StringToDouble(a.Coordinates[1]) };
+
+            layer.Add(overlay);
+          }
+        }
+        catch { }
+      };
+
+      client.DownloadStringAsync(new Uri("http://bus.admomsk.ru/index.php/getroute/getbus/" + id));
+
+      if (_mapBusesLayerInt == -1)
+      {
+        Map.Layers.Add(layer);
+
+        _mapBusesLayerInt = Map.Layers.Count - 1;
+      }
+      else
+        Map.Layers[_mapBusesLayerInt] = layer;
     }
 
 
@@ -1298,6 +1447,7 @@ namespace MyWay
         case "Map":
           e1 = Map_Search_Box_Transform;
           a = 125;
+          Map_Search_Box.Text = "";
           break;
       }
 

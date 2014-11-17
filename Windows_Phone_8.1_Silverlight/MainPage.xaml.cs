@@ -79,6 +79,8 @@ namespace MyWay
           if (Map_Search_Box.Text != "")
           {
             Map_DrawRoute(null);
+            Map_DrawStops(null);
+
             Map_Search_Box.Text = "";
 
             e.Cancel = true;
@@ -563,7 +565,7 @@ namespace MyWay
     *****************************************/
 
     private async Task Map_Init()
-    {
+    {      
       try // определение местоположения
       {
         GeoCoordinate currentPosition = await Map_GetCurrentPosition();
@@ -625,6 +627,7 @@ namespace MyWay
       }
 
       Map_DrawRoute(data);
+      Map_DrawStops(data);
 
       Map_Search_Box.Text = oldText;
       Map_Search_Box.IsEnabled = true;
@@ -736,6 +739,64 @@ namespace MyWay
       else
         Map.MapElements[_mapRoadLayerInt] = line;
     }
+
+    private int _mapStopsLayerInt = -1;
+    private void Map_DrawStops(Util.MapRoute.Model data)
+    {
+      if (data == null)
+      {
+        if (_mapStopsLayerInt == -1) // да, дубляция, знаю.
+        {
+          Map.Layers.Add(new MapLayer());
+
+          _mapStopsLayerInt = Map.Layers.Count - 1;
+        }
+        else
+          Map.Layers[_mapStopsLayerInt] = new MapLayer();
+
+        return;
+      }
+
+      // Отрисовка остановок
+
+      MapLayer layer = new MapLayer();
+
+      for (int i = 0; i <= data.Stations.Count - 1; i++)
+      {
+        Util.MapRoute._Models.Stations b = data.Stations[i];
+
+        Image img = new Image();
+        BitmapImage bi = new BitmapImage();
+        bi.UriSource = new Uri("/Assets/stop.png", UriKind.Relative);
+        img.Source = bi;
+        img.Height = 25;
+        img.Width = 25;
+        img.Tag = "http://t.bus55.ru/index.php/app/get_dir/" + b.Id + "|" + Util.TypographString(b.Name);
+        img.Tap += (sender, e) =>
+        {
+          string[] str = ((Image)sender).Tag.ToString().Split(new Char[] { '|' });
+
+          (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/DirectionsList.xaml?link=" + str[0] + "&name=" + str[1], UriKind.Relative));
+        };
+
+        MapOverlay overlay = new MapOverlay();
+        overlay.Content = img;
+        overlay.PositionOrigin = new Point(0.5, 0.5);
+        overlay.GeoCoordinate = new GeoCoordinate() { Longitude = Util.StringToDouble(b.Coordinates[0]), Latitude = Util.StringToDouble(b.Coordinates[1]) };
+
+        layer.Add(overlay);
+      }
+
+      if (_mapStopsLayerInt == -1)
+      {
+        Map.Layers.Add(layer);
+
+        _mapStopsLayerInt = Map.Layers.Count - 1;
+      }
+      else
+        Map.Layers[_mapStopsLayerInt] = layer;
+    }
+
 
     private async Task<GeoCoordinate> Map_GetCurrentPosition()
     {

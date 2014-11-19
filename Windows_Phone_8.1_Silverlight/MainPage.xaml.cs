@@ -1075,7 +1075,7 @@ namespace MyWay
      Избранное
     *****************************************/
 
-    private async Task Favourite_Init(bool scroll) //////////////////////////////////////////// TODO: удаление из избранного
+    private async Task Favourite_Init(bool scroll)
     {
       // Вставляю картинку в зависимости от цвета темы
       BitmapImage _bi = new BitmapImage();
@@ -1196,7 +1196,7 @@ namespace MyWay
       PivotItem_Init();
     }
 
-    private async void Favourite_ContextMenu_Add_Route(object sender, RoutedEventArgs e) // удаление из избранного и карту допилить + все остановки наносить
+    private async void Favourite_ContextMenu_Add_Route(object sender, RoutedEventArgs e)
     {
       string str = ((MenuItem)sender).Tag.ToString();
       
@@ -1404,7 +1404,7 @@ namespace MyWay
       if (Pivot_Current == "Map") // так вышло. «Невозможно преобразовать AutoCompleteBox в TextBox»
       {
         if (Map_Search_Box.Text == "")
-          Element_Search_Box_Animation(0, 125, 0.5, 0.5, EasingMode.EaseOut);
+          Element_Search_Box_Animation(0, 123, 0.5, 0.5, EasingMode.EaseOut);
 
         Map_Search_Box.Focus(); // что за херня? какого чёрта?
 
@@ -1446,7 +1446,7 @@ namespace MyWay
           break;
         case "Map":
           e1 = Map_Search_Box_Transform;
-          a = 125;
+          a = 123;
           Map_Search_Box.Text = "";
           break;
       }
@@ -1457,15 +1457,15 @@ namespace MyWay
 
     private async void Element_Search_Box_LostFocus(object sender, RoutedEventArgs e)
     {
-      //if (Pivot_Current == "Map") // см. коммент в Element_Search_Box_Open
-      //{
-      //  if (Map_Search_Box.Text == "")
-      //    Element_Search_Box_Animation(125, 0, 0.5, 0.25, EasingMode.EaseIn);
-      //  else
-      //    Element_Search_Box_Animation(130, 125, 0.5, 1, EasingMode.EaseOut);
+      if (Pivot_Current == "Map") // см. коммент в Element_Search_Box_Open
+      {
+    //    if (Map_Search_Box.Text == "")
+    //      Element_Search_Box_Animation(123, 0, 0.5, 0.25, EasingMode.EaseIn);
+    //    else
+    //      Element_Search_Box_Animation(130, 123, 0.5, 1, EasingMode.EaseOut);
 
-      //  return;
-      //}
+        return;
+      }
 
       TextBox e1 = null;
 

@@ -572,13 +572,13 @@ namespace MyWay
 
     private async Task Map_Init()
     {
-      await Map_ShowUser();
+      await Map_ShowUser(true);
 
       System.Windows.Threading.DispatcherTimer userTimer = new System.Windows.Threading.DispatcherTimer();
-      userTimer.Interval = TimeSpan.FromMilliseconds(30000);
+      userTimer.Interval = TimeSpan.FromMilliseconds(20000);
       userTimer.Tick += new EventHandler(async (sender, e) =>
       {
-        await Map_ShowUser();
+        await Map_ShowUser(false);
       });
       userTimer.Start();
     }
@@ -705,15 +705,17 @@ namespace MyWay
       else
         Map.Layers[_mapUsersLayerInt] = layer;
     }
-    private async Task Map_ShowUser()
+    private async Task Map_ShowUser(bool focus)
     {
       try // определение местоположения
       {
         GeoCoordinate currentPosition = await Map_GetCurrentPosition();
 
-        Map.Center = currentPosition;
-        Map.ZoomLevel = 13;
-
+        if (focus)
+        {
+          Map.SetView(currentPosition, 13);
+        }
+        
         Map_DrawUser(currentPosition);
       }
       catch (Exception e)
@@ -728,7 +730,7 @@ namespace MyWay
     }
     private async void Map_AppBar_ShowUser(object sender, EventArgs e)
     {
-      await Map_ShowUser();
+      await Map_ShowUser(true);
     }
 
     private int _mapRoadLayerInt = -1;

@@ -378,7 +378,7 @@ namespace MyWay
 
             await Data.File.Write("Stops_List.db", k);
 
-            result = j.ToArray();
+            result = j.OrderBy(x => x).ToArray(); // OrderBy — сортировка по алфавиту
 
             break;
         }
@@ -391,7 +391,7 @@ namespace MyWay
         if (Data.File.IsExists(mode + ".db"))
         {
           string a = await Data.File.Read(mode + ".db");
-          return a.Split(new Char[] { '\n' });
+          return a.Split(new Char[] { '\n' }).OrderBy(x => x).ToArray(); // OrderBy — сортировка по алфавиту
         }
         else
         {

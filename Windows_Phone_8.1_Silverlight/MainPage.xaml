@@ -329,7 +329,7 @@
 
           <ListBoxItem>
             <Grid Width="425">
-              <toolkit:ToggleSwitch x:Name="Favourite_Scroll_ToggleSwicth" Header="открывание избранного при старте" Content="да" IsChecked="True" SwitchForeground="#FF455580" Margin="-11,0" Checked="Favourite_Scroll_Changed" Unchecked="Favourite_Scroll_Unchanged" />
+              <toolkit:ToggleSwitch x:Name="Favourite_Scroll_ToggleSwicth" Header="открывание избранного при старте" Content="Да" IsChecked="True" SwitchForeground="#FF455580" Margin="-11,0" Checked="Favourite_Scroll_Changed" Unchecked="Favourite_Scroll_Unchanged" />
             </Grid>
           </ListBoxItem>
         </ListBox>

@@ -591,7 +591,7 @@ namespace MyWay
     }
 
     private int _mapSearchId = -1;
-    private async void Map_Search_Box_SelectionChanged(object sender, SelectionChangedEventArgs e) // карту на странице маршрута + на странице остановки + ОБЪЕДИНЕНИЕ В ПОИСКЕ ОСТАНОВОК И МАРШРУТОВ
+    private async void Map_Search_Box_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
       if (e.AddedItems.Count <= 0) // ничего не найдено? валим.
         return;
@@ -995,7 +995,7 @@ namespace MyWay
     // Скролл к избранному: вкл
     private void Favourite_Scroll_Changed(object sender, RoutedEventArgs e)
     {
-      ((ToggleSwitch)sender).Content = "да";
+      ((ToggleSwitch)sender).Content = "Да";
 
       Data.Settings.AddOrUpdate("ScrollToFavouriteOnStart", "true");
     }
@@ -1003,7 +1003,7 @@ namespace MyWay
     // Скролл к избранному: выкл
     private void Favourite_Scroll_Unchanged(object sender, RoutedEventArgs e)
     {
-      ((ToggleSwitch)sender).Content = "нет";
+      ((ToggleSwitch)sender).Content = "Нет";
 
       Data.Settings.AddOrUpdate("ScrollToFavouriteOnStart", "false");
     }
@@ -1119,7 +1119,7 @@ namespace MyWay
       }
       else
       {
-        Favourite_Scroll_ToggleSwicth.Content = "нет";
+        Favourite_Scroll_ToggleSwicth.Content = "Нет";
         Favourite_Scroll_ToggleSwicth.IsChecked = false;
       }
     }

@@ -596,6 +596,10 @@ namespace MyWay
       if (e.AddedItems.Count <= 0) // ничего не найдено? валим.
         return;
 
+      string oldText = Map_Search_Box.Text;
+      Map_Search_Box.Text += " — загрузка";
+      Map_Search_Box.IsEnabled = false;
+
       Map_Search_Model m = (Map_Search_Model)e.AddedItems[0];
       
       if (_mapSearchId == m.Id)
@@ -604,11 +608,7 @@ namespace MyWay
       _mapSearchId = m.Id;
       
       _busTimer.Stop();
-
-      string oldText = Map_Search_Box.Text;
-      Map_Search_Box.Text += " — загрузка";
-      Map_Search_Box.IsEnabled = false;
-
+      
       Util.MapRoute.Model data = await Util.MapRoute.Get(_mapSearchId);
 
       if (data == null) // не можем загрузить? не можем нормально распарсить? валим. (у меня, например, если нет денег, Билайн отдаёт html страницу и json.net умирает)

@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Maps.Controls;
+using Microsoft.Phone.Maps.Toolkit;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
 using Newtonsoft.Json;
@@ -924,9 +925,23 @@ namespace MyWay
             img.Tap += (sender2, e2) =>
             {
               string str = ((Image)sender2).Tag.ToString();
-              MessageBox.Show(str);
-              //(Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/DirectionsList.xaml?link=" + str[0] + "&name=" + str[1], UriKind.Relative));
+
+              MapLayer _layer = new MapLayer();
+              Pushpin pushpin = new Pushpin();
+
+              pushpin.GeoCoordinate = new GeoCoordinate() { Longitude = Util.StringToDouble(a.Coordinates[0]), Latitude = Util.StringToDouble(a.Coordinates[1]) };
+              pushpin.Content = Util.TypographString(a.Info);
+              MapOverlay _overlay = new MapOverlay();
+              _overlay.Content = pushpin;
+              _overlay.GeoCoordinate = new GeoCoordinate() { Longitude = Util.StringToDouble(a.Coordinates[0]), Latitude = Util.StringToDouble(a.Coordinates[1]) };
+              _layer.Add(_overlay);
+
+              Map.Layers.Add(_layer);
             };
+            //img.LostFocus += (sender3, e3) =>
+            //{
+              //pushpin.Visibility = none; // сделать одну переменную на всех и менять по необходимости
+            //};
 
             MapOverlay overlay = new MapOverlay();
             overlay.Content = img;

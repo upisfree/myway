@@ -757,7 +757,7 @@ namespace MyWay
       }
 
       MapPolyline line = new MapPolyline();
-      line.StrokeColor = Util.ConvertStringToColor("#FF455580");
+      line.StrokeColor = Util.ConvertStringToColor("#FF101D80");
       line.StrokeThickness = 7;
 
       for (int i = 0; i <= data.Coordinates.Count - 1; i++)
@@ -915,7 +915,7 @@ namespace MyWay
           {
             Image img = new Image();
             BitmapImage bi = new BitmapImage();
-            bi.UriSource = new Uri("/Assets/ApplicationIcon.png", UriKind.Relative);
+            bi.UriSource = new Uri("/Assets/bus.png", UriKind.Relative);
             img.Source = bi;
             img.Height = 25;
             img.Width = 100;

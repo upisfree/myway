@@ -594,15 +594,7 @@ namespace MyWay
     private async void Map_Search_Box_SelectionChanged(object sender, SelectionChangedEventArgs e) // карту на странице маршрута + на странице остановки + ОБЪЕДИНЕНИЕ В ПОИСКЕ ОСТАНОВОК И МАРШРУТОВ
     {
       if (e.AddedItems.Count <= 0) // ничего не найдено? валим.
-      {
         return;
-      }
-
-      _busTimer.Stop();
-
-      string oldText = Map_Search_Box.Text;
-      Map_Search_Box.Text += " — загрузка";
-      Map_Search_Box.IsEnabled = false;
 
       Map_Search_Model m = (Map_Search_Model)e.AddedItems[0];
       
@@ -610,6 +602,12 @@ namespace MyWay
         return;
 
       _mapSearchId = m.Id;
+      
+      _busTimer.Stop();
+
+      string oldText = Map_Search_Box.Text;
+      Map_Search_Box.Text += " — загрузка";
+      Map_Search_Box.IsEnabled = false;
 
       Util.MapRoute.Model data = await Util.MapRoute.Get(_mapSearchId);
 
@@ -634,6 +632,11 @@ namespace MyWay
 
       Map_Search_Box.Focus();
       Map.Focus();
+
+      double a = Util.StringToDouble(data.Coordinates[Convert.ToInt32(data.Coordinates.Count / 1.5)][1]);
+      double b = Util.StringToDouble(data.Coordinates[Convert.ToInt32(data.Coordinates.Count / 1.5)][0]);
+      
+      Map.SetView(new GeoCoordinate(a, b), 11.5);
 
       _busTimer.Interval = TimeSpan.FromMilliseconds(30000);
       _busTimer.Tick += new EventHandler((sender2, e2) =>

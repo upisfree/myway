@@ -409,7 +409,7 @@
               </Grid.RowDefinitions>
 
               <Grid Grid.Row="0" VerticalAlignment="Stretch"  Margin="0,0,0,60">
-                <TextBlock Text="маршруты" Foreground="{StaticResource PhoneSubtleBrush}" FontFamily="Segoe WP SemiLight" FontSize="32" Margin="0,-10,0,10" />
+                <TextBlock Text="🚌 маршруты" Foreground="{StaticResource PhoneSubtleBrush}" FontFamily="Segoe WP SemiLight" FontSize="32" Margin="0,-10,0,10" />
                 <ListBox x:Name="Favourive_Routes" ScrollViewer.VerticalScrollBarVisibility="Disabled" toolkit:SlideInEffect.LineIndex="1" Margin="0,40,0,-40">
                   <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -435,7 +435,7 @@
               </Grid>
 
               <Grid Grid.Row="1" VerticalAlignment="Stretch" Margin="0,0,0,40">
-                <TextBlock Text="остановки" Foreground="{StaticResource PhoneSubtleBrush}" FontFamily="Segoe WP SemiLight" FontSize="32" Margin="0,-10,0,10" />
+                <TextBlock Text="🚏 остановки" Foreground="{StaticResource PhoneSubtleBrush}" FontFamily="Segoe WP SemiLight" FontSize="32" Margin="0,-10,0,10" />
                 <ListBox x:Name="Favourive_Stops" ScrollViewer.VerticalScrollBarVisibility="Disabled" Margin="-5,40,0,-40">
                   <ListBox.ItemTemplate>
                     <DataTemplate>

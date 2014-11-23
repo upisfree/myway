@@ -84,11 +84,6 @@
       <shell:ApplicationBarIconButton IconUri="/Images/me.png" Text="близжайшая остановка" Click="Element_Search_Box_Open"/>
     </shell:ApplicationBar>
 
-    <shell:ApplicationBar x:Name="ApplicationBar_Map" IsVisible="True">
-      <shell:ApplicationBarIconButton IconUri="/Images/search.png" Text="поиск" Click="Element_Search_Box_Open"/>
-      <shell:ApplicationBarIconButton IconUri="/Images/me.png" Text="я" Click="Map_AppBar_ShowUser"/>
-    </shell:ApplicationBar>
-
     <shell:ApplicationBar x:Name="ApplicationBar_Favourite" IsVisible="True" IsMenuEnabled="True" Mode="Minimized">
       <shell:ApplicationBar.MenuItems>
         <shell:ApplicationBarMenuItem Text="удалить всё" Click="Favourite_AppBar_Clear" />
@@ -263,49 +258,7 @@
             <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,342,0,232" Tap="Element_Error_Button_Tap"/>
           </Grid>
         </Grid>
-      </phone:PivotItem>
-
-      <phone:PivotItem Margin="14,10,10,18">
-        <phone:PivotItem.Header>
-          <Grid>
-            <TextBlock Text="карта" />
-          </Grid>
-        </phone:PivotItem.Header>
-
-        <Grid>
-          <maps:Map x:Name="Map" CartographicMode="Road" LandmarksEnabled="False" Center="54.9856846220791,73.3648522663862" ZoomLevel="12" Canvas.ZIndex="1" Canvas.Left="-15" Width="482" Margin="-14,0,-12,-93" />
-
-          <Grid x:Name="Map_Search_Box_Container" Width="480" Height="80" Margin="-12,-1000,-12,0" Background="{StaticResource PhoneBackgroundBrush}">
-            <toolkit:AutoCompleteBox
-                x:Name="Map_Search_Box"
-                Height="80"
-                FontSize="32"
-                InputScope="NameOrPhoneNumber"
-                Tap="Element_Search_Box_Tap"
-                FilterMode="Contains"
-                ValueMemberPath="Title"
-                GotFocus="Map_Search_Box_GotFocus"
-                SelectionChanged="Map_Search_Box_SelectionChanged">
-              <toolkit:AutoCompleteBox.ItemTemplate>
-                <DataTemplate>
-                  <StackPanel Margin="0,7" Tag="{Binding Id}">
-                    <TextBlock Margin="8,0"
-                               Text="{Binding Title}" />
-                    <TextBlock FontSize="{StaticResource PhoneFontSizeNormal}"
-                               Foreground="{StaticResource PhoneSubtleBrush}"
-                               Margin="8,-6,8,2"
-                               Text="{Binding Desc}" />
-                  </StackPanel>
-                </DataTemplate>
-              </toolkit:AutoCompleteBox.ItemTemplate>
-            </toolkit:AutoCompleteBox>
-
-            <Grid.RenderTransform>
-              <TranslateTransform x:Name="Map_Search_Box_Transform" />
-            </Grid.RenderTransform>
-          </Grid>
-        </Grid>
-      </phone:PivotItem>
+      </phone:PivotItem>   
 
       <phone:PivotItem Header="настройки">
         <ListBox Margin="15,-16,15,0">

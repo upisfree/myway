@@ -1,18 +1,13 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Phone.Controls;
-using Microsoft.Phone.Maps.Controls;
-using Microsoft.Phone.Maps.Toolkit;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Device.Location;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,8 +16,6 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using Windows.Devices.Geolocation;
-using Windows.System;
 
 namespace MyWay
 {
@@ -34,23 +27,20 @@ namespace MyWay
       ApplicationBar = ApplicationBar_Routes;
 
       Routes_Init();
-
       Stops_Init();
-      Map_Init();
 
       InitializeComponent();
 
-      this.Loaded += new RoutedEventHandler(async (sender, e2) =>
+      this.Loaded += new RoutedEventHandler(async (sender, e2) => // перед инициализацией?
       {
         await Favourite_Init(true);
-        await Map_Search_SetSource();
       });
     }
 
     // Загрузка данных для элементов ViewModel
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
-
+      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Map.xaml", UriKind.Relative));
     }
 
     // Нажатие на клавишу «Назад»
@@ -78,24 +68,6 @@ namespace MyWay
           e4 = Stops_Root;
           r = "ApplicationBar_Stops";
           break;
-        case "Map":
-          if (Map_Search_Box.Text != "")
-          {
-            Map_DrawRoute(null);
-            Map_DrawStops(null);
-            Map_DrawBuses(0);
-
-            _busTimer.Stop();
-
-            Map_Search_Box.Text = "";
-            Map_Search_Box.IsEnabled = true;
-
-            e.Cancel = true;
-          }
-          
-          base.OnBackKeyPress(e);
-
-          return;
       }
 
       if (e1 != null) // что я вижу?
@@ -160,18 +132,12 @@ namespace MyWay
 
           break;
         case 2:
-          Pivot_Current = "Map";
-
-          resource = "ApplicationBar_Map";
-
-          break;
-        case 3:
           Pivot_Current = "Settings";
 
           resource = "ApplicationBar_Hidden";
           
           break;
-        case 4:
+        case 3:
           Pivot_Current = "About";
 
           resource = "ApplicationBar_Hidden";
@@ -182,7 +148,7 @@ namespace MyWay
           Pivot_Title.Foreground = new SolidColorBrush(Util.ConvertStringToColor("#FFFFFFFF"));
 
           break;
-        case 5:
+        case 4:
           Pivot_Current = "Favourite";
 
           if (Favourite_Items.Visibility == System.Windows.Visibility.Visible)
@@ -215,17 +181,14 @@ namespace MyWay
         case "Stops":
           a = 1;
           break;
-        case "Map":
+        case "Settings":
           a = 2;
           break;
-        case "Settings":
+        case "About":
           a = 3;
           break;
-        case "About":
-          a = 4;
-          break;
         case "Favourite":
-          a = 5;
+          a = 4;
           break;
       }
 
@@ -236,7 +199,7 @@ namespace MyWay
      Загрузка & Кеширование & Демонстрация маршрутов / остановок
     *****************************************/
 
-    private class IO
+    public class IO
     {
       public async static Task<HtmlDocument> Download(string mode)
       {
@@ -566,429 +529,7 @@ namespace MyWay
 
       (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/DirectionsList.xaml?link=" + link + "&name=" + name, UriKind.Relative));
     }
-
-    /*****************************************
-     Карта
-    *****************************************/
-
-    private async Task Map_Init()
-    {
-      await Map_ShowUser(true);
-
-      System.Windows.Threading.DispatcherTimer userTimer = new System.Windows.Threading.DispatcherTimer();
-      userTimer.Interval = TimeSpan.FromMilliseconds(20000);
-      userTimer.Tick += new EventHandler(async (sender, e) =>
-      {
-        await Map_ShowUser(false);
-      });
-      userTimer.Start();
-    }
-
-    public class Map_Search_Model
-    {
-      public string Title { get; set; }
-      public string Desc  { get; set; }
-      public int Id       { get; set; }
-    }
-
-    private int _mapSearchId = -1;
-    private async void Map_Search_Box_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-      if (e.AddedItems.Count <= 0) // ничего не найдено? валим.
-        return;
-
-      string oldText = Map_Search_Box.Text;
-      Map_Search_Box.Text += " — загрузка";
-      Map_Search_Box.IsEnabled = false;
-
-      Map_Search_Model m = (Map_Search_Model)e.AddedItems[0];
-      
-      if (_mapSearchId == m.Id)
-        return;
-
-      _mapSearchId = m.Id;
-      
-      _busTimer.Stop();
-      
-      Util.MapRoute.Model data = await Util.MapRoute.Get(_mapSearchId);
-
-      if (data == null) // не можем загрузить? не можем нормально распарсить? валим. (у меня, например, если нет денег, Билайн отдаёт html страницу и json.net умирает)
-      {
-        MessageBox.Show("Произошла ошибка при загрузке маршрута.\nМожет, нет подключения к сети?\n\nОшибка не пропадает? Очисти кэш (в настройках).", "Ошибка!", MessageBoxButton.OK);
-
-        Map_DrawRoute(null);
-
-        Map_Search_Box.Text = "";
-        Map_Search_Box.IsEnabled = true;
-
-        return;
-      }
-
-      Map_DrawRoute(data);
-      Map_DrawStops(data);
-      Map_DrawBuses(_mapSearchId);
-
-      Map_Search_Box.Text = oldText;
-      Map_Search_Box.IsEnabled = true;
-
-      Map_Search_Box.Focus();
-      Map.Focus();
-
-      double a = Util.StringToDouble(data.Coordinates[Convert.ToInt32(data.Coordinates.Count / 1.5)][1]);
-      double b = Util.StringToDouble(data.Coordinates[Convert.ToInt32(data.Coordinates.Count / 1.5)][0]);
-      
-      Map.SetView(new GeoCoordinate(a, b), 11.5);
-
-      _busTimer.Interval = TimeSpan.FromMilliseconds(30000);
-      _busTimer.Tick += new EventHandler((sender2, e2) =>
-      {
-        Map_DrawBuses(_mapSearchId);
-      });
-      _busTimer.Start();
-    }
-
-    private void Map_Search_Box_GotFocus(object sender, RoutedEventArgs e)
-    {
-      //Map_Search_Box.Text = "";
-    }
-
-    public async Task Map_Search_SetSource()
-    {
-      string[] b = await IO.Get("Routes");
-
-      if (b != null)
-      {
-        List<Map_Search_Model> list = new List<Map_Search_Model>();
-
-        foreach (string a in b)
-        {
-          try
-          {
-            string[] line = a.Split(new Char[] { '|' });
-
-            string number = Util.TypographString(line[0]);
-            string type = Util.TypographString(line[1]);
-            string desc = Util.TypographString(line[2]);
-            int id = Int32.Parse(line[3].Split(new Char[] { '/' }).Last());
-
-            list.Add(new Map_Search_Model() { Title = line[0] + " " + line[1], Desc = line[2], Id = id });
-          }
-          catch { }
-        }
-
-        Map_Search_Box.ItemsSource = list;
-      }
-      else
-        MessageBox.Show("Маршруты ещё не загрузились, подожди пожалуйста.");
-    }
-
-    private int _mapUsersLayerInt = -1;
-    private void Map_DrawUser(GeoCoordinate coordinate)
-    {
-      Image img = new Image();
-      BitmapImage b = new BitmapImage();
-      b.UriSource = new Uri("/Assets/MapUser.png", UriKind.Relative);
-      img.Source = b;
-      img.Height = 75;
-      img.Width = 40;
-
-      MapOverlay overlay = new MapOverlay();
-      overlay.Content = img;
-      overlay.PositionOrigin = new Point(0.5, 0.5);
-      overlay.GeoCoordinate = coordinate;
-
-      MapLayer layer = new MapLayer();
-      layer.Add(overlay);
-
-      if (_mapUsersLayerInt == -1)
-      {
-        Map.Layers.Add(layer);
-
-        _mapUsersLayerInt = Map.Layers.Count - 1;
-      }
-      else
-        Map.Layers[_mapUsersLayerInt] = layer;
-    }
-    private async Task Map_ShowUser(bool focus)
-    {
-      try // определение местоположения
-      {
-        GeoCoordinate currentPosition = await Map_GetCurrentPosition();
-
-        if (focus)
-        {
-          Map.SetView(currentPosition, 13);
-        }
-        
-        Map_DrawUser(currentPosition);
-      }
-      catch (Exception e)
-      {
-        MessageBoxResult mbr = MessageBox.Show("Не могу отобразить тебя на карте, так как у тебя отключено определение местоположения.\nОткрыть настройки, чтобы включить его?", "Местоположение", MessageBoxButton.OKCancel);
-
-        if (mbr == MessageBoxResult.OK)
-        {
-          Launcher.LaunchUriAsync(new Uri("ms-settings-location:"));
-        }
-      }
-    }
-    private async void Map_AppBar_ShowUser(object sender, EventArgs e)
-    {
-      await Map_ShowUser(true);
-    }
-
-    private int _mapRoadLayerInt = -1;
-    private void Map_DrawRoute(Util.MapRoute.Model data)
-    {
-      if (data == null)
-      {
-        MapPolyline _line = new MapPolyline();
-        _line.StrokeThickness = 0;
-
-        if (_mapRoadLayerInt == -1) // да, дубляция, знаю.
-        {
-          Map.MapElements.Add(_line);
-
-          _mapRoadLayerInt = Map.MapElements.Count - 1;
-        }
-        else
-          Map.MapElements[_mapRoadLayerInt] = _line;
-
-        return;
-      }
-
-      MapPolyline line = new MapPolyline();
-      line.StrokeColor = Util.ConvertStringToColor("#FF101D80");
-      line.StrokeThickness = 7;
-
-      for (int i = 0; i <= data.Coordinates.Count - 1; i++)
-      {
-        string[] b = data.Coordinates[i];
-
-        line.Path.Add(new GeoCoordinate() { Longitude = Util.StringToDouble(b[0]), Latitude = Util.StringToDouble(b[1]) });
-      }
-
-      if (_mapRoadLayerInt == -1)
-      {
-        Map.MapElements.Add(line);
-
-        _mapRoadLayerInt = Map.MapElements.Count - 1;
-      }
-      else
-        Map.MapElements[_mapRoadLayerInt] = line;
-    }
-
-    private int _mapStopsLayerInt = -1;
-    private void Map_DrawStops(Util.MapRoute.Model data)
-    {
-      if (data == null)
-      {
-        if (_mapStopsLayerInt == -1) // да, дубляция, знаю.
-        {
-          Map.Layers.Add(new MapLayer());
-
-          _mapStopsLayerInt = Map.Layers.Count - 1;
-        }
-        else
-          Map.Layers[_mapStopsLayerInt] = new MapLayer();
-
-        return;
-      }
-
-      // Отрисовка остановок
-
-      MapLayer layer = new MapLayer();
-
-      for (int i = 0; i <= data.Stations.Count - 1; i++)
-      {
-        Util.MapRoute._Models.Stations b = data.Stations[i];
-
-        Image img = new Image();
-        BitmapImage bi = new BitmapImage();
-        bi.UriSource = new Uri("/Assets/stop.png", UriKind.Relative);
-        img.Source = bi;
-        img.Height = 25;
-        img.Width = 25;
-        img.Tag = "http://t.bus55.ru/index.php/app/get_dir/" + b.Id + "|" + Util.TypographString(b.Name);
-        img.Tap += (sender, e) =>
-        {
-          string[] str = ((Image)sender).Tag.ToString().Split(new Char[] { '|' });
-
-          (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/DirectionsList.xaml?link=" + str[0] + "&name=" + str[1], UriKind.Relative));
-        };
-
-        MapOverlay overlay = new MapOverlay();
-        overlay.Content = img;
-        overlay.PositionOrigin = new Point(0.5, 0.5);
-        overlay.GeoCoordinate = new GeoCoordinate() { Longitude = Util.StringToDouble(b.Coordinates[0]), Latitude = Util.StringToDouble(b.Coordinates[1]) };
-
-        layer.Add(overlay);
-      }
-
-      if (_mapStopsLayerInt == -1)
-      {
-        Map.Layers.Add(layer);
-
-        _mapStopsLayerInt = Map.Layers.Count - 1;
-      }
-      else
-        Map.Layers[_mapStopsLayerInt] = layer;
-    }
-
-    private System.Windows.Threading.DispatcherTimer _busTimer = new System.Windows.Threading.DispatcherTimer();
-    private int _mapBusesLayerInt = -1;
-    private class Map_BusesModel
-    {
-      public class Main
-      {
-        [JsonProperty("vehicles")]
-        public IList<Vehicle> Vehicles { get; set; }
-      }
-
-      public class Vehicle
-      {
-        [JsonProperty("id")]
-        public int Id { get; set; }
-
-        [JsonProperty("type")]
-        public int Type { get; set; }
-
-        [JsonProperty("coordinates")]
-        public string[] Coordinates { get; set; }
-
-        [JsonProperty("info")]
-        public string Info { get; set; }
-
-        [JsonProperty("course")]
-        public int Course { get; set; }
-      }
-    }
-    private void Map_DrawBuses(int id)
-    {
-      if (id == 0)
-      {
-        if (_mapBusesLayerInt == -1) // да, дубляция, знаю.
-        {
-          Map.Layers.Add(new MapLayer());
-
-          _mapBusesLayerInt = Map.Layers.Count - 1;
-        }
-        else
-          Map.Layers[_mapBusesLayerInt] = new MapLayer();
-
-        return;
-      }
-
-      // Отрисовка автобусов
-
-      MapLayer layer = new MapLayer();
-
-      var client = new WebClient();
-
-      client.Headers["If-Modified-Since"] = DateTimeOffset.Now.ToString(); // отключение кэширования
-
-      client.DownloadStringCompleted += (sender, e) =>
-      {
-        HtmlDocument htmlDocument = new HtmlDocument();
-        try
-        {
-          htmlDocument.LoadHtml(e.Result);
-          string json = htmlDocument.DocumentNode.InnerText;
-          json = Regex.Replace(json, "[«»]", "\"");
-
-          Map_BusesModel.Main b = JsonConvert.DeserializeObject<Map_BusesModel.Main>(json);
-
-          if (b.Vehicles.Count == 0)
-          {
-            if (_mapBusesLayerInt == -1) // да, уже три раза!
-            {
-              Map.Layers.Add(new MapLayer());
-
-              _mapBusesLayerInt = Map.Layers.Count - 1;
-            }
-            else
-              Map.Layers[_mapBusesLayerInt] = new MapLayer();
-
-            return;
-          }
-
-          foreach (Map_BusesModel.Vehicle a in b.Vehicles)
-          {
-            Image img = new Image();
-            BitmapImage bi = new BitmapImage();
-            bi.UriSource = new Uri("/Assets/bus.png", UriKind.Relative);
-            img.Source = bi;
-            img.Height = 25;
-            img.Width = 100;
-            img.RenderTransform = new RotateTransform() { Angle = a.Course };
-            img.Tag = "http://t.bus55.ru/index.php/app/get_stations/" + id + "|" + Util.TypographString(a.Info);
-            img.Tap += (sender2, e2) =>
-            {
-              string str = ((Image)sender2).Tag.ToString();
-
-              MapLayer _layer = new MapLayer();
-              Pushpin pushpin = new Pushpin();
-
-              pushpin.GeoCoordinate = new GeoCoordinate() { Longitude = Util.StringToDouble(a.Coordinates[0]), Latitude = Util.StringToDouble(a.Coordinates[1]) };
-              pushpin.Content = Util.TypographString(a.Info);
-              MapOverlay _overlay = new MapOverlay();
-              _overlay.Content = pushpin;
-              _overlay.GeoCoordinate = new GeoCoordinate() { Longitude = Util.StringToDouble(a.Coordinates[0]), Latitude = Util.StringToDouble(a.Coordinates[1]) };
-              _layer.Add(_overlay);
-
-              Map.Layers.Add(_layer);
-            };
-            //img.LostFocus += (sender3, e3) =>
-            //{
-              //pushpin.Visibility = none; // сделать одну переменную на всех и менять по необходимости
-            //};
-
-            MapOverlay overlay = new MapOverlay();
-            overlay.Content = img;
-            overlay.PositionOrigin = new Point(0.5, 0.5);
-            overlay.GeoCoordinate = new GeoCoordinate() { Longitude = Util.StringToDouble(a.Coordinates[0]), Latitude = Util.StringToDouble(a.Coordinates[1]) };
-
-            layer.Add(overlay);
-          }
-        }
-        catch { }
-      };
-
-      client.DownloadStringAsync(new Uri("http://bus.admomsk.ru/index.php/getroute/getbus/" + id));
-
-      if (_mapBusesLayerInt == -1)
-      {
-        Map.Layers.Add(layer);
-
-        _mapBusesLayerInt = Map.Layers.Count - 1;
-      }
-      else
-        Map.Layers[_mapBusesLayerInt] = layer;
-    }
-
-
-    private async Task<GeoCoordinate> Map_GetCurrentPosition()
-    {
-      Geolocator locator = new Geolocator();
-      Geoposition position = await locator.GetGeopositionAsync();
-      Geocoordinate coordinate = position.Coordinate;
-      return ConvertGeocoordinate(coordinate);
-    }
-
-    public static GeoCoordinate ConvertGeocoordinate(Geocoordinate geocoordinate)
-    {
-      return new GeoCoordinate
-          (
-          geocoordinate.Latitude,
-          geocoordinate.Longitude,
-          geocoordinate.Altitude ?? Double.NaN,
-          geocoordinate.Accuracy,
-          geocoordinate.AltitudeAccuracy ?? Double.NaN,
-          geocoordinate.Speed ?? Double.NaN,
-          geocoordinate.Heading ?? Double.NaN
-          );
-    }
-
+    
     /*****************************************
      Настройки
     *****************************************/
@@ -1421,16 +962,6 @@ namespace MyWay
 
     private void Element_Search_Box_Open(object sender, EventArgs e)
     {
-      if (Pivot_Current == "Map") // так вышло. «Невозможно преобразовать AutoCompleteBox в TextBox»
-      {
-        if (Map_Search_Box.Text == "")
-          Element_Search_Box_Animation(0, 123, 0.5, 0.5, EasingMode.EaseOut);
-
-        Map_Search_Box.Focus(); // что за херня? какого чёрта?
-
-        return;
-      }
-
       TextBox e1 = null;
 
       switch (Pivot_Current)
@@ -1463,11 +994,6 @@ namespace MyWay
           break;
         case "Stops":
           e1 = Stops_Search_Box_Transform;
-          break;
-        case "Map":
-          e1 = Map_Search_Box_Transform;
-          a = 123;
-          Map_Search_Box.Text = "";
           break;
       }
 
@@ -1542,9 +1068,6 @@ namespace MyWay
           break;
         case "Stops":
           t = Stops_Search_Box_Transform;
-          break;
-        case "Map":
-          t = Map_Search_Box_Transform;
           break;
       }
 

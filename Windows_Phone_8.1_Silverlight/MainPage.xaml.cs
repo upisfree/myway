@@ -738,6 +738,7 @@ namespace MyWay
       PivotItem_Init();
     }
 
+    // Контекстные меню
     private async void Favourite_ContextMenu_Add_Route(object sender, RoutedEventArgs e)
     {
       string str = ((MenuItem)sender).Tag.ToString();
@@ -754,6 +755,14 @@ namespace MyWay
       await Favourite_WriteToFile(str, "Stop");
 
       await Favourite_Init(false);
+    }
+
+    private async void Favourite_ContextMenu_Remove_Route(object sender, RoutedEventArgs e)
+    {
+    }
+
+    private async void Favourite_ContextMenu_Remove_Stop(object sender, RoutedEventArgs e)
+    {
     }
 
     /*****************************************

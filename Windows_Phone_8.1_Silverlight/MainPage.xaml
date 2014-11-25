@@ -377,6 +377,13 @@
                   <ListBox.ItemTemplate>
                     <DataTemplate>
                       <Grid Tag="{Binding ToStop}" Tap="Route_GoToStops" toolkit:TiltEffect.IsTiltEnabled="True">
+                        <toolkit:ContextMenuService.ContextMenu>
+                          <toolkit:ContextMenu IsZoomEnabled="False">
+                            <toolkit:MenuItem Header="удалить из избранного" Click="Favourite_ContextMenu_Remove_Route" Tag="{Binding ToStop}" />
+                            <toolkit:MenuItem Header="посмотреть на карте" Click="Map_Show_Route" Tag="{Binding ToStop}" />
+                          </toolkit:ContextMenu>
+                        </toolkit:ContextMenuService.ContextMenu>
+
                         <TextBlock FontFamily="{StaticResource PhoneFontFamilySemiLight}" Margin="0,-8,0,0" Height="91" VerticalAlignment="Top" toolkit:SlideInEffect.LineIndex="1">
           						    <Run Text="{Binding Number}" FontSize="64" Foreground="{StaticResource PhoneForegroundBrush}" />
           						    <Run Text="{Binding Type}" FontSize="42" Foreground="{StaticResource PhoneForegroundBrush}" />
@@ -412,7 +419,14 @@
           					    FontSize="36"
           					    Foreground="{StaticResource PhoneForegroundBrush}"
           					    toolkit:TiltEffect.IsTiltEnabled="True"
-          					    toolkit:SlideInEffect.LineIndex="1" />
+          					    toolkit:SlideInEffect.LineIndex="1">
+                        <toolkit:ContextMenuService.ContextMenu>
+                          <toolkit:ContextMenu IsZoomEnabled="False">
+                            <toolkit:MenuItem Header="удалить из избранного" Click="Favourite_ContextMenu_Remove_Stop" Tag="{Binding All}" />
+                            <toolkit:MenuItem Header="посмотреть на карте" Click="Map_Show_Stop" Tag="{Binding All}" />
+                          </toolkit:ContextMenu>
+                        </toolkit:ContextMenuService.ContextMenu>
+                      </TextBlock>
                     </DataTemplate>
                   </ListBox.ItemTemplate>
 

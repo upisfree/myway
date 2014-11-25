@@ -481,6 +481,8 @@ namespace MyWay
       TextBlock text = (TextBlock)sender;
       string[] tag = text.Tag.ToString().Split(new Char[] { '|' });
 
+      Debug.WriteLine(text);
+
       string id  = tag[0];
       string lon = tag[1];
       string lat = tag[2];
@@ -621,7 +623,6 @@ namespace MyWay
 
     private async Task Favourite_Init(bool scroll)
     {
-      Debug.WriteLine(scroll);
       // Вставляю картинку в зависимости от цвета темы
       BitmapImage _bi = new BitmapImage();
 
@@ -632,11 +633,9 @@ namespace MyWay
 
       Favourite_Image.Source = _bi;
 
-      Debug.WriteLine(Util.GetThemeColor());
-
       // Инициализация, собственно
       Favourite_Model data = await Favourite_ReadFile();
-      Debug.WriteLine(data.Routes.Count);
+
       if (data == null)
       {
         Util.Hide(Favourite_Items);
@@ -704,20 +703,16 @@ namespace MyWay
           if (b.Length == 3)
             c += " " + b[2];
 
-          Debug.WriteLine(c);
-
           Routes.Model model = new Routes.Model() { Number = b[0], Type = c, Desc = a[2], ToStop = str };
           data.Routes.Add(model);
           break;
         case "Stop":
           string[] a2 = str.Split(new Char[] { '|' });
 
-          Stops.Model_XAML model2 = new Stops.Model_XAML() { Name = a2[3], All = str};
+          Stops.Model_XAML model2 = new Stops.Model_XAML() { Name = a2[3], All = str };
           data.Stops.Add(model2);
           break;
       }
-
-      Debug.WriteLine(data);
 
       await Data.File.WriteJson("favourite.json", JsonConvert.SerializeObject(data));
     }

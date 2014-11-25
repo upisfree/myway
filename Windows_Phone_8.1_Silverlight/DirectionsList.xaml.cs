@@ -34,14 +34,14 @@ namespace MyWay
         Title.Text = name.ToUpper();
 
       if (NavigationContext.QueryString.TryGetValue("id", out id))
-        Directions_Root.Tag = "http://t.bus55.ru/index.php/app/get_dir/" + id;
+        Directions_Root.Tag = id;
 
       await Directions_Show(Directions_Root.Tag.ToString());
     }
 
     private class IO
     {
-      public async static Task<HtmlDocument> Download(string link)
+      public async static Task<HtmlDocument> Download(int id)
       {
         if (Util.IsInternetAvailable())
         {
@@ -49,7 +49,7 @@ namespace MyWay
 
           try
           {
-            htmlPage = await new HttpClient().GetStringAsync(link);
+            htmlPage = await new HttpClient().GetStringAsync("http://t.bus55.ru/index.php/app/get_dir/" + id);
           }
           catch
           {
@@ -75,7 +75,14 @@ namespace MyWay
         List<string> s = new List<string>();
         string d = null;
 
-        foreach (var a in html.DocumentNode.SelectNodes("//a"))
+        var _a = html.DocumentNode.SelectNodes("//a");
+
+        if (_a == null)
+        {
+          return null;
+        }
+
+        foreach (var a in _a)
         {
           var b = a.ChildNodes.ToArray();
 
@@ -103,10 +110,11 @@ namespace MyWay
         return result;
       }
 
-      public async static Task<string[]> Get(string link)
+      public async static Task<string[]> Get(string _id)
       {
-        Array _id = link.Split(new Char[] { '/' });
-        int id = Convert.ToInt32(Regex.Match(_id.GetValue(_id.Length - 1).ToString(), @"\d+").Value); // получаем последную часть ссылки, id прогноза
+        //Array _id = link.Split(new Char[] { '/' });
+        //int id = Convert.ToInt32(Regex.Match(_id.GetValue(_id.Length - 1).ToString(), @"\d+").Value); // получаем последную часть ссылки, id прогноза
+        int id = Convert.ToInt32(_id);
 
         if (Data.File.IsExists("Directions/" + id + ".db"))
         {
@@ -115,7 +123,7 @@ namespace MyWay
         }
         else
         {
-          HtmlDocument a = await Download(link);
+          HtmlDocument a = await Download(id);
           return await WriteAndGet(a, id);
         }
       }

@@ -31,24 +31,43 @@ namespace MyWay
       Init();
     }
 
+    protected async override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
+    {
+      base.OnNavigatedTo(e);
+
+      string mode = "";
+      string id = "";
+      string name = "";
+      string desc = "";
+
+      if (NavigationContext.QueryString.TryGetValue("name", out name))
+        Name.Text = name.ToUpper();
+
+      if (NavigationContext.QueryString.TryGetValue("desc", out desc))
+        Desc.Text = desc.ToUpper();
+
+      if (NavigationContext.QueryString.TryGetValue("id", out id))
+        await ShowRoute(id);
+    }
+
     // Нажатие на клавишу «Назад»
     protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
     {
-      if (SearchBox.Text != "")
-      {
-        DrawRoute(null);
-        DrawStops(null);
-        DrawBuses(0);
+      //if (SearchBox.Text != "")
+      //{
+      //  DrawRoute(null);
+      //  DrawStops(null);
+      //  DrawBuses(0);
 
-        _busTimer.Stop();
+      //  _busTimer.Stop();
 
-        SearchBox.Text = "";
-        SearchBox.IsEnabled = true;
+      //  SearchBox.Text = "";
+      //  SearchBox.IsEnabled = true;
 
-        e.Cancel = true;
-      }
+      //  e.Cancel = true;
+      //}
 
-      base.OnBackKeyPress(e);
+      //base.OnBackKeyPress(e);
     }
 
     /*****************************************
@@ -194,7 +213,7 @@ namespace MyWay
 
     private async Task Init()
     {
-      await Search_SetSource(); // отладь дизайн
+      //await Search_SetSource();
       await ShowUser(true);
 
       System.Windows.Threading.DispatcherTimer userTimer = new System.Windows.Threading.DispatcherTimer();
@@ -206,91 +225,91 @@ namespace MyWay
       userTimer.Start();
     }
 
-    private int _mapSearchId = -1;
-    private async void SearchBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-      if (e.AddedItems.Count <= 0) // ничего не найдено? валим.
-        return;
+    //private int _mapSearchId = -1;
+    //private async void SearchBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    //{
+    //  if (e.AddedItems.Count <= 0) // ничего не найдено? валим.
+    //    return;
 
-      string oldText = SearchBox.Text;
-      SearchBox.Text += " — загрузка";
-      SearchBox.IsEnabled = false;
+    //  string oldText = SearchBox.Text;
+    //  SearchBox.Text += " — загрузка";
+    //  SearchBox.IsEnabled = false;
 
-      Search_Model m = (Search_Model)e.AddedItems[0];
+    //  Search_Model m = (Search_Model)e.AddedItems[0];
 
-      if (_mapSearchId == m.Id)
-        return;
+    //  if (_mapSearchId == m.Id)
+    //    return;
 
-      _mapSearchId = m.Id;
+    //  _mapSearchId = m.Id;
 
-      _busTimer.Stop();
+    //  _busTimer.Stop();
 
-      Model data = await IO.Get(_mapSearchId);
+    //  Model data = await IO.Get(_mapSearchId);
 
-      if (data == null) // не можем загрузить? не можем нормально распарсить? валим. (у меня, например, если нет денег, Билайн отдаёт html страницу и json.net умирает)
-      {
-        MessageBox.Show("Произошла ошибка при загрузке маршрута.\nМожет, нет подключения к сети?\n\nОшибка не пропадает? Очисти кэш (в настройках).", "Ошибка!", MessageBoxButton.OK);
+    //  if (data == null) // не можем загрузить? не можем нормально распарсить? валим. (у меня, например, если нет денег, Билайн отдаёт html страницу и json.net умирает)
+    //  {
+    //    MessageBox.Show("Произошла ошибка при загрузке маршрута.\nМожет, нет подключения к сети?\n\nОшибка не пропадает? Очисти кэш (в настройках).", "Ошибка!", MessageBoxButton.OK);
 
-        DrawRoute(null);
+    //    DrawRoute(null);
 
-        SearchBox.Text = "";
-        SearchBox.IsEnabled = true;
+    //    SearchBox.Text = "";
+    //    SearchBox.IsEnabled = true;
 
-        return;
-      }
+    //    return;
+    //  }
 
-      DrawRoute(data);
-      DrawStops(data);
-      DrawBuses(_mapSearchId);
+    //  DrawRoute(data);
+    //  DrawStops(data);
+    //  DrawBuses(_mapSearchId);
 
-      SearchBox.Text = oldText;
-      SearchBox.IsEnabled = true;
+    //  SearchBox.Text = oldText;
+    //  SearchBox.IsEnabled = true;
 
-      SearchBox.Focus();
-      MapPanel.Focus();
+    //  SearchBox.Focus();
+    //  MapPanel.Focus();
 
-      double a = Util.StringToDouble(data.Coordinates[Convert.ToInt32(data.Coordinates.Count / 1.5)][1]);
-      double b = Util.StringToDouble(data.Coordinates[Convert.ToInt32(data.Coordinates.Count / 1.5)][0]);
+    //  double a = Util.StringToDouble(data.Coordinates[Convert.ToInt32(data.Coordinates.Count / 1.5)][1]);
+    //  double b = Util.StringToDouble(data.Coordinates[Convert.ToInt32(data.Coordinates.Count / 1.5)][0]);
 
-      MapPanel.SetView(new GeoCoordinate(a, b), 11.5);
+    //  MapPanel.SetView(new GeoCoordinate(a, b), 11.5);
 
-      _busTimer.Interval = TimeSpan.FromMilliseconds(30000);
-      _busTimer.Tick += new EventHandler((sender2, e2) =>
-      {
-        DrawBuses(_mapSearchId);
-      });
-      _busTimer.Start();
-    }
+    //  _busTimer.Interval = TimeSpan.FromMilliseconds(30000);
+    //  _busTimer.Tick += new EventHandler((sender2, e2) =>
+    //  {
+    //    DrawBuses(_mapSearchId);
+    //  });
+    //  _busTimer.Start();
+    //}
 
-    public async Task Search_SetSource()
-    {
-      string[] b = await MyWay.MainPage.IO.Get("Routes");
+    //public async Task Search_SetSource()
+    //{
+    //  string[] b = await MyWay.MainPage.IO.Get("Routes");
 
-      if (b != null)
-      {
-        List<Search_Model> list = new List<Search_Model>();
+    //  if (b != null)
+    //  {
+    //    List<Search_Model> list = new List<Search_Model>();
 
-        foreach (string a in b)
-        {
-          try
-          {
-            string[] line = a.Split(new Char[] { '|' });
+    //    foreach (string a in b)
+    //    {
+    //      try
+    //      {
+    //        string[] line = a.Split(new Char[] { '|' });
 
-            string number = Util.TypographString(line[0]);
-            string type = Util.TypographString(line[1]);
-            string desc = Util.TypographString(line[2]);
-            int id = Int32.Parse(line[3].Split(new Char[] { '/' }).Last());
+    //        string number = Util.TypographString(line[0]);
+    //        string type = Util.TypographString(line[1]);
+    //        string desc = Util.TypographString(line[2]);
+    //        int id = Int32.Parse(line[3].Split(new Char[] { '/' }).Last());
 
-            list.Add(new Search_Model() { Title = line[0] + " " + line[1], Desc = line[2], Id = id });
-          }
-          catch { }
-        }
+    //        list.Add(new Search_Model() { Title = line[0] + " " + line[1], Desc = line[2], Id = id });
+    //      }
+    //      catch { }
+    //    }
 
-        SearchBox.ItemsSource = list;
-      }
-      else
-        MessageBox.Show("Маршруты ещё не загрузились, подожди пожалуйста.");
-    }
+    //    SearchBox.ItemsSource = list;
+    //  }
+    //  else
+    //    MessageBox.Show("Маршруты ещё не загрузились, подожди пожалуйста.");
+    //}
 
     private int _mapUsersLayerInt = -1;
     private void DrawUser(GeoCoordinate coordinate)
@@ -576,42 +595,76 @@ namespace MyWay
         MapPanel.Layers[_mapBusesLayerInt] = layer;
     }
 
-    private void SearchBox_Open(object sender, EventArgs e)
+    private async Task ShowRoute(string _id)
     {
-      if (SearchBox.Text == "")
-        SearchBox_Animation(0, 150, 0.5, 0.5, EasingMode.EaseOut);
+      _busTimer.Stop();
 
-      SearchBox.Focus(); // что за херня? какого чёрта?
+      int id = Convert.ToInt32(_id);
+
+      Model data = await IO.Get(id);
+
+      if (data == null) // не можем загрузить? не можем нормально распарсить? валим. (у меня, например, если нет денег, Билайн отдаёт html страницу и json.net умирает)
+      {
+        MessageBox.Show("Произошла ошибка при загрузке маршрута.\nМожет, нет подключения к сети?\n\nОшибка не пропадает? Очисти кэш (в настройках).", "Ошибка!", MessageBoxButton.OK);
+
+        DrawRoute(null);
+
+        return;
+      }
+
+      DrawRoute(data);
+      DrawStops(data);
+      DrawBuses(id);
+
+      double a = Util.StringToDouble(data.Coordinates[Convert.ToInt32(data.Coordinates.Count / 1.5)][1]);
+      double b = Util.StringToDouble(data.Coordinates[Convert.ToInt32(data.Coordinates.Count / 1.5)][0]);
+
+      MapPanel.SetView(new GeoCoordinate(a, b), 11.5);
+
+      _busTimer.Interval = TimeSpan.FromMilliseconds(30000);
+      _busTimer.Tick += new EventHandler((sender2, e2) =>
+      {
+        DrawBuses(id);
+      });
+      _busTimer.Start();
     }
 
-    private void SearchBox_Tap(object sender, RoutedEventArgs e)
-    {
-      int a = 150;
-      TranslateTransform e1 = SearchBox_Transform;
+    //private void SearchBox_Open(object sender, EventArgs e)
+    //{
+    //  if (SearchBox.Text == "")
+    //    SearchBox_Animation(0, 150, 0.5, 0.5, EasingMode.EaseOut);
 
-      SearchBox.Text = "";
+    //  SearchBox.Focus(); // что за херня? какого чёрта?
+    //}
+
+    //private void SearchBox_Tap(object sender, RoutedEventArgs e)
+    //{
+    //  int a = 150;
+    //  TranslateTransform e1 = SearchBox_Transform;
+
+    //  SearchBox.Text = "";
       
-      if (e1.Y != a + 5)
-        SearchBox_Animation(a, a + 5, 0.5, 1, EasingMode.EaseOut);
-    }
+    //  if (e1.Y != a + 5)
+    //    SearchBox_Animation(a, a + 5, 0.5, 1, EasingMode.EaseOut);
+    //}
 
-    private void SearchBox_Animation(double from, double to, double time, double amplitude = 0, EasingMode mode = EasingMode.EaseOut)
-    {
-      DoubleAnimation da = new DoubleAnimation();
+    //private void SearchBox_Animation(double from, double to, double time, double amplitude = 0, EasingMode mode = EasingMode.EaseOut)
+    //{
+    //  DoubleAnimation da = new DoubleAnimation();
 
-      da.From = from;
-      da.To = to;
-      da.Duration = new Duration(TimeSpan.FromSeconds(time));
+    //  da.From = from;
+    //  da.To = to;
+    //  da.Duration = new Duration(TimeSpan.FromSeconds(time));
 
-      BackEase b = new BackEase();
-      b.Amplitude = amplitude;
-      b.EasingMode = mode;
-      da.EasingFunction = b;
+    //  BackEase b = new BackEase();
+    //  b.Amplitude = amplitude;
+    //  b.EasingMode = mode;
+    //  da.EasingFunction = b;
 
-      TranslateTransform t = SearchBox_Transform;
+    //  TranslateTransform t = SearchBox_Transform;
 
-      Util.DoubleAnimation(t, new PropertyPath("(TranslateTransform.Y)"), da);
-    }
+    //  Util.DoubleAnimation(t, new PropertyPath("(TranslateTransform.Y)"), da);
+    //}
 
     private async Task<GeoCoordinate> GetCurrentPosition()
     {

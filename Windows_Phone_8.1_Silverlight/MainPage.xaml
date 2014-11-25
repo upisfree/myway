@@ -23,7 +23,8 @@
       <Grid Tag="{Binding ToStop}" Tap="Route_GoToStops" toolkit:TiltEffect.IsTiltEnabled="True" Margin="0,-7.5,0,5">
         <toolkit:ContextMenuService.ContextMenu>
           <toolkit:ContextMenu IsZoomEnabled="False">
-            <toolkit:MenuItem Header="добавить в избранное" Click="Favourite_ContextMenu_Add_Route" Tag="{Binding ToStop}" /> <!-- Ай, хитрюга! -->
+            <toolkit:MenuItem Header="добавить в избранное" Click="Favourite_ContextMenu_Add_Route" Tag="{Binding ToStop}" />
+            <toolkit:MenuItem Header="посмотреть на карте" Click="Map_Show_Route" Tag="{Binding ToStop}" />
           </toolkit:ContextMenu>
         </toolkit:ContextMenuService.ContextMenu>
 
@@ -125,7 +126,8 @@
                 <Grid Tag="{Binding ToStop}" Tap="Route_GoToStops" toolkit:TiltEffect.IsTiltEnabled="True">
                   <toolkit:ContextMenuService.ContextMenu>
                     <toolkit:ContextMenu IsZoomEnabled="False">
-                      <toolkit:MenuItem Header="добавить в избранное" Click="Favourite_ContextMenu_Add_Route" Tag="{Binding ToStop}" /> <!-- Ай, хитрюга! -->
+                      <toolkit:MenuItem Header="добавить в избранное" Click="Favourite_ContextMenu_Add_Route" Tag="{Binding ToStop}" />
+                      <toolkit:MenuItem Header="посмотреть на карте" Click="Map_Show_Route" Tag="{Binding ToStop}" />
                     </toolkit:ContextMenu>
                   </toolkit:ContextMenuService.ContextMenu>
 
@@ -179,7 +181,7 @@
             <ListBox.ItemTemplate>
               <DataTemplate>
                 <TextBlock Text="{Binding Name}"
-                           Tag="{Binding Link}"
+                           Tag="{Binding All}"
                            Tap="Stop_Open"
                            Width="436"
                            Height="55"
@@ -191,7 +193,8 @@
                            toolkit:SlideInEffect.LineIndex="1">
                    <toolkit:ContextMenuService.ContextMenu>
                     <toolkit:ContextMenu IsZoomEnabled="False">
-                      <toolkit:MenuItem Header="добавить в избранное" Click="Favourite_ContextMenu_Add_Stop" Tag="{Binding All}" /> <!-- Ай, хитрюга! -->
+                      <toolkit:MenuItem Header="добавить в избранное" Click="Favourite_ContextMenu_Add_Stop" Tag="{Binding All}" />
+                      <toolkit:MenuItem Header="посмотреть на карте" Click="Map_Show_Stop" Tag="{Binding All}" />
                     </toolkit:ContextMenu>
                   </toolkit:ContextMenuService.ContextMenu>
                 </TextBlock>
@@ -209,7 +212,7 @@
             <ListBox.ItemTemplate>
               <DataTemplate>
                 <TextBlock Text="{Binding Name}"
-                           Tag="{Binding Link}"
+                           Tag="{Binding All}"
                            Tap="Stop_Open"
                            Width="436"
                            Height="55"
@@ -221,7 +224,8 @@
                            toolkit:SlideInEffect.LineIndex="1">
                   <toolkit:ContextMenuService.ContextMenu>
                     <toolkit:ContextMenu IsZoomEnabled="False">
-                      <toolkit:MenuItem Header="добавить в избранное" Click="Favourite_ContextMenu_Add_Stop" Tag="{Binding All}" /> <!-- Ай, хитрюга! -->
+                      <toolkit:MenuItem Header="добавить в избранное" Click="Favourite_ContextMenu_Add_Stop" Tag="{Binding All}" />
+                      <toolkit:MenuItem Header="посмотреть на карте" Click="Map_Show_Stop" Tag="{Binding All}" />
                     </toolkit:ContextMenu>
                   </toolkit:ContextMenuService.ContextMenu>                  
                 </TextBlock>
@@ -283,6 +287,12 @@
           <ListBoxItem>
             <Grid Width="425">
               <toolkit:ToggleSwitch x:Name="Favourite_Scroll_ToggleSwicth" Header="открывание избранного при старте" Content="Да" IsChecked="True" SwitchForeground="#FF455580" Margin="-11,0" Checked="Favourite_Scroll_Changed" Unchecked="Favourite_Scroll_Unchanged" />
+            </Grid>
+          </ListBoxItem>
+
+          <ListBoxItem>
+            <Grid Width="425">
+              <Button Content="открыть карту" Margin="-12,55,-12,0" Tap="Button_Tap" toolkit:TiltEffect.IsTiltEnabled="True" />
             </Grid>
           </ListBoxItem>
         </ListBox>
@@ -393,7 +403,7 @@
                   <ListBox.ItemTemplate>
                     <DataTemplate>
                       <TextBlock Text="{Binding Name}"
-          					    Tag="{Binding Link}"
+          					    Tag="{Binding All}"
           					    Tap="Stop_Open"
           					    Width="436"
           					    Height="55"

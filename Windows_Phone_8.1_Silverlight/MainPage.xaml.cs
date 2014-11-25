@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -40,7 +41,6 @@ namespace MyWay
     // Загрузка данных для элементов ViewModel
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
-      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Map.xaml", UriKind.Relative));
     }
 
     // Нажатие на клавишу «Назад»
@@ -211,7 +211,7 @@ namespace MyWay
             case "Routes":
               link = "http://t.bus55.ru/index.php/app/get_routes";
               break;
-            case "Stops_Map":
+            case "Stops":
               link = "http://t.bus55.ru/index.php/app/get_stations_json";
               break;
           }
@@ -271,68 +271,27 @@ namespace MyWay
             result = s.ToArray();
 
             break;
-          case "Stops_Map":
+          case "Stops":
             string jsonText = html.DocumentNode.InnerText;
 
-            List<Stops.Model_Map> json = JsonConvert.DeserializeObject<List<Stops.Model_Map>>(jsonText);
+            List<Stops.Model> json = JsonConvert.DeserializeObject<List<Stops.Model>>(jsonText);
+            Stops.Model_List_Comparer mc = new Stops.Model_List_Comparer();
 
-            string[] r = new string[json.Count - 1];
-            string w = null;
-
-            for (int i = 0; i < json.Count - 1; i++)
-            {
-              Stops.Model_Map a = json[i];
-
-              string c = a.Id + "|" + a.Lat + "|" + a.Lon + "|" + a.Name;
-
-              r[i] = c;
-
-              w += c + "\n";
-            }
-
-            w = w.Substring(0, w.Length - 1);
-
-            await Data.File.Write("Stops_Map.db", w);
-
-            result = r;
-
-            break;
-
-          case "Stops_List":
-            string[] e = null;
-
-            try
-            {
-              e = await IO.Get("Stops_Map"); // проверка на отсутсвие интернета, так как основная не проходит (смотри проверку в начале функции)
-              int _e = e.Length;            // чтобы try catch поймал исключение, надо произвести какое-либо действие над «e»
-            }
-            catch
-            {
-              break; // ловим исключение? валим отсюда.
-            }
-
-            List<Stops.Model_List> f = new List<Stops.Model_List>();
+            List<Stops.Model> f = new List<Stops.Model>();
             List<string> j = new List<string>();
             string k = null;
 
-            Stops.Model_List_Comparer mc = new Stops.Model_List_Comparer();
-
-            foreach (string g in e)
+            for (int i = 0; i < json.Count - 1; i++)
             {
               try
               {
-                string[] line = g.Split(new Char[] { '|' });
+                Stops.Model a = json[i];
 
-                string name = line[3];
-                string link = "http://t.bus55.ru/index.php/app/get_dir/" + line[0];
-
-                Stops.Model_List i = new Stops.Model_List() { Name = name, Link = link, All = name + "|" + link };
-
-                if (!f.Contains(i, mc))
+                if (!f.Contains(a, mc))
                 {
-                  f.Add(i);
-                  j.Add(name + "|" + link);
-                  k += name + "|" + link + "\n";
+                  f.Add(a);
+                  j.Add(a.Id + "|" + a.Lon + "|" + a.Lat + "|" + a.Name);
+                  k += a.Id + "|" + a.Lon + "|" + a.Lat + "|" + a.Name + "\n";
                 }
               }
               catch { }
@@ -340,7 +299,7 @@ namespace MyWay
 
             k = k.Substring(0, k.Length - 1);
 
-            await Data.File.Write("Stops_List.db", k);
+            await Data.File.Write("Stops.db", k);
 
             result = j.OrderBy(x => x).ToArray(); // OrderBy — сортировка по алфавиту
 
@@ -359,13 +318,8 @@ namespace MyWay
         }
         else
         {
-          if (mode != "Stops_List")
-          {
-            HtmlDocument a = await Download(mode);
-            return await WriteAndGet(mode, a);
-          }
-          else
-            return await WriteAndGet(mode, new HtmlDocument());
+          HtmlDocument a = await Download(mode);
+          return await WriteAndGet(mode, a);
         }
       }
     }
@@ -454,29 +408,28 @@ namespace MyWay
 
     public class Stops
     {
-      public class Model_Map
+      public class Model
       {
-        public int Id      { get; set; }
-        public double Lon  { get; set; }
-        public double Lat  { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
+        public string Lon { get; set; }
+        public string Lat { get; set; }
       }
 
-      public class Model_List
+      public class Model_XAML
       {
         public string Name { get; set; }
-        public string Link { get; set; }
-        public string All  { get; set; }
+        public string All { get; set; }
       }
 
-      public class Model_List_Comparer : IEqualityComparer<Model_List>
+      public class Model_List_Comparer : IEqualityComparer<Model>
       {
-        public bool Equals(Model_List x, Model_List y)
+        public bool Equals(Model x, Model y)
         {
           return (Util.IsStringContains(x.Name, y.Name));
         }
 
-        public int GetHashCode(Model_List obj)
+        public int GetHashCode(Model obj)
         {
           return obj.GetHashCode();
         }
@@ -485,13 +438,14 @@ namespace MyWay
 
     private async Task Stops_Init()
     {
-      string[] b = await IO.Get("Stops_List");
+      string[] b = await IO.Get("Stops");
+      b = b.OrderBy(x => x).ToArray();
 
       if (b != null)
       {
         Util.Hide(Stops_Error);
 
-        List<Stops.Model_List> StopsList = new List<Stops.Model_List>();
+        List<Stops.Model_XAML> StopsList = new List<Stops.Model_XAML>();
 
         foreach (string a in b)
         {
@@ -499,17 +453,19 @@ namespace MyWay
           {
             string[] line = a.Split(new Char[] { '|' });
 
-            string name = Util.TypographString(line[0]);
-            string link = Util.TypographString(line[1]);
+            string id = line[0];
+            string lon = line[1];
+            string lat = line[2];
+            string name = Util.TypographString(line[3]);
 
-            StopsList.Add(new Stops.Model_List() { Name = name, Link = link, All = name + "|" + link });
+            StopsList.Add(new Stops.Model_XAML() { Name = name, All = id + "|" + lon + "|" + lat + "|" + name  });
           }
           catch { }
         }
 
         Util.Hide(Stops_Load);
 
-        Stops_Root.ItemsSource = StopsList;
+        Stops_Root.ItemsSource = StopsList; // OrderBy — сортировка по алфавиту
       }
       else
       {
@@ -523,11 +479,38 @@ namespace MyWay
     private void Stop_Open(object sender, EventArgs e)
     {
       TextBlock text = (TextBlock)sender;
+      string[] tag = text.Tag.ToString().Split(new Char[] { '|' });
 
-      string link = text.Tag.ToString();
-      string name = text.Text;
+      string id  = tag[0];
+      string lon = tag[1];
+      string lat = tag[2];
+      string name = text.Text; // или tag[3]
 
-      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/DirectionsList.xaml?link=" + link + "&name=" + name, UriKind.Relative));
+      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/DirectionsList.xaml?id=" + id + "&name=" + name + "&lon=" + lon + "&lan=" + lat, UriKind.Relative));
+    }
+
+    /*****************************************
+     Карта
+    *****************************************/
+
+    private void Map_Show_Route(object sender, RoutedEventArgs e)
+    {
+      string[] a = ((MenuItem)sender).Tag.ToString().Split(new Char[] { '|' });
+      Array _id = a[0].Split(new Char[] { '/' });
+      string id = Regex.Match(_id.GetValue(_id.Length - 1).ToString(), @"\d+").Value; // получаем последную часть ссылки, id прогноза
+      string name = a[1];
+      string desc = a[2];
+
+      Debug.WriteLine(id + ", " + name + ", " + desc);
+
+      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Map.xaml?mode=route&id=" + id + "&name=" + name + "&desc=" + desc, UriKind.Relative));
+    }
+
+    private async void Map_Show_Stop(object sender, RoutedEventArgs e)
+    {
+      string[] a = ((MenuItem)sender).Tag.ToString().Split(new Char[] { '|' });
+      Debug.WriteLine(((MenuItem)sender).Tag.ToString());
+      //(Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Map.xaml?mode=stop&name=" + name + "&coordinates=" + name + "&desc=" + desc, UriKind.Relative));
     }
     
     /*****************************************
@@ -638,6 +621,7 @@ namespace MyWay
 
     private async Task Favourite_Init(bool scroll)
     {
+      Debug.WriteLine(scroll);
       // Вставляю картинку в зависимости от цвета темы
       BitmapImage _bi = new BitmapImage();
 
@@ -648,9 +632,11 @@ namespace MyWay
 
       Favourite_Image.Source = _bi;
 
+      Debug.WriteLine(Util.GetThemeColor());
+
       // Инициализация, собственно
       Favourite_Model data = await Favourite_ReadFile();
-
+      Debug.WriteLine(data.Routes.Count);
       if (data == null)
       {
         Util.Hide(Favourite_Items);
@@ -683,7 +669,7 @@ namespace MyWay
     public class Favourite_Model
     {
       public List<Routes.Model> Routes { get; set; }
-      public List<Stops.Model_List> Stops { get; set; }
+      public List<Stops.Model_XAML> Stops { get; set; }
     }
 
     private async Task<Favourite_Model> Favourite_ReadFile()
@@ -706,7 +692,7 @@ namespace MyWay
       Favourite_Model data = await Favourite_ReadFile();
 
       if (data == null)
-        data = new Favourite_Model() { Routes = new List<Routes.Model>(), Stops = new List<Stops.Model_List>() };
+        data = new Favourite_Model() { Routes = new List<Routes.Model>(), Stops = new List<Stops.Model_XAML>() };
 
       switch (mode)
       {
@@ -726,7 +712,7 @@ namespace MyWay
         case "Stop":
           string[] a2 = str.Split(new Char[] { '|' });
 
-          Stops.Model_List model2 = new Stops.Model_List() { Name = a2[0], Link = a2[1], All = str };
+          Stops.Model_XAML model2 = new Stops.Model_XAML() { Name = a2[3], All = str};
           data.Stops.Add(model2);
           break;
       }
@@ -791,7 +777,7 @@ namespace MyWay
             way = "Routes";
             break;
           case "Stops":
-            way = "Stops_List";
+            way = "Stops";
             break;
         }
 
@@ -838,7 +824,7 @@ namespace MyWay
 
                 break;
               case "Stops":
-                if (Util.IsStringContains(line[0], query))
+                if (Util.IsStringContains(line[3], query))
                 {
                   flag = true;
                 }
@@ -908,10 +894,10 @@ namespace MyWay
 
                   break;
                 case "Stops":
-                  string name = a[0];
-                  string link = a[1];
+                  string name = a[3];
+                  string all = a[0] + "|" + a[1] + "|" + a[2] + "|" + a[3];
 
-                  e1.Items.Add(new Stops.Model_List() { Name = name, Link = link , All = name + "|" + link });
+                  e1.Items.Add(new Stops.Model_XAML() { Name = name, All = all });
 
                   break;
               }
@@ -1003,16 +989,6 @@ namespace MyWay
 
     private async void Element_Search_Box_LostFocus(object sender, RoutedEventArgs e)
     {
-      if (Pivot_Current == "Map") // см. коммент в Element_Search_Box_Open
-      {
-    //    if (Map_Search_Box.Text == "")
-    //      Element_Search_Box_Animation(123, 0, 0.5, 0.25, EasingMode.EaseIn);
-    //    else
-    //      Element_Search_Box_Animation(130, 123, 0.5, 1, EasingMode.EaseOut);
-
-        return;
-      }
-
       TextBox e1 = null;
 
       switch (Pivot_Current)
@@ -1081,6 +1057,11 @@ namespace MyWay
       ca.Duration = TimeSpan.FromMilliseconds(time);
 
       Util.ColorAnimation(LayoutRoot, new PropertyPath("(Panel.Background).(SolidColorBrush.Color)"), ca);
+    }
+
+    private void Button_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+    {
+      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Map.xaml", UriKind.Relative));
     }
   }
 }

@@ -25,14 +25,16 @@ namespace MyWay
     {
       base.OnNavigatedTo(e);
 
-      string link = "";
+      string id = "";
+      string lon = "";
+      string lat = "";
       string name = "";
 
       if (NavigationContext.QueryString.TryGetValue("name", out name))
         Title.Text = name.ToUpper();
 
-      if (NavigationContext.QueryString.TryGetValue("link", out link))
-        Directions_Root.Tag = link;
+      if (NavigationContext.QueryString.TryGetValue("id", out id))
+        Directions_Root.Tag = "http://t.bus55.ru/index.php/app/get_dir/" + id;
 
       await Directions_Show(Directions_Root.Tag.ToString());
     }

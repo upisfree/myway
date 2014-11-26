@@ -1065,10 +1065,5 @@ namespace MyWay
 
       Util.ColorAnimation(LayoutRoot, new PropertyPath("(Panel.Background).(SolidColorBrush.Color)"), ca);
     }
-
-    private void Button_Tap(object sender, System.Windows.Input.GestureEventArgs e)
-    {
-      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Map.xaml", UriKind.Relative));
-    }
   }
 }

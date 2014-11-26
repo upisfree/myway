@@ -31,16 +31,16 @@ namespace MyWay
       Stops_Init();
 
       InitializeComponent();
-
-      this.Loaded += new RoutedEventHandler(async (sender, e2) => // перед инициализацией?
-      {
-        await Favourite_Init(true);
-      });
     }
 
-    // Загрузка данных для элементов ViewModel
-    protected override void OnNavigatedTo(NavigationEventArgs e)
+    protected async override void OnNavigatedTo(NavigationEventArgs e)
     {
+      base.OnNavigatedTo(e);
+
+      if (e.NavigationMode == NavigationMode.New)
+        await Favourite_Init(true);
+      else
+        await Favourite_Init(false);
     }
 
     // Нажатие на клавишу «Назад»
@@ -624,7 +624,7 @@ namespace MyWay
      Избранное
     *****************************************/
 
-    private async Task Favourite_Init(bool scroll)
+    public async Task Favourite_Init(bool scroll)
     {
       // Вставляю картинку в зависимости от цвета темы
       BitmapImage _bi = new BitmapImage();

@@ -107,6 +107,7 @@
     <Compile Include="DirectionsList.xaml.cs">
       <DependentUpon>DirectionsList.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Favourite.cs" />
     <Compile Include="Map.xaml.cs">
       <DependentUpon>Map.xaml</DependentUpon>
     </Compile>

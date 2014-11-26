@@ -637,7 +637,7 @@ namespace MyWay
       Favourite_Image.Source = _bi;
 
       // Инициализация, собственно
-      Favourite_Model data = await Favourite_ReadFile();
+      Favourite.Model data = await Favourite.ReadFile();
 
       if (data == null)
       {
@@ -668,58 +668,6 @@ namespace MyWay
       }
     }
 
-    public class Favourite_Model
-    {
-      public List<Routes.Model> Routes { get; set; }
-      public List<Stops.Model_XAML> Stops { get; set; }
-    }
-
-    private async Task<Favourite_Model> Favourite_ReadFile()
-    {
-      if (Data.File.IsExists("favourite.json") == false)
-        return null;
-
-      string json = await Data.File.Read("favourite.json");
-
-      if (json == "" || json == null)
-        return null;
-
-      Debug.WriteLine(json);
-
-      return JsonConvert.DeserializeObject<Favourite_Model>(json);
-    }
-
-    private async Task Favourite_WriteToFile(string str, string mode)
-    {
-      Favourite_Model data = await Favourite_ReadFile();
-
-      if (data == null)
-        data = new Favourite_Model() { Routes = new List<Routes.Model>(), Stops = new List<Stops.Model_XAML>() };
-
-      switch (mode)
-      {
-        case "Route":
-          string[] a = str.Split(new Char[] { '|' });
-          string[] b = a[1].Split(new Char[] { ' ' });
-          string c = b[1];
-
-          if (b.Length == 3)
-            c += " " + b[2];
-
-          Routes.Model model = new Routes.Model() { Number = b[0], Type = c, Desc = a[2], ToStop = str };
-          data.Routes.Add(model);
-          break;
-        case "Stop":
-          string[] a2 = str.Split(new Char[] { '|' });
-
-          Stops.Model_XAML model2 = new Stops.Model_XAML() { Name = a2[3], All = str };
-          data.Stops.Add(model2);
-          break;
-      }
-
-      await Data.File.WriteJson("favourite.json", JsonConvert.SerializeObject(data));
-    }
-
     private async Task Favourite_Clear()
     {
       MessageBoxResult mbr = MessageBox.Show("Очищение удалит из избранного все добавленные маршруты и остановки.\nОчистить избранное?", "Очистка избранного", MessageBoxButton.OKCancel);
@@ -746,7 +694,7 @@ namespace MyWay
     {
       string str = ((MenuItem)sender).Tag.ToString();
       
-      await Favourite_WriteToFile(str, "Route");
+      await Favourite.WriteToFile(str, "Route");
 
       await Favourite_Init(false);
     }
@@ -755,7 +703,7 @@ namespace MyWay
     {
       string str = ((MenuItem)sender).Tag.ToString();
 
-      await Favourite_WriteToFile(str, "Stop");
+      await Favourite.WriteToFile(str, "Stop");
 
       await Favourite_Init(false);
     }

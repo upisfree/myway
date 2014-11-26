@@ -11,6 +11,7 @@ using HtmlAgilityPack;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace MyWay
 {
@@ -36,6 +37,11 @@ namespace MyWay
       if (NavigationContext.QueryString.TryGetValue("id", out id))
         Directions_Root.Tag = id;
 
+      NavigationContext.QueryString.TryGetValue("lon", out lon);
+      NavigationContext.QueryString.TryGetValue("lat", out lat);
+
+      MapData.Tag = lon + "|" + lat;
+      
       await Directions_Show(Directions_Root.Tag.ToString());
     }
 
@@ -188,6 +194,13 @@ namespace MyWay
       string name = Title.Text;
 
       (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + link + "&name=" + name, UriKind.Relative));
+    }
+
+    private void MapButton_Click(object sender, EventArgs e)
+    {
+      string[] a = MapData.Tag.ToString().Split(new Char[] { '|' });
+
+      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Map.xaml?mode=stop&id=" + Directions_Root.Tag + "&name=" + Title.Text + "&lon=" + a[0] + "&lat=" + a[1], UriKind.Relative));
     }
   }
 }

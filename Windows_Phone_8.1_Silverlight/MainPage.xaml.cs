@@ -488,7 +488,7 @@ namespace MyWay
       string lat = tag[2];
       string name = text.Text; // или tag[3]
 
-      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/DirectionsList.xaml?id=" + id + "&name=" + name + "&lon=" + lon + "&lan=" + lat, UriKind.Relative));
+      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/DirectionsList.xaml?id=" + id + "&name=" + name + "&lon=" + lon + "&lat=" + lat, UriKind.Relative));
     }
 
     /*****************************************

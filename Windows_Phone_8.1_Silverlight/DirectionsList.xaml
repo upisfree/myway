@@ -22,6 +22,8 @@
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
+    <Grid x:Name="MapData" Visibility="Collapsed" Tag=""></Grid>
+    
     <!--TitlePanel содержит имя приложения и заголовок страницы-->
     <StackPanel Grid.Row="0" Margin="12,17,0,28">
       <TextBlock x:Name="Title" Text="МОЙ МАРШРУТ" Style="{StaticResource PhoneTextNormalStyle}" FontFamily="Segoe WP Semibold" FontSize="22.7"/>
@@ -63,4 +65,10 @@
       </Grid>
     </Grid>
   </Grid>
+
+  <phone:PhoneApplicationPage.ApplicationBar>
+    <shell:ApplicationBar IsVisible="True">
+      <shell:ApplicationBarIconButton IconUri="/Images/appbar.map.png" Text="посмотреть на карте" Click="MapButton_Click" />
+    </shell:ApplicationBar>
+  </phone:PhoneApplicationPage.ApplicationBar>
 </phone:PhoneApplicationPage>

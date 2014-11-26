@@ -80,4 +80,10 @@
       <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="99,342,98,232" Tap="ShowStopsAgain"/>
     </Grid>
   </Grid>
+
+  <phone:PhoneApplicationPage.ApplicationBar>
+    <shell:ApplicationBar IsVisible="True">
+      <shell:ApplicationBarIconButton IconUri="/Images/appbar.map.png" Text="посмотреть на карте" Click="MapButton_Click" />
+    </shell:ApplicationBar>
+  </phone:PhoneApplicationPage.ApplicationBar>
 </phone:PhoneApplicationPage>

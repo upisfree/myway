@@ -398,8 +398,9 @@ namespace MyWay
 
       string link = a[0];
       string name = a[1].ToUpper();
+      string desc = a[2].ToUpper();
 
-      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/StopsList.xaml?link=" + link + "&name=" + name, UriKind.Relative));
+      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/StopsList.xaml?link=" + link + "&name=" + name + "&desc=" + desc, UriKind.Relative));
     }
 
     /*****************************************

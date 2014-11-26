@@ -24,22 +24,25 @@ namespace MyWay
 
       string link = "";
       string name = "";
+      string desc = "";
 
-      if (NavigationContext.QueryString.TryGetValue("name", out name))
-        PivotRoot.Title = name;
+      NavigationContext.QueryString.TryGetValue("name", out name);
+      PivotRoot.Title = name;
 
-      if (NavigationContext.QueryString.TryGetValue("link", out link))
-      {
-        Array a = link.Split(new Char[] { '/' });
-        string b = Regex.Match(a.GetValue(a.Length - 1).ToString(), @"\d+").Value; // получаем последную часть ссылки, id прогноза
+      NavigationContext.QueryString.TryGetValue("desc", out desc);
+      NavigationContext.QueryString.TryGetValue("link", out link);
+      
+      Array a = link.Split(new Char[] { '/' });
+      string b = Regex.Match(a.GetValue(a.Length - 1).ToString(), @"\d+").Value; // получаем последную часть ссылки, id прогноза
 
-        LayoutRoot.Tag = link + "|" + b;
+      LayoutRoot.Tag = link + "|" + b;
 
-        if (Data.File.IsExists("Stops/" + b + "/a.db"))
-          ShowStopsOffline(link, b);
-        else
-          ShowStopsOnline(link, b);
-      }
+      PivotRoot.Tag = desc + "|" + b;
+
+      if (Data.File.IsExists("Stops/" + b + "/a.db"))
+        ShowStopsOffline(link, b);
+      else
+        ShowStopsOnline(link, b);
     }
 
     public class Stop
@@ -216,6 +219,13 @@ namespace MyWay
       string name = text.Text;
 
       (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + link + "&name=" + name, UriKind.Relative));
+    }
+
+    private void MapButton_Click(object sender, EventArgs e)
+    {
+      string[] a = PivotRoot.Tag.ToString().Split(new Char[] { '|' });
+
+      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Map.xaml?mode=route&id=" + a[1] + "&name=" + PivotRoot.Title + "&desc=" + a[0], UriKind.Relative));
     }
   }
 }

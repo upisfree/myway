@@ -444,12 +444,12 @@ namespace MyWay
         img.Source = bi;
         img.Height = 25;
         img.Width = 25;
-        img.Tag = "http://t.bus55.ru/index.php/app/get_dir/" + b.Id + "|" + Util.TypographString(b.Name);
+        img.Tag = b.Id + "|" + Util.TypographString(b.Name);
         img.Tap += (sender, e) =>
         {
           string[] str = ((Image)sender).Tag.ToString().Split(new Char[] { '|' });
 
-          (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/DirectionsList.xaml?link=" + str[0] + "&name=" + str[1], UriKind.Relative));
+          (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + "http://t.bus55.ru/index.php/app/get_predict/" + str[0] + "&name=" + str[1], UriKind.Relative));
         };
 
         MapOverlay overlay = new MapOverlay();
@@ -656,7 +656,7 @@ namespace MyWay
       {
         string[] str = ((Image)sender).Tag.ToString().Split(new Char[] { '|' });
 
-        (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/DirectionsList.xaml?id=" + str[0] + "&lon=" + str[1] + "&lat=" + str[2] + "&name=" + str[3], UriKind.Relative));
+        (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + "http://t.bus55.ru/index.php/app/get_predict/" + str[0] + "&name=" + str[3], UriKind.Relative));
       };
 
       MapOverlay overlay = new MapOverlay();

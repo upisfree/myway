@@ -503,16 +503,19 @@ namespace MyWay
       string name = a[1];
       string desc = a[2];
 
-      Debug.WriteLine(id + ", " + name + ", " + desc);
-
       (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Map.xaml?mode=route&id=" + id + "&name=" + name + "&desc=" + desc, UriKind.Relative));
     }
 
-    private async void Map_Show_Stop(object sender, RoutedEventArgs e)
+    private void Map_Show_Stop(object sender, RoutedEventArgs e)
     {
       string[] a = ((MenuItem)sender).Tag.ToString().Split(new Char[] { '|' });
-      Debug.WriteLine(((MenuItem)sender).Tag.ToString());
-      //(Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Map.xaml?mode=stop&name=" + name + "&coordinates=" + name + "&desc=" + desc, UriKind.Relative));
+
+      string id   = a[0];
+      string lon  = a[1];
+      string lat  = a[2];
+      string name = a[3];
+
+      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Map.xaml?mode=stop&id=" + id + "&name=" + name + "&lon=" + lon + "&lat=" + lat, UriKind.Relative));
     }
     
     /*****************************************

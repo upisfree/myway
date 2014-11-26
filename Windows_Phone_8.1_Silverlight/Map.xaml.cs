@@ -39,6 +39,8 @@ namespace MyWay
       string id = "";
       string name = "";
       string desc = "";
+      string lat = "";
+      string lon = "";
 
       if (NavigationContext.QueryString.TryGetValue("name", out name))
         Name.Text = name.ToUpper();
@@ -46,8 +48,12 @@ namespace MyWay
       if (NavigationContext.QueryString.TryGetValue("desc", out desc))
         Desc.Text = desc.ToUpper();
 
-      if (NavigationContext.QueryString.TryGetValue("id", out id))
-        await ShowRoute(id);
+
+      if (NavigationContext.QueryString.TryGetValue("mode", out mode) && NavigationContext.QueryString.TryGetValue("id", out id))
+        if (mode == "route")
+          await ShowRoute(id);
+        else if (mode == "stop" && NavigationContext.QueryString.TryGetValue("lon", out lon) && NavigationContext.QueryString.TryGetValue("lat", out lat))
+          ShowStop(id, lat, lon);
     }
 
     // Нажатие на клавишу «Назад»
@@ -214,7 +220,7 @@ namespace MyWay
     private async Task Init()
     {
       //await Search_SetSource();
-      await ShowUser(true);
+      await ShowUser(false);
 
       System.Windows.Threading.DispatcherTimer userTimer = new System.Windows.Threading.DispatcherTimer();
       userTimer.Interval = TimeSpan.FromMilliseconds(20000);
@@ -629,6 +635,44 @@ namespace MyWay
       _busTimer.Start();
     }
 
+    private void ShowStop(string _id, string _lat, string _lon) // да, дубляция, иди нахуй, всё равно его больше развивать не планирую, только не на Silverlight'е
+    {
+      int id = Convert.ToInt32(_id);
+      double lat = Util.StringToDouble(_lat);
+      double lon = Util.StringToDouble(_lon);
+
+      GeoCoordinate coordinate = new GeoCoordinate(lat, lon);
+
+      MapLayer layer = new MapLayer();
+
+      Image img = new Image();
+      BitmapImage bi = new BitmapImage();
+      bi.UriSource = new Uri("/Assets/stop.png", UriKind.Relative);
+      img.Source = bi;
+      img.Height = 25;
+      img.Width = 25;
+      img.Tag = id + "|" + lon + "|" + lat + "|" + Util.TypographString(Name.Text);
+      img.Tap += (sender, e) =>
+      {
+        string[] str = ((Image)sender).Tag.ToString().Split(new Char[] { '|' });
+
+        (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/DirectionsList.xaml?id=" + str[0] + "&lon=" + str[1] + "&lat=" + str[2] + "&name=" + str[3], UriKind.Relative));
+      };
+
+      MapOverlay overlay = new MapOverlay();
+      overlay.Content = img;
+      overlay.PositionOrigin = new Point(0.5, 0.5);
+      overlay.GeoCoordinate = new GeoCoordinate() { Longitude = lon, Latitude = lat };
+
+      layer.Add(overlay);
+
+      MapPanel.Layers.Add(layer);
+
+      MapPanel.Center = coordinate;
+      MapPanel.ZoomLevel = 16;
+    }
+
+
     //private void SearchBox_Open(object sender, EventArgs e)
     //{
     //  if (SearchBox.Text == "")
@@ -673,7 +717,6 @@ namespace MyWay
       Geocoordinate coordinate = position.Coordinate;
       return ConvertGeocoordinate(coordinate);
     }
-
     public static GeoCoordinate ConvertGeocoordinate(Geocoordinate geocoordinate)
     {
       return new GeoCoordinate

@@ -555,7 +555,7 @@ namespace MyWay
             img.Source = bi;
             img.Height = 25;
             img.Width = 100;
-            img.RenderTransform = new RotateTransform() { Angle = a.Course };
+            //img.RenderTransform = new RotateTransform() { Angle = a.Course };
             img.Tag = "http://t.bus55.ru/index.php/app/get_stations/" + id + "|" + Util.TypographString(a.Info);
             img.Tap += (sender2, e2) =>
             {
@@ -564,8 +564,12 @@ namespace MyWay
               MapLayer _layer = new MapLayer();
               Pushpin pushpin = new Pushpin();
 
+              Debug.WriteLine(Util.StringToDouble(a.Coordinates[0]) + " " + Util.StringToDouble(a.Coordinates[1]));
+
               pushpin.GeoCoordinate = new GeoCoordinate() { Longitude = Util.StringToDouble(a.Coordinates[0]), Latitude = Util.StringToDouble(a.Coordinates[1]) };
               pushpin.Content = Util.TypographString(a.Info);
+              //pushpin.RenderTransform.Transform(new Point(1, -100));
+
               MapOverlay _overlay = new MapOverlay();
               _overlay.Content = pushpin;
               _overlay.GeoCoordinate = new GeoCoordinate() { Longitude = Util.StringToDouble(a.Coordinates[0]), Latitude = Util.StringToDouble(a.Coordinates[1]) };
@@ -710,7 +714,7 @@ namespace MyWay
     //  Util.DoubleAnimation(t, new PropertyPath("(TranslateTransform.Y)"), da);
     //}
 
-    private async Task<GeoCoordinate> GetCurrentPosition()
+    public static async Task<GeoCoordinate> GetCurrentPosition()
     {
       Geolocator locator = new Geolocator();
       Geoposition position = await locator.GetGeopositionAsync();

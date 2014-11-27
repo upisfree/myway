@@ -5,8 +5,10 @@ using Microsoft.Phone.Tasks;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Device.Location;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -17,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using Windows.System;
 
 namespace MyWay
 {
@@ -423,6 +426,21 @@ namespace MyWay
         public string All { get; set; }
       }
 
+      public class Model_Near
+      {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("lon")]
+        public string Lon { get; set; }
+
+        [JsonProperty("lat")]
+        public string Lat { get; set; }
+      }
+
       public class Model_List_Comparer : IEqualityComparer<Model>
       {
         public bool Equals(Model x, Model y)
@@ -474,6 +492,75 @@ namespace MyWay
         Util.Hide(Stops_Load);
 
         await Stops_Init();
+      }
+    }
+
+    private async void Stops_Near(object sender, EventArgs e)
+    {
+      Stops_Search_Result.Items.Clear();
+      Util.Hide(Stops_Search_NoResults);
+      Util.Show(Stops_Root);
+
+      ProgressIndicator pi = new ProgressIndicator();
+      pi.IsVisible = true;
+      pi.IsIndeterminate = true;
+      pi.Text = "Ищу ближайшие остановки...";
+
+      SystemTray.SetProgressIndicator(this, pi);
+
+      try // определение местоположения
+      {
+        GeoCoordinate currentPosition = await MyWay.Map.GetCurrentPosition();
+
+        // загрузка данных
+        var client = new WebClient();
+
+        client.Headers["If-Modified-Since"] = DateTimeOffset.Now.ToString(); // отключение кэширования
+
+        client.DownloadStringCompleted += (sender2, e2) =>
+        {
+          HtmlDocument htmlDocument = new HtmlDocument();
+          
+          try
+          {
+            htmlDocument.LoadHtml(e2.Result);
+            string json = htmlDocument.DocumentNode.InnerText;
+            json = Regex.Replace(json, "[«»]", "\"");
+
+            Stops.Model_Near[] b = JsonConvert.DeserializeObject<Stops.Model_Near[]>(json);
+
+            Util.Show(Stops_Search_Result);
+            Util.Hide(Stops_Search_NoResults);
+            Util.Hide(Stops_Root);
+
+            foreach (Stops.Model_Near a in b)
+            {
+              string name = Util.TypographString(a.Name);
+              string all = a.Id + "|" + a.Lon + "|" + a.Lat + "|" + Util.TypographString(a.Name);
+
+              Stops_Search_Result.Items.Add(new Stops.Model_XAML() { Name = name, All = all });
+            }
+
+            pi.IsVisible = false;
+          }
+          catch
+          {
+            pi.IsVisible = false;
+
+            MessageBox.Show("Скорее всего, нет доступа к сети. Проверь его и попробуй ещё раз.", "Ошибочка!", MessageBoxButton.OK);
+          }
+        };
+
+        client.DownloadStringAsync(new Uri("http://t.bus55.ru/index.php/app/get_stations_geoloc_json/" + Regex.Replace(currentPosition.Longitude.ToString(), ",", "\\.") + "/" + Regex.Replace(currentPosition.Latitude.ToString(), ",", "\\.")));
+      }
+      catch (Exception e3)
+      {
+        MessageBoxResult mbr = MessageBox.Show("Не могу отобразить тебя на карте, так как у тебя отключено определение местоположения.\nОткрыть настройки, чтобы включить его?", "Местоположение", MessageBoxButton.OKCancel);
+
+        if (mbr == MessageBoxResult.OK)
+        {
+          Launcher.LaunchUriAsync(new Uri("ms-settings-location:"));
+        }
       }
     }
 

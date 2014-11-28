@@ -302,7 +302,7 @@
         <Grid>
           <ListBox Margin="10,0,-10,0">
             <ListBoxItem Height="289" Width="292" Margin="0,-50,0,0">
-              <Image Source="/Assets/Tiles/Medium.png" Stretch="Fill" Tap="About_BusImage_Tap" toolkit:TiltEffect.IsTiltEnabled="True"/>
+              <Image Source="/Assets/Tiles/Medium.png" Stretch="Fill" Hold="About_BusImage_Hold" toolkit:TiltEffect.IsTiltEnabled="True"/>
             </ListBoxItem>
 
             <ListBoxItem Margin="0,-50,0,0">

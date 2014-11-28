@@ -2,11 +2,14 @@
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Device.Location;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -97,7 +100,7 @@ namespace MyWay
 
     // Событие, вызываемое при прокрутке Pivot-ов
     private static string Pivot_Current = "Routes";
-    private static Color _StandartFontColor = Microsoft.Phone.Shell.SystemTray.ForegroundColor;
+    private static System.Windows.Media.Color _StandartFontColor = Microsoft.Phone.Shell.SystemTray.ForegroundColor;
 
     private void PivotItem_Init()
     {
@@ -717,13 +720,12 @@ namespace MyWay
     }
 
     // Воспоизведение звуков
-    private int About_BusImage_RandomInt;
-    private void About_BusImage_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+    private void About_BusImage_Hold(object sender, System.Windows.Input.GestureEventArgs e)
     {
-      MediaElement sound = new MediaElement();
-      About_BusImage_RandomInt = new Random().Next(1, 2);
-      sound.Source = new Uri(@"Assets/Sounds/" + About_BusImage_RandomInt + ".wav", UriKind.Relative);
-      sound.Play();
+      Stream stream = TitleContainer.OpenStream("Assets/NoRun.wav");
+      SoundEffect effect = SoundEffect.FromStream(stream);
+      FrameworkDispatcher.Update();
+      effect.Play();  
     }
 
     // Контакты
@@ -1131,7 +1133,7 @@ namespace MyWay
       Util.DoubleAnimation(t, new PropertyPath("(TranslateTransform.Y)"), da);
     }
 
-    private void Pivot_About_Background_Animation(Color to, double time)
+    private void Pivot_About_Background_Animation(System.Windows.Media.Color to, double time)
     {
       ColorAnimation ca = new ColorAnimation();
       ca.To = to;

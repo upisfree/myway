@@ -717,7 +717,8 @@ namespace MyWay
     public static Geolocator locator = new Geolocator();
     public static async Task<GeoCoordinate> GetCurrentPosition()
     {
-      Geoposition position = await locator.GetGeopositionAsync();
+      Geoposition position = await locator.GetGeopositionAsync(maximumAge: TimeSpan.FromMinutes(5), timeout: TimeSpan.FromSeconds(10));
+
       Geocoordinate coordinate = position.Coordinate;
       return ConvertGeocoordinate(coordinate);
     }

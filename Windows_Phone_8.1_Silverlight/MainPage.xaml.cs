@@ -591,7 +591,7 @@ namespace MyWay
           }
         };
 
-        client.DownloadStringAsync(new Uri("http://t.bus55.ru/index.php/app/get_stations_geoloc_json/" + Regex.Replace(currentPosition.Longitude.ToString(), ",", "\\.") + "/" + Regex.Replace(currentPosition.Latitude.ToString(), ",", "\\.")));
+        client.DownloadStringAsync(new Uri("http://t.bus55.ru/index.php/app/get_stations_geoloc_json/" + Regex.Replace(currentPosition.Latitude.ToString(), ",", ".") + "/" + Regex.Replace(currentPosition.Longitude.ToString(), ",", ".")));
       }
       catch (Exception e3)
       {

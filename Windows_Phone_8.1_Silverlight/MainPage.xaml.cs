@@ -347,6 +347,20 @@ namespace MyWay
         public KeyedList(TKey key, IEnumerable<TItem> items) : base(items) { Key = key; }
         public KeyedList(IGrouping<TKey, TItem> grouping) : base(grouping) { Key = grouping.Key; }
       }
+
+      public class Comparer : IEqualityComparer<Model>
+      {
+        public bool Equals(Model x, Model y)
+        {
+          return (Util.IsStringContains(x.Number + " " + x.Type, y.Number + " " + y.Type));
+        }
+
+        public int GetHashCode(Model obj)
+        {
+          return obj.GetHashCode();
+        }
+      }
+
     }
 
     private async Task Routes_Init()
@@ -357,7 +371,8 @@ namespace MyWay
       {
         Util.Hide(Routes_Error);
 
-        List<Routes.Model> RoutesList = new List<Routes.Model>();
+        List<Routes.Model> list = new List<Routes.Model>();
+        Routes.Comparer mc = new Routes.Comparer();
 
         foreach (string a in b)
         {
@@ -370,19 +385,22 @@ namespace MyWay
             string desc   = Util.TypographString(line[2]);
             string toStop = Util.TypographString(line[3] + "|" + number + " " + type + "|" + desc);
 
-            RoutesList.Add(new Routes.Model() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop });
+            Routes.Model _line = new Routes.Model() { Number = number, Type = " " + type, Desc = desc, ToStop = toStop };
+
+            if (!list.Contains(_line, mc))
+              list.Add(_line);
           }
           catch { }
         }
 
-        var groupedRoutesList =
-              from list in RoutesList
-              group list by list.Number[0] into listByGroup
+        var groupedList =
+              from _list in list
+              group _list by _list.Number[0] into listByGroup
               select new Routes.KeyedList<char, Routes.Model>(listByGroup);
 
         Util.Hide(Routes_Load);
-        
-        Routes_Root.ItemsSource = new List<Routes.KeyedList<char, Routes.Model>>(groupedRoutesList);
+
+        Routes_Root.ItemsSource = new List<Routes.KeyedList<char, Routes.Model>>(groupedList);
       }
       else
       {
@@ -881,8 +899,7 @@ namespace MyWay
                 if (Util.IsStringContains(line[0], query) ||
                     Util.IsStringContains(line[1], query) ||
                     Util.IsStringContains(line[2], query) ||
-                    Util.IsStringContains(line[0] + " " + line[1], query) ||
-                    Util.IsStringContains(line[0] + " " + line[1] + " " + line[2], query))
+                    Util.IsStringContains(line[0] + " " + line[1], query))
                 {
                   flag = true;
                 }

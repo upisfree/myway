@@ -24,7 +24,7 @@ using Windows.System;
 namespace MyWay
 {
   public partial class MainPage : PhoneApplicationPage//////////////////////////////////////////////////////////////// TODO: удаление из избранного
-  {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////        убирание дубликатов в поиске маршрутов
+  {
     // Конструктор//////////////////////////////////////////////////////////////////////////////////////////////////         настройки карты
     public MainPage()
     {
@@ -488,7 +488,6 @@ namespace MyWay
     private async Task Stops_Init()
     {
       string[] b = await IO.Get("Stops");
-      b = b.OrderBy(x => x).ToArray();
 
       if (b != null)
       {
@@ -514,7 +513,7 @@ namespace MyWay
 
         Util.Hide(Stops_Load);
 
-        Stops_Root.ItemsSource = StopsList; // OrderBy — сортировка по алфавиту
+        Stops_Root.ItemsSource = StopsList.OrderBy(x => x.Name).ToList(); // OrderBy — сортировка по алфавиту
       }
       else
       {

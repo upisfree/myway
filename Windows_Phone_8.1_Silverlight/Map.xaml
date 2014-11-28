@@ -30,47 +30,6 @@
         <TextBlock x:Name="Name" Text="" Style="{StaticResource PhoneTextNormalStyle}"  Foreground="Black" FontFamily="Segoe WP Semibold" FontSize="22.7" Margin="12,0,12,1"/>
         <TextBlock x:Name="Desc" Text="" Style="{StaticResource PhoneTextNormalStyle}" Foreground="Black" Opacity="0.5" FontFamily="Segoe WP Semibold" FontSize="22.7"/>
       </StackPanel>
-
-
-
-      <!--<Grid x:Name="SearchBox_Container" Width="480" Background="{StaticResource PhoneChromeBrush}" Margin="10,320,10,420">
-        <Grid.RowDefinitions>
-          <RowDefinition Height="9*"/>
-          <RowDefinition Height="11*"/>
-        </Grid.RowDefinitions>
-        <toolkit:AutoCompleteBox
-                x:Name="SearchBox"
-                FontSize="32"
-                InputScope="NameOrPhoneNumber"
-                Tap="SearchBox_Tap"
-                FilterMode="Contains"
-                ValueMemberPath="Title"
-                Background="{StaticResource PhoneTextBoxBrush}"
-                SelectionChanged="SearchBox_SelectionChanged" Grid.RowSpan="2" Margin="-12,-12,8,-12">
-          <toolkit:AutoCompleteBox.ItemTemplate>
-            <DataTemplate>
-              <StackPanel Margin="0,7" Tag="{Binding Id}">
-                <TextBlock Margin="8,0"
-                           Text="{Binding Title}" />
-                <TextBlock FontSize="{StaticResource PhoneFontSizeNormal}"
-                           Foreground="{StaticResource PhoneSubtleBrush}"
-                           Margin="8,-6,8,2"
-                           Text="{Binding Desc}" />
-              </StackPanel>
-            </DataTemplate>
-          </toolkit:AutoCompleteBox.ItemTemplate>
-        </toolkit:AutoCompleteBox>
-
-        <Grid.RenderTransform>
-          <TranslateTransform x:Name="SearchBox_Transform" />
-        </Grid.RenderTransform>
-      </Grid>-->
     </Grid>
   </Grid>
-
-  <phone:PhoneApplicationPage.ApplicationBar>
-    <shell:ApplicationBar IsVisible="True" Opacity="0">
-      <!--<shell:ApplicationBarIconButton IconUri="/Images/search.png" Text="поиск" Click="SearchBox_Open" />-->
-    </shell:ApplicationBar>
-  </phone:PhoneApplicationPage.ApplicationBar>
 </phone:PhoneApplicationPage>

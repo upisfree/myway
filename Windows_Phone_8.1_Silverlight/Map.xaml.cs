@@ -59,21 +59,6 @@ namespace MyWay
     // Нажатие на клавишу «Назад»
     protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
     {
-      //if (SearchBox.Text != "")
-      //{
-      //  DrawRoute(null);
-      //  DrawStops(null);
-      //  DrawBuses(0);
-
-      //  _busTimer.Stop();
-
-      //  SearchBox.Text = "";
-      //  SearchBox.IsEnabled = true;
-
-      //  e.Cancel = true;
-      //}
-
-      //base.OnBackKeyPress(e);
     }
 
     /*****************************************
@@ -219,7 +204,6 @@ namespace MyWay
 
     private async Task Init()
     {
-      //await Search_SetSource();
       await ShowUser(false);
 
       System.Windows.Threading.DispatcherTimer userTimer = new System.Windows.Threading.DispatcherTimer();
@@ -230,92 +214,6 @@ namespace MyWay
       });
       userTimer.Start();
     }
-
-    //private int _mapSearchId = -1;
-    //private async void SearchBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    //{
-    //  if (e.AddedItems.Count <= 0) // ничего не найдено? валим.
-    //    return;
-
-    //  string oldText = SearchBox.Text;
-    //  SearchBox.Text += " — загрузка";
-    //  SearchBox.IsEnabled = false;
-
-    //  Search_Model m = (Search_Model)e.AddedItems[0];
-
-    //  if (_mapSearchId == m.Id)
-    //    return;
-
-    //  _mapSearchId = m.Id;
-
-    //  _busTimer.Stop();
-
-    //  Model data = await IO.Get(_mapSearchId);
-
-    //  if (data == null) // не можем загрузить? не можем нормально распарсить? валим. (у меня, например, если нет денег, Билайн отдаёт html страницу и json.net умирает)
-    //  {
-    //    MessageBox.Show("Произошла ошибка при загрузке маршрута.\nМожет, нет подключения к сети?\n\nОшибка не пропадает? Очисти кэш (в настройках).", "Ошибка!", MessageBoxButton.OK);
-
-    //    DrawRoute(null);
-
-    //    SearchBox.Text = "";
-    //    SearchBox.IsEnabled = true;
-
-    //    return;
-    //  }
-
-    //  DrawRoute(data);
-    //  DrawStops(data);
-    //  DrawBuses(_mapSearchId);
-
-    //  SearchBox.Text = oldText;
-    //  SearchBox.IsEnabled = true;
-
-    //  SearchBox.Focus();
-    //  MapPanel.Focus();
-
-    //  double a = Util.StringToDouble(data.Coordinates[Convert.ToInt32(data.Coordinates.Count / 1.5)][1]);
-    //  double b = Util.StringToDouble(data.Coordinates[Convert.ToInt32(data.Coordinates.Count / 1.5)][0]);
-
-    //  MapPanel.SetView(new GeoCoordinate(a, b), 11.5);
-
-    //  _busTimer.Interval = TimeSpan.FromMilliseconds(30000);
-    //  _busTimer.Tick += new EventHandler((sender2, e2) =>
-    //  {
-    //    DrawBuses(_mapSearchId);
-    //  });
-    //  _busTimer.Start();
-    //}
-
-    //public async Task Search_SetSource()
-    //{
-    //  string[] b = await MyWay.MainPage.IO.Get("Routes");
-
-    //  if (b != null)
-    //  {
-    //    List<Search_Model> list = new List<Search_Model>();
-
-    //    foreach (string a in b)
-    //    {
-    //      try
-    //      {
-    //        string[] line = a.Split(new Char[] { '|' });
-
-    //        string number = Util.TypographString(line[0]);
-    //        string type = Util.TypographString(line[1]);
-    //        string desc = Util.TypographString(line[2]);
-    //        int id = Int32.Parse(line[3].Split(new Char[] { '/' }).Last());
-
-    //        list.Add(new Search_Model() { Title = line[0] + " " + line[1], Desc = line[2], Id = id });
-    //      }
-    //      catch { }
-    //    }
-
-    //    SearchBox.ItemsSource = list;
-    //  }
-    //  else
-    //    MessageBox.Show("Маршруты ещё не загрузились, подожди пожалуйста.");
-    //}
 
     private int _mapUsersLayerInt = -1;
     private void DrawUser(GeoCoordinate coordinate)
@@ -676,46 +574,10 @@ namespace MyWay
       MapPanel.ZoomLevel = 16;
     }
 
-
-    //private void SearchBox_Open(object sender, EventArgs e)
-    //{
-    //  if (SearchBox.Text == "")
-    //    SearchBox_Animation(0, 150, 0.5, 0.5, EasingMode.EaseOut);
-
-    //  SearchBox.Focus(); // что за херня? какого чёрта?
-    //}
-
-    //private void SearchBox_Tap(object sender, RoutedEventArgs e)
-    //{
-    //  int a = 150;
-    //  TranslateTransform e1 = SearchBox_Transform;
-
-    //  SearchBox.Text = "";
-      
-    //  if (e1.Y != a + 5)
-    //    SearchBox_Animation(a, a + 5, 0.5, 1, EasingMode.EaseOut);
-    //}
-
-    //private void SearchBox_Animation(double from, double to, double time, double amplitude = 0, EasingMode mode = EasingMode.EaseOut)
-    //{
-    //  DoubleAnimation da = new DoubleAnimation();
-
-    //  da.From = from;
-    //  da.To = to;
-    //  da.Duration = new Duration(TimeSpan.FromSeconds(time));
-
-    //  BackEase b = new BackEase();
-    //  b.Amplitude = amplitude;
-    //  b.EasingMode = mode;
-    //  da.EasingFunction = b;
-
-    //  TranslateTransform t = SearchBox_Transform;
-
-    //  Util.DoubleAnimation(t, new PropertyPath("(TranslateTransform.Y)"), da);
-    //}
+    // Определение позиции человека
 
     public static Geolocator locator = new Geolocator();
-    public static async Task<GeoCoordinate> GetCurrentPosition()
+    public static async Task<GeoCoordinate> GetCurrentPosition() // GeoCoordinateWathcer сюда?
     {
       Geoposition position = await locator.GetGeopositionAsync(maximumAge: TimeSpan.FromMinutes(5), timeout: TimeSpan.FromSeconds(10));
 

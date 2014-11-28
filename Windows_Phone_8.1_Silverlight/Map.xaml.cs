@@ -714,9 +714,9 @@ namespace MyWay
     //  Util.DoubleAnimation(t, new PropertyPath("(TranslateTransform.Y)"), da);
     //}
 
+    public static Geolocator locator = new Geolocator();
     public static async Task<GeoCoordinate> GetCurrentPosition()
     {
-      Geolocator locator = new Geolocator();
       Geoposition position = await locator.GetGeopositionAsync();
       Geocoordinate coordinate = position.Coordinate;
       return ConvertGeocoordinate(coordinate);

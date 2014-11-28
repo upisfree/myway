@@ -453,6 +453,18 @@ namespace MyWay
           return obj.GetHashCode();
         }
       }
+      public class Model_XAML_Comparer : IEqualityComparer<Model_XAML>
+      {
+        public bool Equals(Model_XAML x, Model_XAML y)
+        {
+          return (Util.IsStringContains(x.Name, y.Name));
+        }
+
+        public int GetHashCode(Model_XAML obj)
+        {
+          return obj.GetHashCode();
+        }
+      }
     }
 
     private async Task Stops_Init()
@@ -497,7 +509,7 @@ namespace MyWay
 
     private async void Stops_Near(object sender, EventArgs e)
     {
-      Stops_Search_Result.Items.Clear();
+      Stops_Search_Result.ItemsSource = new List<Stops.Model_XAML>();
       Util.Hide(Stops_Search_NoResults);
       Util.Show(Stops_Root);
 
@@ -533,13 +545,23 @@ namespace MyWay
             Util.Hide(Stops_Search_NoResults);
             Util.Hide(Stops_Root);
 
+            List<Stops.Model_XAML> list = new List<Stops.Model_XAML>();
+            Stops.Model_XAML_Comparer mc = new Stops.Model_XAML_Comparer();
+
             foreach (Stops.Model_Near a in b)
             {
               string name = Util.TypographString(a.Name);
               string all = a.Id + "|" + a.Lon + "|" + a.Lat + "|" + Util.TypographString(a.Name);
 
-              Stops_Search_Result.Items.Add(new Stops.Model_XAML() { Name = name, All = all });
+              Stops.Model_XAML c = new Stops.Model_XAML() { Name = name, All = all };
+
+              if (!list.Contains(c, mc))
+              {
+                list.Add(c);
+              }
             }
+
+            Stops_Search_Result.ItemsSource = list;
 
             pi.IsVisible = false;
           }

@@ -336,22 +336,33 @@ namespace MyWay
       {
         _Models.Stations b = data.Stations[i];
 
+        Border border = new Border();
         Image img = new Image();
         BitmapImage bi = new BitmapImage();
         bi.UriSource = new Uri("/Assets/stop.png", UriKind.Relative);
         img.Source = bi;
-        img.Height = 25;
-        img.Width = 25;
-        img.Tag = b.Id + "|" + Util.TypographString(b.Name);
-        img.Tap += (sender, e) =>
+        img.Height = 20;
+        img.Width = 20;
+
+        border.Child = img;
+        border.Width = 35;
+        border.Height = 35;
+        border.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+        border.BorderThickness = new Thickness(2);
+        border.BorderBrush = new SolidColorBrush(Util.ConvertStringToColor("#FF455580"));
+        border.CornerRadius = new CornerRadius(100);
+        border.Tag = b.Id + "|" + Util.TypographString(b.Name);
+        border.Tap += (sender, e) =>
         {
-          string[] str = ((Image)sender).Tag.ToString().Split(new Char[] { '|' });
+          string[] str = ((Border)sender).Tag.ToString().Split(new Char[] { '|' });
 
           (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + "http://t.bus55.ru/index.php/app/get_predict/" + str[0] + "&name=" + str[1], UriKind.Relative));
         };
 
+
+
         MapOverlay overlay = new MapOverlay();
-        overlay.Content = img;
+        overlay.Content = border;
         overlay.PositionOrigin = new Point(0.5, 0.5);
         overlay.GeoCoordinate = new GeoCoordinate() { Longitude = Util.StringToDouble(b.Coordinates[0]), Latitude = Util.StringToDouble(b.Coordinates[1]) };
 
@@ -547,22 +558,31 @@ namespace MyWay
 
       MapLayer layer = new MapLayer();
 
+      Border border = new Border();
       Image img = new Image();
       BitmapImage bi = new BitmapImage();
       bi.UriSource = new Uri("/Assets/stop.png", UriKind.Relative);
       img.Source = bi;
       img.Height = 25;
       img.Width = 25;
-      img.Tag = id + "|" + lon + "|" + lat + "|" + Util.TypographString(Name.Text);
-      img.Tap += (sender, e) =>
+
+      border.Child = img;
+      border.Width = 35;
+      border.Height = 35;
+      border.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+      border.BorderThickness = new Thickness(2);
+      border.BorderBrush = new SolidColorBrush(Util.ConvertStringToColor("#FF455580"));
+      border.CornerRadius = new CornerRadius(100);
+      border.Tag = id + "|" + lon + "|" + lat + "|" + Util.TypographString(Name.Text);
+      border.Tap += (sender, e) =>
       {
-        string[] str = ((Image)sender).Tag.ToString().Split(new Char[] { '|' });
+        string[] str = ((Border)sender).Tag.ToString().Split(new Char[] { '|' });
 
         (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + "http://t.bus55.ru/index.php/app/get_predict/" + str[0] + "&name=" + str[3], UriKind.Relative));
       };
 
       MapOverlay overlay = new MapOverlay();
-      overlay.Content = img;
+      overlay.Content = border;
       overlay.PositionOrigin = new Point(0.5, 0.5);
       overlay.GeoCoordinate = new GeoCoordinate() { Longitude = lon, Latitude = lat };
 

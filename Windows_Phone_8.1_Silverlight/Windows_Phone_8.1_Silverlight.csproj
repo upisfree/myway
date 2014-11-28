@@ -169,6 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\bus.png" />
+    <Content Include="Assets\MapStop.png" />
     <Content Include="Assets\MapUser.png" />
     <Content Include="Assets\Sounds\1.wav" />
     <Content Include="Assets\Sounds\2.wav" />

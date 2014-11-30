@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
-  <Identity Name="a0375d45-da2d-418c-a588-43c6ba028cc3" Publisher="CN=upisfree" Version="1.0.0.0" />
+  <Identity Name="64278upisfree.62078BC062C2B" Publisher="CN=1ACC04C5-F556-44E2-90CD-301FC2702EE0" Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="df514d43-08d1-4983-b1f9-507743814f53" PhonePublisherId="9f7fcde2-6f3e-489d-b3e6-3a9cab21e30c" />
   <Properties>
-    <DisplayName>Мой маршрут — Омск</DisplayName>
+    <DisplayName>Мой маршрут</DisplayName>
     <PublisherDisplayName>upisfree</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -16,7 +16,7 @@
   </Resources>
   <Applications>
     <Application Id="xdf514d43y08d1y4983yb1f9y507743814f53x" Executable="AGHost.exe" EntryPoint="MainPage.xaml">
-      <m3:VisualElements DisplayName="Мой маршрут — Омск" Square150x150Logo="Assets\SquareTile150x150.png" Square44x44Logo="Assets\Logo.png" Description="Мобильная версия известной омичам системы «Мой маршрут». Позволяет наблюдать за движением муниципального транспорта на карте города. Имеется возможность прогнозирования времени прибытия нужного автобуса, троллейбуса или трамвая на выбранную остановку." ForegroundText="light" BackgroundColor="#464646" ToastCapable="false">
+      <m3:VisualElements DisplayName="Мой маршрут" Square150x150Logo="Assets\SquareTile150x150.png" Square44x44Logo="Assets\Logo.png" Description="Мобильная версия системы Мой маршрут. Позволяет наблюдать за движением муниципального транспорта на карте города. Имеется возможность прогнозирования времени прибытия нужного автобуса, троллейбуса или трамвая на выбранную остановку. Замечания и предложения о развитии системы просим направлять на info@bus55.ru. Автор приложения — Сеня Пугач. Система создана ООО «Флагман-Софт»" ForegroundText="light" BackgroundColor="#464646" ToastCapable="false">
         <m3:DefaultTile Square71x71Logo="Assets\SquareTile71x71.png">
         </m3:DefaultTile>
         <m3:SplashScreen Image="Assets\Splashscreen.png" />

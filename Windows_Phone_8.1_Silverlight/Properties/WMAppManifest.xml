@@ -1,17 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2014/deployment" AppPlatformVersion="8.1">
-  <DefaultLanguage xmlns="" code="ru-RU" />
+  <DefaultLanguage xmlns="" code="ru" />
   <Languages xmlns="">
     <Language code="ru" />
     <Language code="ru-RU" />
   </Languages>
-  <App xmlns="" ProductID="{df514d43-08d1-4983-b1f9-507743814f53}" Title="Мой маршрут" RuntimeType="Silverlight" Version="1.0" Genre="apps.normal" Author="upisfree" Description="Мобильная версия известной омичам системы «Мой маршрут»." Publisher="upisfree" PublisherID="{9f7fcde2-6f3e-489d-b3e6-3a9cab21e30c}" NotificationService="MPN">
+  <App xmlns="" ProductID="{df514d43-08d1-4983-b1f9-507743814f53}" Title="Мой маршрут" RuntimeType="Silverlight" Version="1.1.0.0" Genre="apps.normal" Author="upisfree" Description="Мой маршрут — система, которая прогнозирует время прибытия и местоположение муниципального транспорта (автобусы, троллейбусы, трамваи, маршуртные такси) Омска. Это приложение — клиент для этой системы." Publisher="upisfree" PublisherID="{9f7fcde2-6f3e-489d-b3e6-3a9cab21e30c}" NotificationService="MPN">
     <IconPath IsRelative="true" IsResource="false">Assets\ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />
       <Capability Name="ID_CAP_WEBBROWSERCOMPONENT" />
-      <Capability Name="ID_CAP_MAP" />
+      <Capability Name="ID_CAP_ISV_CAMERA" />
       <Capability Name="ID_CAP_LOCATION" />
+      <Capability Name="ID_CAP_MAP" />
+      <Capability Name="ID_CAP_SENSORS" />
     </Capabilities>
     <Tasks>
       <DefaultTask Name="_default" NavigationPage="MainPage.xaml" />
@@ -44,5 +46,8 @@
       <ScreenResolution Name="ID_RESOLUTION_HD720P" />
       <ScreenResolution Name="ID_RESOLUTION_WVGA" />
     </ScreenResolutions>
+    <Requirements>
+      <Requirement Name="ID_REQ_FRONTCAMERA" />
+    </Requirements>
   </App>
 </Deployment>

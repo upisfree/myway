@@ -174,8 +174,6 @@
     <Content Include="Assets\ApplicationIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\BadgeLogo.png" />
-    <Content Include="Assets\Logo.png" />
     <Content Include="Assets\NoFuture\1.jpg" />
     <Content Include="Assets\NoFuture\2.jpg" />
     <Content Include="Assets\NoFuture\3.jpg" />
@@ -184,11 +182,7 @@
     <Content Include="Assets\NoFuture\6.jpg" />
     <Content Include="Assets\NoFuture\7.jpg" />
     <Content Include="Assets\NoFuture\8.jpg" />
-    <Content Include="Assets\SplashScreen.png" />
-    <Content Include="Assets\SquareTile150x150.png" />
-    <Content Include="Assets\SquareTile71x71.png" />
     <Content Include="Assets\stop.png" />
-    <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Tiles\Large.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -198,7 +192,7 @@
     <Content Include="Assets\Tiles\Small.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\WideLogo.png" />
+    <Content Include="GART.WP8.dll" />
     <Content Include="Images\add.png" />
     <Content Include="Images\appbar.map.png" />
     <Content Include="Images\close.png" />
@@ -222,6 +216,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="GART.WP8, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="HtmlAgilityPack">
       <HintPath>..\packages\HtmlAgilityPack.1.4.6\lib\sl4-windowsphone71\HtmlAgilityPack.dll</HintPath>
     </Reference>

@@ -16,10 +16,10 @@
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     shell:SystemTray.IsVisible="False">
 
-
   <phone:PhoneApplicationPage.ApplicationBar>
     <shell:ApplicationBar IsVisible="True">
       <shell:ApplicationBarIconButton IconUri="/Images/refresh.png" Text="сменить" Click="ApplicationBarIconButton_Click" />
+      <shell:ApplicationBarIconButton IconUri="/Images/refresh.png" Text="сменить" Click="ApplicationBarIconButton_Click_1" />
     </shell:ApplicationBar>
   </phone:PhoneApplicationPage.ApplicationBar>
 

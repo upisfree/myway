@@ -684,5 +684,13 @@ namespace MyWay
         ARDisplay.Visibility = System.Windows.Visibility.Collapsed;
       }
     }
+
+    private void ApplicationBarIconButton_Click_1(object sender, EventArgs e)
+    {
+      if (OverheadMap.Visibility == System.Windows.Visibility.Visible)
+        OverheadMap.Visibility = System.Windows.Visibility.Collapsed;
+      else
+        OverheadMap.Visibility = System.Windows.Visibility.Visible;
+    }
   }
 }

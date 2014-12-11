@@ -7,6 +7,7 @@
   xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:ARControls="clr-namespace:GART.Controls;assembly=GART.WP8"
   xmlns:maps="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
   xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
   mc:Ignorable="d"
@@ -261,6 +262,13 @@
             <TextBlock Text="Может, стоит проверить доступ к интернету?" Foreground="{StaticResource PhoneSubtleBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
             <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,342,0,232" Tap="Element_Error_Button_Tap"/>
           </Grid>
+
+          <ARControls:ARDisplay Visibility="Collapsed" x:Name="ARDisplay" d:LayoutOverrides="Width" AttitudeRefreshRate="50" MovementThreshold="10">
+            <ARControls:VideoPreview x:Name="VideoPreview" />
+            <ARControls:OverheadMap x:Name="OverheadMap" />
+            <ARControls:WorldView x:Name="WorldView" MinItemScale="0.1" MaxItemScale="1.0" FarClippingPlane="300.0" NearClippingPlane="1.0" />
+            <ARControls:HeadingIndicator x:Name="HeadingIndicator" HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </ARControls:ARDisplay>
         </Grid>
       </phone:PivotItem>   
 

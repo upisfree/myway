@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using GART.Controls;
+using HtmlAgilityPack;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
@@ -23,6 +24,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using Windows.System;
+using Location = System.Device.Location.GeoCoordinate;
 
 namespace MyWay
 {
@@ -542,7 +544,7 @@ namespace MyWay
 
       try // определение местоположения
       {
-        GeoCoordinate currentPosition = await MyWay.Map.GetCurrentPosition();
+        GeoCoordinate currentPosition = ARDisplay.Location;
 
         // загрузка данных
         var client = new WebClient();

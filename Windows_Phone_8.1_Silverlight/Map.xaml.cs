@@ -217,15 +217,15 @@ namespace MyWay
      Название бы придумать 
     *****************************************/
 
-    private async Task Init()
+    private void Init()
     {
-      await ShowUser(false);
+      ShowUser(false);
 
       System.Windows.Threading.DispatcherTimer userTimer = new System.Windows.Threading.DispatcherTimer();
       userTimer.Interval = TimeSpan.FromMilliseconds(20000);
-      userTimer.Tick += new EventHandler(async (sender, e) =>
+      userTimer.Tick += new EventHandler((sender, e) =>
       {
-        await ShowUser(false);
+        ShowUser(false);
       });
       userTimer.Start();
     }
@@ -257,11 +257,11 @@ namespace MyWay
       else
         MapPanel.Layers[_mapUsersLayerInt] = layer;
     }
-    private async Task ShowUser(bool focus)
+    private void ShowUser(bool focus)
     {
       try // определение местоположения
       {
-        GeoCoordinate currentPosition = await GetCurrentPosition();
+        Location currentPosition = ARDisplay.Location;
 
         if (focus)
         {
@@ -280,9 +280,9 @@ namespace MyWay
         }
       }
     }
-    private async void AppBar_ShowUser(object sender, EventArgs e)
+    private void AppBar_ShowUser(object sender, EventArgs e)
     {
-      await ShowUser(true);
+      ShowUser(true);
     }
 
     private int _mapRoadLayerInt = -1;
@@ -608,31 +608,7 @@ namespace MyWay
       MapPanel.Center = coordinate;
       MapPanel.ZoomLevel = 16;
     }
-
-    // Определение позиции человека
-
-    public static Geolocator locator = new Geolocator();
-    public static async Task<GeoCoordinate> GetCurrentPosition() // GeoCoordinateWathcer сюда?
-    {
-      Geoposition position = await locator.GetGeopositionAsync(maximumAge: TimeSpan.FromMinutes(5), timeout: TimeSpan.FromSeconds(10));
-
-      Geocoordinate coordinate = position.Coordinate;
-      return ConvertGeocoordinate(coordinate);
-    }
-    public static GeoCoordinate ConvertGeocoordinate(Geocoordinate geocoordinate)
-    {
-      return new GeoCoordinate
-          (
-          geocoordinate.Latitude,
-          geocoordinate.Longitude,
-          geocoordinate.Altitude ?? Double.NaN,
-          geocoordinate.Accuracy,
-          geocoordinate.AltitudeAccuracy ?? Double.NaN,
-          geocoordinate.Speed ?? Double.NaN,
-          geocoordinate.Heading ?? Double.NaN
-          );
-    }
-
+    
     /*****************************************
      Всё, что связано с доп. реальностью
     *****************************************/
@@ -656,19 +632,56 @@ namespace MyWay
       // Start with the current location
       var current = ARDisplay.Location;
 
-      // We'll add three Labels
-      for (int i = 0; i < 3; i++)
-      {
-        // Create a new location based on the users location plus
-        // a random offset.
-        Location offset = new Location()
-        {
-          Latitude = current.Latitude + ((double)new Random().Next(-60, 60)) / 100000,
-          Longitude = current.Longitude + ((double)new Random().Next(-60, 60)) / 100000,
-          Altitude = Double.NaN // NaN will keep it on the horizon
-        };
+      // загрузка данных
+      var client = new WebClient();
 
-        AddLabel(offset, "Location " + i);
+      client.Headers["If-Modified-Since"] = DateTimeOffset.Now.ToString(); // отключение кэширования
+
+      client.DownloadStringCompleted += (sender2, e2) =>
+      {
+        HtmlDocument htmlDocument = new HtmlDocument();
+
+        try
+        {
+          htmlDocument.LoadHtml(e2.Result);
+          string json = htmlDocument.DocumentNode.InnerText;
+          json = Regex.Replace(json, "[«»]", "\"");
+
+          MyWay.MainPage.Stops.Model_Near[] b = JsonConvert.DeserializeObject<MyWay.MainPage.Stops.Model_Near[]>(json);
+
+          foreach (MyWay.MainPage.Stops.Model_Near a in b)
+          {
+            string name = Util.TypographString(a.Name);
+
+            // Create a new location based on the users location plus
+            // a random offset.
+            Location offset = new Location()
+            {
+              Latitude = Util.StringToDouble(a.Lat),
+              Longitude = Util.StringToDouble(a.Lon),
+              Altitude = Double.NaN // NaN will keep it on the horizon
+            };
+
+            AddLabel(offset, name);
+          }
+        }
+        catch { }
+      };
+
+      client.DownloadStringAsync(new Uri("http://t.bus55.ru/index.php/app/get_stations_geoloc_json/" + Regex.Replace(current.Latitude.ToString(), ",", ".") + "/" + Regex.Replace(current.Longitude.ToString(), ",", ".")));
+    }
+
+    private void ApplicationBarIconButton_Click(object sender, EventArgs e)
+    {
+      if (MapPanel.Visibility == System.Windows.Visibility.Visible)
+      {
+        MapPanel.Visibility = System.Windows.Visibility.Collapsed;
+        ARDisplay.Visibility = System.Windows.Visibility.Visible;
+      }
+      else
+      {
+        MapPanel.Visibility = System.Windows.Visibility.Visible;
+        ARDisplay.Visibility = System.Windows.Visibility.Collapsed;
       }
     }
   }

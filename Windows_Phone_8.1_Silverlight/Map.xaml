@@ -16,6 +16,13 @@
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     shell:SystemTray.IsVisible="False">
 
+
+  <phone:PhoneApplicationPage.ApplicationBar>
+    <shell:ApplicationBar IsVisible="True">
+      <shell:ApplicationBarIconButton IconUri="/Images/refresh.png" Text="сменить" Click="ApplicationBarIconButton_Click" />
+    </shell:ApplicationBar>
+  </phone:PhoneApplicationPage.ApplicationBar>
+
   <!--LayoutRoot представляет корневую сетку, где размещается все содержимое страницы-->
   <Grid x:Name="LayoutRoot" Background="Transparent">
     <Grid.RowDefinitions>
@@ -30,9 +37,9 @@
         <TextBlock x:Name="Desc" Text="" Style="{StaticResource PhoneTextNormalStyle}" Foreground="Black" Opacity="0.5" FontFamily="Segoe WP Semibold" FontSize="22.7"/>
       </StackPanel>
 
-      <maps:Map Visibility="Collapsed" x:Name="MapPanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CartographicMode="Road" Center="54.9856846220791,73.3648522663862" ZoomLevel="12" />
+      <maps:Map x:Name="MapPanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CartographicMode="Road" Center="54.9856846220791,73.3648522663862" ZoomLevel="12" />
 
-      <ARControls:ARDisplay x:Name="ARDisplay" d:LayoutOverrides="Width" AttitudeRefreshRate="50" MovementThreshold="10">
+      <ARControls:ARDisplay Visibility="Collapsed" x:Name="ARDisplay" d:LayoutOverrides="Width" AttitudeRefreshRate="50" MovementThreshold="10">
         <ARControls:VideoPreview x:Name="VideoPreview" />
         <ARControls:OverheadMap x:Name="OverheadMap" />
         <ARControls:WorldView x:Name="WorldView" MinItemScale="0.1" MaxItemScale="1.0" FarClippingPlane="300.0" NearClippingPlane="1.0" />

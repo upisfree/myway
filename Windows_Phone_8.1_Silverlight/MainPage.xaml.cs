@@ -745,20 +745,22 @@ namespace MyWay
     {
       EmailComposeTask emailComposeTask = new EmailComposeTask();
 
-      emailComposeTask.To = "upisfree@outlook.com";
-      emailComposeTask.Subject = "fromapp@myway";
-      emailComposeTask.Body = "Можно удалить фразу про то, с какого устройства было отправлено письмо, если есть. Я попробую угадать.";
+      emailComposeTask.To = "info@bus55.ru";
+      emailComposeTask.Subject = "Замечание или предложение";
+      emailComposeTask.Body = "\n\nОтправлено из клиента под Windows Phone.";
 
       emailComposeTask.Show();
     }
 
     private void ContactVK(object sender, RoutedEventArgs e)
     {
-      WebBrowserTask webBrowserTask = new WebBrowserTask();
+      EmailComposeTask emailComposeTask = new EmailComposeTask();
 
-      webBrowserTask.Uri = new Uri("http://vk.com/upisfree", UriKind.Absolute);
+      emailComposeTask.To = "upisfree@outlook.com";
+      emailComposeTask.Subject = "fromapp@myway";
+      emailComposeTask.Body = "У меня ещё ВК (vk.com/upisfree) и сайт (upisfree.github.io) есть.";
 
-      webBrowserTask.Show();
+      emailComposeTask.Show();
     }
 
     /*****************************************

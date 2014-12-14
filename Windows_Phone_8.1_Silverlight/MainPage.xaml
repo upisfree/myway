@@ -263,7 +263,7 @@
             <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,342,0,232" Tap="Element_Error_Button_Tap"/>
           </Grid>
 
-          <ARControls:ARDisplay Visibility="Collapsed" x:Name="ARDisplay" d:LayoutOverrides="Width" AttitudeRefreshRate="50" MovementThreshold="10"></ARControls:ARDisplay>
+          <ARControls:ARDisplay Visibility="Collapsed" x:Name="ARDisplay" AttitudeRefreshRate="50" MovementThreshold="10"></ARControls:ARDisplay>
         </Grid>
       </phone:PivotItem>
 
@@ -320,7 +320,7 @@
                                Foreground="White">
                       <Run Text="Мой маршрут" />
                     </Underline>
-                    <Run Text=" — система, предсказывающая, когда на ту или иную остановку придёт тот или иной автобус." />
+                    <Run Text=" — система, позволяющая наблюдать за движением муниципального транспорта на карте города и показывающая прогноз времени прибытия нужного автобуса, троллейбуса или трамвая на остановку." />
                   </Paragraph>
                 </RichTextBox>
               </Grid>
@@ -328,20 +328,35 @@
 
             <ListBoxItem Margin="0,25,0,0">
               <Grid Width="425">
-                <TextBlock Text="Автор приложения — Сеня Пугач / upisfree. Связаться со мной можно нажав на эти сексуальные кнопочки ниже."
+                <TextBlock Text="О замечаниях и предложениях можно писать разработчикам"
 							             FontSize="21"
                            TextWrapping="Wrap" Margin="0,0,-12,0"
                            Foreground="White" />
-                <Button Content="почта" Margin="-12,83,224,-1" Click="ContactEmail" toolkit:TiltEffect.IsTiltEnabled="True" Width="225" BorderBrush="White" Foreground="White" />
-                <Button Content="вконтакте" Margin="213,83,-13,-1" Click="ContactVK" toolkit:TiltEffect.IsTiltEnabled="True" Width="225" BorderBrush="White" Foreground="White" />
+                <Button Content="системы" Margin="-12,55,212,27" Click="ContactEmail" toolkit:TiltEffect.IsTiltEnabled="True" Width="225" BorderBrush="White" Foreground="White" />
+                <Button Content="приложения" Margin="213,55,-13,27" Click="ContactVK" toolkit:TiltEffect.IsTiltEnabled="True" Width="225" BorderBrush="White" Foreground="White" />
               </Grid>
             </ListBoxItem>
 
-            <ListBoxItem Margin="0,12.5,0,0">
+            <ListBoxItem Margin="0,-15,0,0">
               <Grid Width="425">
-                <TextBlock Text="Если ждать автобус совсем скучно, то можно попробовать поискать пасхальные яйца :)"
+                <TextBlock Text="Автор приложения — Сеня Пугач, система разработана ООО «Флагман-Софт»."
+							             TextWrapping="Wrap"
+                           Foreground="White"
+                           FontSize="21" />
+              </Grid>
+            </ListBoxItem>
+
+            <ListBoxItem Margin="0,15,0,0">
+              <Grid Width="425">
+                <TextBlock Text="Тут лежат 2-а пасхальных яйца!"
 							             TextWrapping="Wrap"
                            Foreground="White" />
+              </Grid>
+            </ListBoxItem>
+
+            <ListBoxItem Margin="0,15,0,0"> <!-- для отступа -->
+              <Grid Width="425">
+                <TextBlock Text="" />
               </Grid>
             </ListBoxItem>
           </ListBox>

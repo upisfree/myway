@@ -16,7 +16,8 @@
   </Resources>
   <Applications>
     <Application Id="xdf514d43y08d1y4983yb1f9y507743814f53x" Executable="AGHost.exe" EntryPoint="MainPage.xaml">
-      <m3:VisualElements DisplayName="Мой маршрут" Square150x150Logo="Assets\SquareTile150x150.png" Square44x44Logo="Assets\Logo.png" Description="Мой маршрут — система, которая прогнозирует время прибытия и местоположение муниципального транспорта (автобусы, троллейбусы, трамваи, маршуртные такси) Омска. Это приложение — клиент для этой системы." ForegroundText="light" BackgroundColor="#464646" ToastCapable="false"></m3:VisualElements>
+      <m3:VisualElements DisplayName="Мой маршрут" Square150x150Logo="Assets\SquareTile150x150.png" Square44x44Logo="Assets\Logo.png" Description="Мой маршрут — система, позволяющая наблюдать за движением муниципального транспорта на карте города и показывающая прогноз времени прибытия нужного автобуса, троллейбуса или трамвая на остановку. О замечаниях и предложениях можно писать разработчикам системы (info@bus55.ru) и приложения (upisfree@outlook.com). Автор приложения — Сеня Пугач, система разработана ООО «Флагман-Софт». Тут лежат 2-а пасхальных яйца!" ForegroundText="light" BackgroundColor="#464646" ToastCapable="false">
+      </m3:VisualElements>
       <Extensions>
         <Extension Category="windows.backgroundTasks" EntryPoint="AgHost.BackgroundTask">
           <BackgroundTasks>

@@ -397,10 +397,13 @@ namespace MyWay
         {
           string[] str = ((Border)sender).Tag.ToString().Split(new Char[] { '|' });
 
-          (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + "http://t.bus55.ru/index.php/app/get_predict/" + str[0] + "&name=" + str[1], UriKind.Relative));
+          MessageBoxResult mbr = MessageBox.Show("Открыть прогнозы для этой остановки?", str[1], MessageBoxButton.OKCancel);
+
+          if (mbr == MessageBoxResult.OK)
+          {
+            (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + "http://t.bus55.ru/index.php/app/get_predict/" + str[0] + "&name=" + str[1], UriKind.Relative));
+          }
         };
-
-
 
         MapOverlay overlay = new MapOverlay();
         overlay.Content = border;
@@ -619,7 +622,12 @@ namespace MyWay
       {
         string[] str = ((Border)sender).Tag.ToString().Split(new Char[] { '|' });
 
-        (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + "http://t.bus55.ru/index.php/app/get_predict/" + str[0] + "&name=" + str[3], UriKind.Relative));
+        MessageBoxResult mbr = MessageBox.Show("Открыть прогнозы для этой остановки?", str[3], MessageBoxButton.OKCancel);
+
+        if (mbr == MessageBoxResult.OK)
+        {
+          (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + "http://t.bus55.ru/index.php/app/get_predict/" + str[0] + "&name=" + str[3], UriKind.Relative));
+        }
       };
 
       MapOverlay overlay = new MapOverlay();

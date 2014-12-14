@@ -228,7 +228,7 @@
                       <toolkit:MenuItem Header="добавить в избранное" Click="Favourite_ContextMenu_Add_Stop" Tag="{Binding All}" />
                       <toolkit:MenuItem Header="посмотреть на карте" Click="Map_Show_Stop" Tag="{Binding All}" />
                     </toolkit:ContextMenu>
-                  </toolkit:ContextMenuService.ContextMenu>                  
+                  </toolkit:ContextMenuService.ContextMenu>
                 </TextBlock>
               </DataTemplate>
             </ListBox.ItemTemplate>
@@ -270,7 +270,7 @@
             <ARControls:HeadingIndicator x:Name="HeadingIndicator" HorizontalAlignment="Center" VerticalAlignment="Center" />
           </ARControls:ARDisplay>
         </Grid>
-      </phone:PivotItem>   
+      </phone:PivotItem>
 
       <phone:PivotItem Header="настройки">
         <ListBox Margin="15,-16,15,0">
@@ -403,7 +403,7 @@
                       <Setter Property="Margin" Value="0,-10,0,10" />
                     </Style>
                   </ListBox.ItemContainerStyle>
-                </ListBox>                
+                </ListBox>
               </Grid>
 
               <Grid Grid.Row="1" VerticalAlignment="Stretch" Margin="0,0,0,40">
@@ -437,9 +437,9 @@
                       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                     </Style>
                   </ListBox.ItemContainerStyle>
-                </ListBox>                
+                </ListBox>
               </Grid>
-            </Grid>            
+            </Grid>
           </ScrollViewer>
         </Grid>
       </phone:PivotItem>

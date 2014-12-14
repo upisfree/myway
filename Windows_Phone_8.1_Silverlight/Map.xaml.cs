@@ -21,6 +21,7 @@ using GART;
 using Location = System.Device.Location.GeoCoordinate;
 using GART.Data;
 using GART.Controls;
+using GART.BaseControls;
 
 
 namespace MyWay
@@ -70,6 +71,31 @@ namespace MyWay
 
       base.OnNavigatedFrom(e);
     }
+
+    /// <summary>
+    /// To support any orientation, override this method and call
+    /// ARDisplay.HandleOrientationChange() method
+    /// </summary>
+    /// <param name="e"></param>
+    protected override void OnOrientationChanged(OrientationChangedEventArgs e)
+    {
+      base.OnOrientationChanged(e);
+      
+      ControlOrientation orientation = ControlOrientation.Default;
+
+      switch (e.Orientation)
+      {
+        case PageOrientation.LandscapeLeft:
+          orientation = ControlOrientation.Clockwise270Degrees;
+          break;
+        case PageOrientation.LandscapeRight:
+          orientation = ControlOrientation.Clockwise90Degrees;
+          break;
+      }
+
+      ARDisplay.Orientation = orientation;
+    }
+
 
     // Нажатие на клавишу «Назад»
     protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
@@ -613,14 +639,36 @@ namespace MyWay
      Всё, что связано с доп. реальностью
     *****************************************/
 
-    private void AddLabel(Location location, string label)
+    public class MapItem : ARItem
+    {
+      private string _description;
+
+      public string Description
+      {
+        get
+        {
+          return _description;
+        }
+        set
+        {
+          if (_description != value)
+          {
+            _description = value;
+            //NotifyPropertyChanged(() => Desc);
+          }
+        }
+      }
+    }
+
+    private void AddLabel(Location location, string name, string desc)
     {
       // We'll use the specified text for the content and we'll let 
       // the system automatically project the item into world space
       // for us based on the Geo location.
-      ARItem item = new ARItem()
+      MapItem item = new MapItem()
       {
-        Content = label,
+        Content = name,
+        Description = desc,
         GeoLocation = location,
       };
 
@@ -652,7 +700,7 @@ namespace MyWay
           foreach (MyWay.MainPage.Stops.Model_Near a in b)
           {
             string name = Util.TypographString(a.Name);
-
+            Debug.WriteLine(a.Name);
             // Create a new location based on the users location plus
             // a random offset.
             Location offset = new Location()
@@ -662,7 +710,7 @@ namespace MyWay
               Altitude = Double.NaN // NaN will keep it on the horizon
             };
 
-            AddLabel(offset, name);
+            AddLabel(offset, name, "sdfjksdnjfjsdfjnsdjnfdsj");
           }
         }
         catch { }

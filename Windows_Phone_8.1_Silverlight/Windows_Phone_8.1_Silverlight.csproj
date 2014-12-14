@@ -183,6 +183,7 @@
     <Content Include="Assets\NoFuture\7.jpg" />
     <Content Include="Assets\NoFuture\8.jpg" />
     <Content Include="Assets\stop.png" />
+    <Content Include="Assets\stop_white.png" />
     <Content Include="Assets\Tiles\Large.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

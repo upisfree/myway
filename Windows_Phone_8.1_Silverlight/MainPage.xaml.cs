@@ -43,12 +43,22 @@ namespace MyWay
 
     protected async override void OnNavigatedTo(NavigationEventArgs e)
     {
+      ARDisplay.StartServices();
+
       base.OnNavigatedTo(e);
 
       if (e.NavigationMode == NavigationMode.New)
         await Favourite_Init(true);
       else
         await Favourite_Init(false);
+    }
+
+    protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
+    {
+      // Stop AR services
+      ARDisplay.StopServices();
+
+      base.OnNavigatedFrom(e);
     }
 
     // Нажатие на клавишу «Назад»

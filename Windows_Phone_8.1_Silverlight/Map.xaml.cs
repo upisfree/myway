@@ -59,7 +59,7 @@ namespace MyWay
         else if (mode == "stop" && NavigationContext.QueryString.TryGetValue("lon", out lon) && NavigationContext.QueryString.TryGetValue("lat", out lat))
           ShowStop(id, lat, lon);
 
-      AddNearbyLabels();
+      ARInit(); // инициализируем дополненную реальность
 
       base.OnNavigatedTo(e);
     }
@@ -81,19 +81,25 @@ namespace MyWay
     {
       base.OnOrientationChanged(e);
       
-      ControlOrientation orientation = ControlOrientation.Default;
-
-      switch (e.Orientation)
+      if (e.Orientation == PageOrientation.Portrait || e.Orientation == PageOrientation.PortraitDown || e.Orientation == PageOrientation.PortraitUp)
       {
-        case PageOrientation.LandscapeLeft:
-          orientation = ControlOrientation.Clockwise270Degrees;
-          break;
-        case PageOrientation.LandscapeRight:
-          orientation = ControlOrientation.Clockwise90Degrees;
-          break;
+        MapPanel.Visibility = System.Windows.Visibility.Visible;
+        ARDisplay.Visibility = System.Windows.Visibility.Collapsed;
       }
+      else
+      {
+        ControlOrientation orientation = ControlOrientation.Default;
 
-      ARDisplay.Orientation = orientation;
+        if (e.Orientation == PageOrientation.LandscapeLeft)
+          orientation = ControlOrientation.Clockwise270Degrees;
+        else if (e.Orientation == PageOrientation.LandscapeRight)
+          orientation = ControlOrientation.Clockwise90Degrees;
+
+        MapPanel.Visibility = System.Windows.Visibility.Collapsed;
+        ARDisplay.Visibility = System.Windows.Visibility.Visible;
+
+        ARDisplay.Orientation = orientation;
+      }
     }
 
 
@@ -252,6 +258,7 @@ namespace MyWay
       userTimer.Tick += new EventHandler((sender, e) =>
       {
         ShowUser(false);
+        ARInit();
       });
       userTimer.Start();
     }
@@ -647,59 +654,62 @@ namespace MyWay
      Всё, что связано с доп. реальностью
     *****************************************/
 
-    public class MapItem : ARItem
+    public class ARModel
     {
-      private string _description;
-
-      public string Description
+      public class Stop : ARItem
       {
-        get
+        public string Image
         {
-          return _description;
-        }
-        set
-        {
-          if (_description != value)
+          get
           {
-            _description = value;
-            //NotifyPropertyChanged(() => Desc);
+            return "/Assets/stop_white.png";
+          }
+        }
+      }
+
+      public class Bus : ARItem
+      {
+        public string Image
+        {
+          get
+          {
+            return "/Assets/bus_white.png";
+          }
+        }
+
+        private string _description;
+        public string Description
+        {
+          get
+          {
+            return _description;
+          }
+          set
+          {
+            if (_description != value)
+            {
+              _description = value;
+            }
           }
         }
       }
     }
 
-    private void AddLabel(Location location, string name, string desc)
+    private void ARInit() // близжайшие автобусы?
     {
-      // We'll use the specified text for the content and we'll let 
-      // the system automatically project the item into world space
-      // for us based on the Geo location.
-      MapItem item = new MapItem()
-      {
-        Content = name,
-        Description = desc,
-        GeoLocation = location,
-      };
+      var location = ARDisplay.Location;
+      ARDisplay.ARItems.Clear();
 
-      ARDisplay.ARItems.Add(item);
-    }
-
-    private void AddNearbyLabels()
-    {
-      // Start with the current location
-      var current = ARDisplay.Location;
-
-      // загрузка данных
+      // грузим список близжайших остановок
       var client = new WebClient();
-
       client.Headers["If-Modified-Since"] = DateTimeOffset.Now.ToString(); // отключение кэширования
-
-      client.DownloadStringCompleted += (sender2, e2) =>
+      client.DownloadStringCompleted += (sender, e) =>
       {
         HtmlDocument htmlDocument = new HtmlDocument();
 
         try
         {
-          htmlDocument.LoadHtml(e2.Result);
+          htmlDocument.LoadHtml(e.Result);
           string json = htmlDocument.DocumentNode.InnerText;
           json = Regex.Replace(json, "[«»]", "\"");
 
@@ -707,46 +717,13 @@ namespace MyWay
 
           foreach (MyWay.MainPage.Stops.Model_Near a in b)
           {
-            string name = Util.TypographString(a.Name);
-            Debug.WriteLine(a.Name);
-            // Create a new location based on the users location plus
-            // a random offset.
-            Location offset = new Location()
-            {
-              Latitude = Util.StringToDouble(a.Lat),
-              Longitude = Util.StringToDouble(a.Lon),
-              Altitude = Double.NaN // NaN will keep it on the horizon
-            };
-
-            AddLabel(offset, name, "sdfjksdnjfjsdfjnsdjnfdsj");
+            ARDisplay.ARItems.Add(new ARModel.Stop() { Content = Util.TypographString(a.Name), GeoLocation = new Location() { Longitude = Util.StringToDouble(a.Lon), Latitude = Util.StringToDouble(a.Lat), Altitude = Double.NaN } });
           }
         }
         catch { }
       };
 
-      client.DownloadStringAsync(new Uri("http://t.bus55.ru/index.php/app/get_stations_geoloc_json/" + Regex.Replace(current.Latitude.ToString(), ",", ".") + "/" + Regex.Replace(current.Longitude.ToString(), ",", ".")));
-    }
-
-    private void ApplicationBarIconButton_Click(object sender, EventArgs e)
-    {
-      if (MapPanel.Visibility == System.Windows.Visibility.Visible)
-      {
-        MapPanel.Visibility = System.Windows.Visibility.Collapsed;
-        ARDisplay.Visibility = System.Windows.Visibility.Visible;
-      }
-      else
-      {
-        MapPanel.Visibility = System.Windows.Visibility.Visible;
-        ARDisplay.Visibility = System.Windows.Visibility.Collapsed;
-      }
-    }
-
-    private void ApplicationBarIconButton_Click_1(object sender, EventArgs e)
-    {
-      if (OverheadMap.Visibility == System.Windows.Visibility.Visible)
-        OverheadMap.Visibility = System.Windows.Visibility.Collapsed;
-      else
-        OverheadMap.Visibility = System.Windows.Visibility.Visible;
+      client.DownloadStringAsync(new Uri("http://t.bus55.ru/index.php/app/get_stations_geoloc_json/" + Regex.Replace(location.Latitude.ToString(), ",", ".") + "/" + Regex.Replace(location.Longitude.ToString(), ",", ".")));
     }
   }
 }

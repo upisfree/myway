@@ -10,18 +10,11 @@
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
-    SupportedOrientations="Portrait" Orientation="Portrait"
+    SupportedOrientations="PortraitOrLandscape" Orientation="Portrait"
     mc:Ignorable="d"
     xmlns:ARControls="clr-namespace:GART.Controls;assembly=GART.WP8"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     shell:SystemTray.IsVisible="False">
-
-  <phone:PhoneApplicationPage.ApplicationBar>
-    <shell:ApplicationBar IsVisible="True">
-      <shell:ApplicationBarIconButton IconUri="/Images/refresh.png" Text="сменить" Click="ApplicationBarIconButton_Click" />
-      <shell:ApplicationBarIconButton IconUri="/Images/refresh.png" Text="сменить" Click="ApplicationBarIconButton_Click_1" />
-    </shell:ApplicationBar>
-  </phone:PhoneApplicationPage.ApplicationBar>
 
   <phone:PhoneApplicationPage.Resources>
     <DataTemplate x:Key="MapItemTemplate">
@@ -31,9 +24,9 @@
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Image Grid.Column="0" Source="/Assets/stop_white.png" Margin="10,0,0,0" Height="100" Width="90" HorizontalAlignment="Left" />
+        <Image Grid.Column="0" Source="{Binding Image}" Margin="10,0,0,0" Height="100" Width="90" HorizontalAlignment="Left" />
         <TextBlock Grid.Column="1" x:Name="NameBlock" Text="{Binding Content}" Margin="110,7,0,0" FontSize="24" TextWrapping="Wrap" Foreground="White" VerticalAlignment="Top" />
-        <TextBlock Grid.Column="1" x:Name="DescriptionBlock" Text="" FontSize="24" VerticalAlignment="Center" Foreground="White" />
+        <TextBlock Grid.Column="1" x:Name="DescriptionBlock" Text="{Binding Description}" FontSize="24" VerticalAlignment="Center" Foreground="White" />
       </Grid>
     </DataTemplate>
   </phone:PhoneApplicationPage.Resources>
@@ -52,20 +45,11 @@
         <TextBlock x:Name="Desc" Text="" Style="{StaticResource PhoneTextNormalStyle}" Foreground="Black" Opacity="0.5" FontFamily="Segoe WP Semibold" FontSize="22.7"/>
       </StackPanel>
 
-      <maps:Map x:Name="MapPanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CartographicMode="Road" Center="54.9856846220791,73.3648522663862" ZoomLevel="12" />
-
-      <!--<ARControls:ARDisplay Visibility="Collapsed" x:Name="ARDisplay" d:LayoutOverrides="Width" AttitudeRefreshRate="50" MovementThreshold="10">
-        <ARControls:VideoPreview x:Name="VideoPreview" />
-        <ARControls:OverheadMap x:Name="OverheadMap" />
-        <ARControls:WorldView x:Name="WorldView" MinItemScale="0.1" MaxItemScale="1.0" FarClippingPlane="300.0" NearClippingPlane="1.0" />
-        <ARControls:HeadingIndicator x:Name="HeadingIndicator" HorizontalAlignment="Center" VerticalAlignment="Center" />
-      </ARControls:ARDisplay>-->
+      <maps:Map x:Name="MapPanel" Canvas.ZIndex="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CartographicMode="Road" Center="54.9856846220791,73.3648522663862" ZoomLevel="12" />
 
       <ARControls:ARDisplay Visibility="Collapsed" x:Name="ARDisplay" AttitudeRefreshRate="50" MovementThreshold="10">
         <ARControls:VideoPreview x:Name="VideoPreview" Canvas.ZIndex="1"/>
-        <ARControls:OverheadMap x:Name="OverheadMap" Canvas.ZIndex="1"/>
         <ARControls:WorldView x:Name="WorldView" Canvas.ZIndex="1" ItemTemplate="{StaticResource MapItemTemplate}" MinItemScale="0.1" MaxItemScale="1.0" FarClippingPlane="500.0" NearClippingPlane="1.0"/>
-        <ARControls:HeadingIndicator x:Name="HeadingIndicator" Canvas.ZIndex="1" Width="300" Height="300" HorizontalAlignment="Center" VerticalAlignment="Center"/>
       </ARControls:ARDisplay>
     </Grid>
   </Grid>

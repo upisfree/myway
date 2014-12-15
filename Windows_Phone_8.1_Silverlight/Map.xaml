@@ -25,8 +25,9 @@
         </Grid.RowDefinitions>
 
         <Image Grid.Column="0" Source="{Binding Image}" Margin="10,0,0,0" Height="100" Width="90" HorizontalAlignment="Left" />
-        <TextBlock Grid.Column="1" x:Name="NameBlock" Text="{Binding Content}" Margin="110,7,0,0" FontSize="24" TextWrapping="Wrap" Foreground="White" VerticalAlignment="Top" />
+        <TextBlock Grid.Column="1" x:Name="NameBlock" Text="{Binding Content}" Margin="110,12.5,0,0" FontSize="24" TextWrapping="Wrap" Foreground="White" VerticalAlignment="Top" FontFamily="Segoe WP Black" />
         <TextBlock Grid.Column="1" x:Name="DescriptionBlock" Text="{Binding Description}" FontSize="24" VerticalAlignment="Center" Foreground="White" />
+        <TextBlock Grid.Column="2" Text="{Binding Distance}" FontSize="24" VerticalAlignment="Bottom" Foreground="White" HorizontalAlignment="Right" Margin="0,0,5,5" FontFamily="Segoe WP" />
       </Grid>
     </DataTemplate>
   </phone:PhoneApplicationPage.Resources>

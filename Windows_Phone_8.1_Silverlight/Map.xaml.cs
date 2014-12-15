@@ -665,6 +665,22 @@ namespace MyWay
             return "/Assets/stop_white.png";
           }
         }
+
+        private string _distance;
+        public string Distance
+        {
+          get
+          {
+            return _distance;
+          }
+          set
+          {
+            if (_distance != value)
+            {
+              _distance = value;
+            }
+          }
+        }
       }
 
       public class Bus : ARItem
@@ -674,6 +690,22 @@ namespace MyWay
           get
           {
             return "/Assets/bus_white.png";
+          }
+        }
+
+        private string _distance;
+        public string Distance
+        {
+          get
+          {
+            return _distance;
+          }
+          set
+          {
+            if (_distance != value)
+            {
+              _distance = value;
+            }
           }
         }
 
@@ -698,7 +730,6 @@ namespace MyWay
     private void ARInit() // близжайшие автобусы?
     {
       var location = ARDisplay.Location;
-      ARDisplay.ARItems.Clear();
 
       // грузим список близжайших остановок
       var client = new WebClient();
@@ -715,9 +746,16 @@ namespace MyWay
 
           MyWay.MainPage.Stops.Model_Near[] b = JsonConvert.DeserializeObject<MyWay.MainPage.Stops.Model_Near[]>(json);
 
+          ARDisplay.ARItems.Clear();
+
           foreach (MyWay.MainPage.Stops.Model_Near a in b)
           {
-            ARDisplay.ARItems.Add(new ARModel.Stop() { Content = Util.TypographString(a.Name), GeoLocation = new Location() { Longitude = Util.StringToDouble(a.Lon), Latitude = Util.StringToDouble(a.Lat), Altitude = Double.NaN } });
+            ARDisplay.ARItems.Add(new ARModel.Stop()
+            {
+              Content = Util.TypographString(a.Name),
+              Distance = Math.Round(location.GetDistanceTo(new Location() { Longitude = Util.StringToDouble(a.Lon), Latitude = Util.StringToDouble(a.Lat) })).ToString() + " м",
+              GeoLocation = new Location() { Longitude = Util.StringToDouble(a.Lon), Latitude = Util.StringToDouble(a.Lat), Altitude = Double.NaN }
+            });
           }
         }
         catch { }

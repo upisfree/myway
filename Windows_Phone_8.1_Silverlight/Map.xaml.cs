@@ -22,6 +22,7 @@ using Location = System.Device.Location.GeoCoordinate;
 using GART.Data;
 using GART.Controls;
 using GART.BaseControls;
+using System.Windows.Media.Animation;
 
 
 namespace MyWay
@@ -80,11 +81,13 @@ namespace MyWay
     protected override void OnOrientationChanged(OrientationChangedEventArgs e)
     {
       base.OnOrientationChanged(e);
-      
+
+      double h = Application.Current.Host.Content.ActualHeight;
+
       if (e.Orientation == PageOrientation.Portrait || e.Orientation == PageOrientation.PortraitDown || e.Orientation == PageOrientation.PortraitUp)
       {
-        MapPanel.Visibility = System.Windows.Visibility.Visible;
-        ARDisplay.Visibility = System.Windows.Visibility.Collapsed;
+        Animation(MapPanel_Transform, h, 0, 0.5);
+        Animation(ARDisplay_Transform, 0, h, 0.5);
       }
       else
       {
@@ -95,8 +98,8 @@ namespace MyWay
         else if (e.Orientation == PageOrientation.LandscapeRight)
           orientation = ControlOrientation.Clockwise90Degrees;
 
-        MapPanel.Visibility = System.Windows.Visibility.Collapsed;
-        ARDisplay.Visibility = System.Windows.Visibility.Visible;
+        Animation(MapPanel_Transform, 0, h, 0.5);
+        Animation(ARDisplay_Transform, h, 0, 0.5);
 
         ARDisplay.Orientation = orientation;
       }
@@ -762,6 +765,31 @@ namespace MyWay
       };
 
       client.DownloadStringAsync(new Uri("http://t.bus55.ru/index.php/app/get_stations_geoloc_json/" + Regex.Replace(location.Latitude.ToString(), ",", ".") + "/" + Regex.Replace(location.Longitude.ToString(), ",", ".")));
+    }
+    
+    /// <summary>
+    /// Анимации
+    /// </summary>
+    /// <param name="t"></param>
+    /// <param name="from"></param>
+    /// <param name="to"></param>
+    /// <param name="time"></param>
+    /// <param name="amplitude"></param>
+    /// <param name="mode"></param>
+    private void Animation(TranslateTransform t, double from, double to, double time, double amplitude = 0, EasingMode mode = EasingMode.EaseOut)
+    {
+      DoubleAnimation da = new DoubleAnimation();
+
+      da.From = from;
+      da.To = to;
+      da.Duration = new Duration(TimeSpan.FromSeconds(time));
+
+      BackEase b = new BackEase();
+      b.Amplitude = amplitude;
+      b.EasingMode = mode;
+      da.EasingFunction = b;
+
+      Util.DoubleAnimation(t, new PropertyPath("(TranslateTransform.Y)"), da);
     }
   }
 }

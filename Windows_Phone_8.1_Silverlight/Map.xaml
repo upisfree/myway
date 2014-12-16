@@ -46,11 +46,19 @@
         <TextBlock x:Name="Desc" Text="" Style="{StaticResource PhoneTextNormalStyle}" Foreground="Black" Opacity="0.5" FontFamily="Segoe WP Semibold" FontSize="22.7"/>
       </StackPanel>
 
-      <maps:Map x:Name="MapPanel" Canvas.ZIndex="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CartographicMode="Road" Center="54.9856846220791,73.3648522663862" ZoomLevel="12" />
+      <maps:Map x:Name="MapPanel" Canvas.ZIndex="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" CartographicMode="Road" Center="54.9856846220791,73.3648522663862" ZoomLevel="12">
+        <maps:Map.RenderTransform>
+          <TranslateTransform x:Name="MapPanel_Transform" />
+        </maps:Map.RenderTransform>
+      </maps:Map>
 
-      <ARControls:ARDisplay Visibility="Collapsed" x:Name="ARDisplay" AttitudeRefreshRate="50" MovementThreshold="10">
+      <ARControls:ARDisplay x:Name="ARDisplay" AttitudeRefreshRate="50" MovementThreshold="10">
         <ARControls:VideoPreview x:Name="VideoPreview" Canvas.ZIndex="1"/>
         <ARControls:WorldView x:Name="WorldView" Canvas.ZIndex="1" ItemTemplate="{StaticResource MapItemTemplate}" MinItemScale="0.1" MaxItemScale="1.0" FarClippingPlane="500.0" NearClippingPlane="1.0"/>
+      
+        <ARControls:ARDisplay.RenderTransform>
+          <TranslateTransform x:Name="ARDisplay_Transform" />
+        </ARControls:ARDisplay.RenderTransform>
       </ARControls:ARDisplay>
     </Grid>
   </Grid>

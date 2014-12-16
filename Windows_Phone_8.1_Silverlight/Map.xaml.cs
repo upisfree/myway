@@ -435,6 +435,7 @@ namespace MyWay
 
     private System.Windows.Threading.DispatcherTimer _busTimer = new System.Windows.Threading.DispatcherTimer();
     private int _mapBusesLayerInt = -1;
+    private int _mapPushpinsLayerInt = -1;
     private class BusesModel
     {
       public class Main
@@ -524,10 +525,17 @@ namespace MyWay
             {
               string str = ((Image)sender2).Tag.ToString();
 
+              if (_mapPushpinsLayerInt == -1)
+              {
+                MapPanel.Layers.Add(new MapLayer());
+
+                _mapPushpinsLayerInt = MapPanel.Layers.Count - 1;
+              }
+              else
+                MapPanel.Layers[_mapPushpinsLayerInt] = new MapLayer();
+
               MapLayer _layer = new MapLayer();
               Pushpin pushpin = new Pushpin();
-
-              Debug.WriteLine(Util.StringToDouble(a.Coordinates[0]) + " " + Util.StringToDouble(a.Coordinates[1]));
 
               pushpin.GeoCoordinate = new GeoCoordinate() { Longitude = Util.StringToDouble(a.Coordinates[0]), Latitude = Util.StringToDouble(a.Coordinates[1]) };
               pushpin.Content = Util.TypographString(a.Info);
@@ -538,11 +546,7 @@ namespace MyWay
               _overlay.GeoCoordinate = new GeoCoordinate() { Longitude = Util.StringToDouble(a.Coordinates[0]), Latitude = Util.StringToDouble(a.Coordinates[1]) };
               _layer.Add(_overlay);
 
-              MapPanel.Layers.Add(_layer);
-            };
-            img.LostFocus += (sender3, e3) =>
-            {
-              //pu
+              MapPanel.Layers[_mapPushpinsLayerInt] = _layer;
             };
 
             MapOverlay overlay = new MapOverlay();

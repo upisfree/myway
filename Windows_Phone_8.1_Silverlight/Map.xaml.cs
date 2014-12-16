@@ -261,9 +261,16 @@ namespace MyWay
       userTimer.Tick += new EventHandler((sender, e) =>
       {
         ShowUser(false);
-        ARInit();
       });
       userTimer.Start();
+
+      System.Windows.Threading.DispatcherTimer ARTimer = new System.Windows.Threading.DispatcherTimer();
+      ARTimer.Interval = TimeSpan.FromMilliseconds(60000);
+      ARTimer.Tick += new EventHandler((sender, e) =>
+      {
+        ARInit();
+      });
+      ARTimer.Start();
     }
 
     private int _mapUsersLayerInt = -1;
@@ -673,6 +680,22 @@ namespace MyWay
           }
         }
 
+        private string _toPredict;
+        public string ToPredict
+        {
+          get
+          {
+            return _toPredict;
+          }
+          set
+          {
+            if (_toPredict != value)
+            {
+              _toPredict = value;
+            }
+          }
+        }
+
         private string _distance;
         public string Distance
         {
@@ -734,6 +757,7 @@ namespace MyWay
       }
     }
 
+    private int _stopsNearbyLayer = -1;
     private void ARInit() // близжайшие автобусы?
     {
       var location = ARDisplay.Location;
@@ -753,33 +777,95 @@ namespace MyWay
 
           MyWay.MainPage.Stops.Model_Near[] b = JsonConvert.DeserializeObject<MyWay.MainPage.Stops.Model_Near[]>(json);
 
+          // чистим список предметов в доп. реальности
           ARDisplay.ARItems.Clear();
+
+          // подготавливаем остановки
+          if (_stopsNearbyLayer == -1) // да, дубляция, знаю.
+          {
+            MapPanel.Layers.Add(new MapLayer());
+
+            _stopsNearbyLayer = MapPanel.Layers.Count - 1;
+          }
+          else
+            MapPanel.Layers[_stopsNearbyLayer] = new MapLayer();
+
+          MapLayer layer = new MapLayer();
 
           foreach (MyWay.MainPage.Stops.Model_Near a in b)
           {
+            // Добавление остановок в доп. реальность
             ARDisplay.ARItems.Add(new ARModel.Stop()
             {
               Content = Util.TypographString(a.Name),
+              ToPredict = a.Id.ToString() + "|" + Util.TypographString(a.Name),
               Distance = Math.Round(location.GetDistanceTo(new Location() { Longitude = Util.StringToDouble(a.Lon), Latitude = Util.StringToDouble(a.Lat) })).ToString() + " м",
               GeoLocation = new Location() { Longitude = Util.StringToDouble(a.Lon), Latitude = Util.StringToDouble(a.Lat), Altitude = Double.NaN }
             });
+
+            // Отрисовка остановок
+            Border border = new Border();
+            Image img = new Image();
+            BitmapImage bi = new BitmapImage();
+            bi.UriSource = new Uri("/Assets/stop.png", UriKind.Relative);
+            img.Source = bi;
+            img.Height = 20;
+            img.Width = 20;
+
+            border.Child = img;
+            border.Width = 35;
+            border.Height = 35;
+            border.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+            border.BorderThickness = new Thickness(2);
+            border.BorderBrush = new SolidColorBrush(Util.ConvertStringToColor("#FF455580"));
+            border.CornerRadius = new CornerRadius(100);
+            border.Tag = a.Id + "|" + Util.TypographString(a.Name);
+            border.Tap += (sender2, e2) =>
+            {
+              string[] str = ((Border)sender2).Tag.ToString().Split(new Char[] { '|' });
+
+              MessageBoxResult mbr = MessageBox.Show("Открыть прогнозы для этой остановки?", str[1], MessageBoxButton.OKCancel);
+
+              if (mbr == MessageBoxResult.OK)
+              {
+                (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + "http://t.bus55.ru/index.php/app/get_predict/" + str[0] + "&name=" + str[1], UriKind.Relative));
+              }
+            };
+
+            MapOverlay overlay = new MapOverlay();
+            overlay.Content = border;
+            overlay.PositionOrigin = new Point(0.5, 0.5);
+            overlay.GeoCoordinate = new GeoCoordinate() { Longitude = Util.StringToDouble(a.Lon), Latitude = Util.StringToDouble(a.Lat) };
+
+            layer.Add(overlay);
+            // конечно, можно вынести это в отдельный метод, чтобы третий раз не писать, но это уже говнокод, а поддерживать его я не особо собираюсь.
           }
+
+          if (_stopsNearbyLayer == -1)
+          {
+            MapPanel.Layers.Add(layer);
+
+            _stopsNearbyLayer = MapPanel.Layers.Count - 1;
+          }
+          else
+            MapPanel.Layers[_stopsNearbyLayer] = layer;
         }
         catch { }
       };
 
       client.DownloadStringAsync(new Uri("http://t.bus55.ru/index.php/app/get_stations_geoloc_json/" + Regex.Replace(location.Latitude.ToString(), ",", ".") + "/" + Regex.Replace(location.Longitude.ToString(), ",", ".")));
     }
-    
-    /// <summary>
-    /// Анимации
-    /// </summary>
-    /// <param name="t"></param>
-    /// <param name="from"></param>
-    /// <param name="to"></param>
-    /// <param name="time"></param>
-    /// <param name="amplitude"></param>
-    /// <param name="mode"></param>
+
+    private void ARItem_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+    {
+      string[] str = ((Grid)sender).Tag.ToString().Split(new Char[] { '|' });
+
+      
+
+      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + "http://t.bus55.ru/index.php/app/get_predict/" + str[0] + "&name=" + str[1], UriKind.Relative));
+    }
+
+    // Анимации
     private void Animation(TranslateTransform t, double from, double to, double time, double amplitude = 0, EasingMode mode = EasingMode.EaseOut)
     {
       DoubleAnimation da = new DoubleAnimation();

@@ -531,7 +531,7 @@ namespace MyWay
 
               pushpin.GeoCoordinate = new GeoCoordinate() { Longitude = Util.StringToDouble(a.Coordinates[0]), Latitude = Util.StringToDouble(a.Coordinates[1]) };
               pushpin.Content = Util.TypographString(a.Info);
-              //pushpin.RenderTransform.Transform(new Point(1, -100));
+              pushpin.Margin = new Thickness() { Top = -60 };
 
               MapOverlay _overlay = new MapOverlay();
               _overlay.Content = pushpin;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using Microsoft.Phone.Tasks;
 using MyWay.Resources;
 using MyWay.ViewModels;
 using System;
@@ -118,6 +119,19 @@ namespace MyWay
         // Код для выполнения на необработанных исключениях
         private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
         {
+          MessageBoxResult mbr = MessageBox.Show("Случилась какая-то ошибка. Отправить информацию о ней разработчику? Никаких данных о вас не отправится (кроме адреса электронной почты).\nПриложение закроется в любом случае.", "Ошибка!", MessageBoxButton.OKCancel);
+
+          if (mbr == MessageBoxResult.OK)
+          {
+            EmailComposeTask emailComposeTask = new EmailComposeTask();
+
+            emailComposeTask.To = "upisfree@outlook.com";
+            emailComposeTask.Subject = "error@myway";
+            emailComposeTask.Body = "HResult: " + e.ExceptionObject.HResult + "\n\nSource: " + e.ExceptionObject.Source + "\n\nMessage: " + e.ExceptionObject.Message + "\n\nStackTrace: " + e.ExceptionObject.StackTrace;
+
+            emailComposeTask.Show();
+          }
+
           //MessageBox.Show(e.ExceptionObject.Message);
 
           if (Debugger.IsAttached)

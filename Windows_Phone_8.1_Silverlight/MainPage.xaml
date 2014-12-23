@@ -263,7 +263,7 @@
             <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,342,0,232" Tap="Element_Error_Button_Tap"/>
           </Grid>
 
-          <ARControls:ARDisplay Visibility="Collapsed" x:Name="ARDisplay" AttitudeRefreshRate="50" MovementThreshold="10"></ARControls:ARDisplay>
+          <ARControls:ARDisplay Visibility="Collapsed" CameraEnabled="False" x:Name="ARDisplay" AttitudeRefreshRate="50" MovementThreshold="10"></ARControls:ARDisplay>
         </Grid>
       </phone:PivotItem>
 

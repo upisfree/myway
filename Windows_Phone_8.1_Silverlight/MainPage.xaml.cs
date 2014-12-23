@@ -56,7 +56,7 @@ namespace MyWay
     protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
     {
       // Stop AR services
-      ARDisplay.StopServices();
+      //ARDisplay.StopServices();
 
       base.OnNavigatedFrom(e);
     }
@@ -436,7 +436,7 @@ namespace MyWay
       string name = a[1].ToUpper();
       string desc = a[2].ToUpper();
 
-      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/StopsList.xaml?link=" + link + "&name=" + name + "&desc=" + desc, UriKind.Relative));
+      NavigationService.Navigate(new Uri("/StopsList.xaml?link=" + link + "&name=" + name + "&desc=" + desc, UriKind.Relative));
     }
 
     /*****************************************
@@ -630,7 +630,7 @@ namespace MyWay
       string lat = tag[2];
       string name = text.Text; // или tag[3]
 
-      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/DirectionsList.xaml?id=" + id + "&name=" + name + "&lon=" + lon + "&lat=" + lat, UriKind.Relative));
+      NavigationService.Navigate(new Uri("/DirectionsList.xaml?id=" + id + "&name=" + name + "&lon=" + lon + "&lat=" + lat, UriKind.Relative));
     }
 
     /*****************************************
@@ -645,7 +645,7 @@ namespace MyWay
       string name = a[1];
       string desc = a[2];
 
-      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Map.xaml?mode=route&id=" + id + "&name=" + name + "&desc=" + desc, UriKind.Relative));
+      NavigationService.Navigate(new Uri("/Map.xaml?mode=route&id=" + id + "&name=" + name + "&desc=" + desc, UriKind.Relative));
     }
 
     private void Map_Show_Stop(object sender, RoutedEventArgs e)
@@ -657,7 +657,7 @@ namespace MyWay
       string lat  = a[2];
       string name = a[3];
 
-      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Map.xaml?mode=stop&id=" + id + "&name=" + name + "&lon=" + lon + "&lat=" + lat, UriKind.Relative));
+      NavigationService.Navigate(new Uri("/Map.xaml?mode=stop&id=" + id + "&name=" + name + "&lon=" + lon + "&lat=" + lat, UriKind.Relative));
     }
     
     /*****************************************

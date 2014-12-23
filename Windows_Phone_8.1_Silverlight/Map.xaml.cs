@@ -68,7 +68,7 @@ namespace MyWay
     protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
     {
       // Stop AR services
-      ARDisplay.StopServices();
+      //ARDisplay.StopServices();
 
       base.OnNavigatedFrom(e);
     }

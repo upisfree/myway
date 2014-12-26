@@ -31,7 +31,13 @@
       </Grid>
     </DataTemplate>
   </phone:PhoneApplicationPage.Resources>
-  
+
+  <!--<shell:SystemTray.ProgressIndicator>
+    <shell:ProgressIndicator x:Name="UpdateProgress" IsIndeterminate="{Binding IsBusy}" 
+                                 IsVisible="{Binding IsBusy}" 
+                                 Text="{Binding Message}" />
+  </shell:SystemTray.ProgressIndicator>-->
+
   <!--LayoutRoot представляет корневую сетку, где размещается все содержимое страницы-->
   <Grid x:Name="LayoutRoot" Background="Transparent">
     <Grid.RowDefinitions>

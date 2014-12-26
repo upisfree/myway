@@ -29,6 +29,7 @@ namespace MyWay
 {
   public partial class Map : PhoneApplicationPage
   {
+    #region Системные методы
     public Map()
     {
       InitializeComponent();
@@ -105,11 +106,14 @@ namespace MyWay
       }
     }
 
-
     // Нажатие на клавишу «Назад»
     protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
     {
     }
+
+    #endregion
+
+    #region Модели
 
     /*****************************************
      Модели
@@ -175,6 +179,8 @@ namespace MyWay
         public string[] Coordinates { get; set; }
       }
     }
+
+    #endregion
 
     /*****************************************
      IO 

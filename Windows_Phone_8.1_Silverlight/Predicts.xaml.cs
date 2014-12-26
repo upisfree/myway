@@ -1,10 +1,12 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Phone.Controls;
+using Microsoft.Phone.Shell;
 using System;
 using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace MyWay
@@ -14,8 +16,13 @@ namespace MyWay
     public StopPredict()
     {
       InitializeComponent();
+
+      Resources.Remove("PhoneAccentColor");
+      Resources.Add("PhoneAccentColor", Util.ConvertStringToColor("#FF455580"));
+      ((SolidColorBrush)Resources["PhoneAccentBrush"]).Color = Util.ConvertStringToColor("#FF455580");
     }
 
+    private int progress = 0;
     protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
     {
       base.OnNavigatedTo(e);
@@ -32,12 +39,23 @@ namespace MyWay
       ShowPredicts(Predicts.Tag.ToString());
 
       System.Windows.Threading.DispatcherTimer dt = new System.Windows.Threading.DispatcherTimer();
-
-      dt.Interval = TimeSpan.FromMilliseconds(30000);
+      
+      int t = 30000;
+      int i = 100;
+      
+      dt.Interval = TimeSpan.FromMilliseconds(i);
       dt.Tick += new EventHandler((sender, e2) =>
       {
-        _refresh();
-        Debug.WriteLine("ok");
+        if (progress == t)
+        {
+          _refresh();
+          progress = 0;
+          UpdateProgress.Value = 0;
+        }
+
+        UpdateProgress.Value = (float)progress / t; // формула для времени + настроки карты
+
+        progress += i;
       });
       dt.Start();
     }
@@ -113,6 +131,9 @@ namespace MyWay
 
     private void Refresh(object sender, System.EventArgs e)
     {
+      progress = 0;
+      UpdateProgress.Value = 0;
+
       _refresh();
     }
 

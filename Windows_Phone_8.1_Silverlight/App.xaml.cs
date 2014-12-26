@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
+using System.Windows.Media;
 using System.Windows.Navigation;
 
 namespace MyWay
@@ -43,6 +44,8 @@ namespace MyWay
         /// </summary>
         public App()
         {
+            //(App.Current.Resources["PhoneButtonBasePressedBackgroundBrush"] as SolidColorBrush).Color = Util.ConvertStringToColor("#FF455580");
+          
             // Глобальный обработчик неперехваченных исключений.
             UnhandledException += Application_UnhandledException;
 

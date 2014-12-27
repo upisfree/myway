@@ -16,9 +16,17 @@
   shell:SystemTray.IsVisible="True"
   shell:SystemTray.Opacity="0.0">
 
-  <!--<shell:SystemTray.ProgressIndicator>
-    <shell:ProgressIndicator x:Name="UpdateProgress" IsIndeterminate="False" IsVisible="True" />
-  </shell:SystemTray.ProgressIndicator>-->
+  <phone:PhoneApplicationPage.Resources>
+    <Grid x:Name="SwipeInfo" Margin="0,-100,0,0" HorizontalAlignment="Center">
+      <TextBlock Text="➔" FontSize="42" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0">
+        <TextBlock.RenderTransform>
+          <RotateTransform Angle="90" CenterX="25" CenterY="25"></RotateTransform>
+        </TextBlock.RenderTransform>
+      </TextBlock>
+
+      <TextBlock Text="потяните, чтобы обновить" FontSize="24" VerticalAlignment="Top" Margin="0,40,0,0" />
+    </Grid>
+  </phone:PhoneApplicationPage.Resources>
 
   <!--LayoutRoot представляет корневую сетку, где размещается все содержимое страницы-->
   <Grid x:Name="LayoutRoot" Background="Transparent" Margin="0,30,0,0">
@@ -52,7 +60,8 @@
         <RowDefinition Height="3*"/>
       </Grid.RowDefinitions>
 
-      <ListBox x:Name="Predicts" Margin="0,10,0,-23" Grid.RowSpan="3">
+      
+      <ListBox x:Name="Predicts" Margin="0,10,0,-23" Grid.RowSpan="3" MouseEnter="Predicts_MouseEnter" MouseMove="Predicts_MouseMove" MouseLeftButtonUp="Predicts_MouseLeftButtonUp">
         <ListBox.ItemTemplate>
           <DataTemplate>
             <Grid>
@@ -80,7 +89,7 @@
         </ListBox.ItemContainerStyle>
       </ListBox>
 
-      <Grid x:Name="NoPredicts" Visibility="Collapsed" Grid.RowSpan="3" Margin="0,10,0,0" DoubleTap="NoFuture_DoubleTap">
+      <Grid x:Name="NoPredicts" Visibility="Collapsed" Grid.RowSpan="3" Margin="0,0,0,0" DoubleTap="NoFuture_DoubleTap">
         <TextBlock Text="Прогнозов нет" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-75,0,0" />
         <TextBlock Text="Может, уже поздно и автобусы не ходят?"  Foreground="{StaticResource PhoneSubtleBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
       </Grid>
@@ -89,17 +98,11 @@
         <TextBlock Text="Загрузка..." Foreground="{StaticResource PhoneSubtleBrush}" FontSize="36" FontFamily="Segoe WP SemiLight" Margin="-26,0,26,181" HorizontalAlignment="Right" Width="401" />
       </Grid>
 
-      <Grid x:Name="Error" Visibility="Collapsed" Margin="0,70,0,0">
+      <Grid x:Name="Error" Visibility="Collapsed" Margin="0,0,0,0">
         <TextBlock Text="Что-то пошло не так :(" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-90,0,0" />
         <TextBlock Text="Может, стоит проверить доступ к интернету?"  Foreground="{StaticResource PhoneSubtleBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
         <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,100,0,0" Tap="Refresh"/>
       </Grid>
     </Grid>
   </Grid>
-
-  <phone:PhoneApplicationPage.ApplicationBar>
-    <shell:ApplicationBar IsVisible="True">
-      <shell:ApplicationBarIconButton IconUri="/Images/refresh.png" Text="обновить" Click="Refresh" />
-    </shell:ApplicationBar>
-  </phone:PhoneApplicationPage.ApplicationBar>
 </phone:PhoneApplicationPage>

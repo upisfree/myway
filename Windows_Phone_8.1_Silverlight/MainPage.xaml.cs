@@ -41,6 +41,8 @@ namespace MyWay
       InitializeComponent();
     }
 
+    #region Системные методы
+
     protected async override void OnNavigatedTo(NavigationEventArgs e)
     {
       ARDisplay.StartServices();
@@ -213,9 +215,9 @@ namespace MyWay
       return a;
     }
 
-    /*****************************************
-     Загрузка & Кеширование & Демонстрация маршрутов / остановок
-    *****************************************/
+    #endregion
+
+    #region Загрузка & Кеширование & Демонстрация маршрутов / остановок
 
     public class IO
     {
@@ -342,9 +344,9 @@ namespace MyWay
       }
     }
 
-    /*****************************************
-     Маршруты
-    *****************************************/
+    #endregion
+
+    #region Маршруты
 
     public class Routes
     {
@@ -439,9 +441,9 @@ namespace MyWay
       NavigationService.Navigate(new Uri("/StopsList.xaml?link=" + link + "&name=" + name + "&desc=" + desc, UriKind.Relative));
     }
 
-    /*****************************************
-     Остановки 
-    *****************************************/
+    #endregion
+
+    #region Остановки
 
     public class Stops
     {
@@ -539,7 +541,7 @@ namespace MyWay
       }
     }
 
-    private async void Stops_Near(object sender, EventArgs e)
+    private void Stops_Near(object sender, EventArgs e)
     {
       Stops_Search_Result.ItemsSource = new List<Stops.Model_XAML>();
       Util.Hide(Stops_Search_NoResults);
@@ -633,10 +635,10 @@ namespace MyWay
       NavigationService.Navigate(new Uri("/DirectionsList.xaml?id=" + id + "&name=" + name + "&lon=" + lon + "&lat=" + lat, UriKind.Relative));
     }
 
-    /*****************************************
-     Карта
-    *****************************************/
+    #endregion
 
+    #region Методы карты
+    
     private void Map_Show_Route(object sender, RoutedEventArgs e)
     {
       string[] a = ((MenuItem)sender).Tag.ToString().Split(new Char[] { '|' });
@@ -659,10 +661,10 @@ namespace MyWay
 
       NavigationService.Navigate(new Uri("/Map.xaml?mode=stop&id=" + id + "&name=" + name + "&lon=" + lon + "&lat=" + lat, UriKind.Relative));
     }
-    
-    /*****************************************
-     Настройки
-    *****************************************/
+
+    #endregion
+
+    #region Настройки
 
     // Очистка кэша
     private async void DeleteCache(object sender, System.Windows.Input.GestureEventArgs e)
@@ -694,9 +696,9 @@ namespace MyWay
       Data.Settings.AddOrUpdate("ScrollToFavouriteOnStart", "false");
     }
 
-    /*****************************************
-     О программе
-    *****************************************/
+    #endregion
+
+    #region О программе
 
     // Ссылка на сайт мэрии
     private void About_LinkToAdministrationSite_Tap(object sender, System.Windows.Input.GestureEventArgs e)
@@ -763,9 +765,9 @@ namespace MyWay
       emailComposeTask.Show();
     }
 
-    /*****************************************
-     Избранное
-    *****************************************/
+    #endregion
+
+    #region Избранное
 
     public async Task Favourite_Init(bool scroll)
     {
@@ -859,9 +861,9 @@ namespace MyWay
     {
     }
 
-    /*****************************************
-     Поиск
-    *****************************************/
+    #endregion
+
+    #region Поиск
 
     private class Element_Search
     {
@@ -1020,9 +1022,9 @@ namespace MyWay
       }
     }
 
-    /*****************************************
-     Единые колбэки (TODO: этот коммент надо переименовать)
-    *****************************************/
+    #endregion
+
+    #region Единые колбэки (TODO: этот коммент надо переименовать)
 
     private async void Element_Error_Button_Tap(object sender, System.Windows.Input.GestureEventArgs e)
     {
@@ -1108,9 +1110,9 @@ namespace MyWay
         Element_Search_Box_Animation(75, 70, 0.5, 1, EasingMode.EaseOut);
     }
 
-    /*****************************************
-     Анимации
-    *****************************************/
+    #endregion
+
+    #region Анимации
 
     private void Element_Search_Box_Animation(double from, double to, double time, double amplitude = 0, EasingMode mode = EasingMode.EaseOut, IEasingFunction ea = null)
     {
@@ -1155,5 +1157,7 @@ namespace MyWay
 
       Util.ColorAnimation(LayoutRoot, new PropertyPath("(Panel.Background).(SolidColorBrush.Color)"), ca);
     }
+
+    #endregion
   }
 }

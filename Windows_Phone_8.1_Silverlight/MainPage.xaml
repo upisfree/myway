@@ -271,7 +271,7 @@
         <ListBox Margin="15,-16,15,0">
           <ListBoxItem>
             <Grid Width="425">
-              <TextBlock Text="Удаляет все данные, сохранённые приложением: маршруты, остановки и т. д."
+              <TextBlock Text="удаляение всех данных, сохранённых приложением: маршрутов, остановок и т. д."
                          TextWrapping="Wrap"
                          Foreground="{StaticResource PhoneSubtleBrush}" />
               <Button Content="удалить кэш" Margin="-12,55,-12,0" Tap="DeleteCache" toolkit:TiltEffect.IsTiltEnabled="True" />
@@ -280,7 +280,7 @@
 
           <ListBoxItem>
             <Grid Width="425">
-              <TextBlock Text="Удалить из избранного все маршруты и остановки."
+              <TextBlock Text="удаление из избранного всех маршрутов и остановок"
                          TextWrapping="Wrap"
                          Foreground="{StaticResource PhoneSubtleBrush}" />
               <Button Content="очистить избранное" Margin="-12,55,-12,0" Tap="Favourite_Settings_Clear" toolkit:TiltEffect.IsTiltEnabled="True" />
@@ -289,8 +289,33 @@
 
           <ListBoxItem>
             <Grid Width="425">
-              <toolkit:ToggleSwitch x:Name="Favourite_Scroll_ToggleSwicth" Header="открывание избранного при старте" Content="Да" IsChecked="True" SwitchForeground="#FF455580" Margin="-11,0" Checked="Favourite_Scroll_Changed" Unchecked="Favourite_Scroll_Unchanged" />
+              <toolkit:ToggleSwitch x:Name="Favourite_Scroll_ToggleSwicth" Header="открывание избранного при старте" Content="Вкл." IsChecked="True" SwitchForeground="#FF455580" Margin="-11,0" Checked="Favourite_Scroll_Changed" Unchecked="Favourite_Scroll_Unchanged" />
             </Grid>
+          </ListBoxItem>
+
+          <ListBoxItem>
+            <StackPanel Width="425">
+              <TextBlock Grid.Row="0"
+                         Text="карта"
+                         TextWrapping="Wrap"
+                         FontSize="30"
+                         FontFamily="Segoe WP SemiLight"
+                         Foreground="{StaticResource PhoneSubtleBrush}" />
+
+              <toolkit:ListPicker x:Name="MapViewMode_Picker" Loaded="MapViewMode_Picker_Loaded" Header="режим отображения" Background="{StaticResource PhoneBackgroundBrush}" ExpansionMode="ExpansionAllowed" toolkit:TiltEffect.IsTiltEnabled="True" Margin="0,0,0,0">
+                <toolkit:ListPickerItem Content="карта"></toolkit:ListPickerItem>
+                <toolkit:ListPickerItem Content="спутник"></toolkit:ListPickerItem>
+                <toolkit:ListPickerItem Content="карта+спутник"></toolkit:ListPickerItem>
+                <toolkit:ListPickerItem Content="карта+рельеф"></toolkit:ListPickerItem>
+              </toolkit:ListPicker>
+
+              <toolkit:ListPicker x:Name="MapColorMode_Picker" Loaded="MapColorMode_Picker_Loaded" Header="цвет" Background="{StaticResource PhoneBackgroundBrush}" ExpansionMode="ExpansionAllowed" toolkit:TiltEffect.IsTiltEnabled="True" Margin="0,20,0,0">
+                <toolkit:ListPickerItem Content="светлый"></toolkit:ListPickerItem>
+                <toolkit:ListPickerItem Content="тёмный"></toolkit:ListPickerItem>
+              </toolkit:ListPicker>
+
+              <Button Content="открыть карту" Margin="-12,20,-12,50" Click="MapSettings_Open" toolkit:TiltEffect.IsTiltEnabled="True" />
+           </StackPanel>
           </ListBoxItem>
         </ListBox>
       </phone:PivotItem>

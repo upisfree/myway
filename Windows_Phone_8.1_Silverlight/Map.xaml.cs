@@ -41,6 +41,37 @@ namespace MyWay
     {
       ARDisplay.StartServices();
 
+      // Инициализация настроек карты
+      
+      // режим просмотра
+      switch (Data.Settings.GetOrDefault("MapViewMode", "карта"))
+      {
+        case "карта":
+          MapPanel.CartographicMode = MapCartographicMode.Road;
+          break;
+        case "спутник":
+          MapPanel.CartographicMode = MapCartographicMode.Aerial;
+          break;
+        case "карта+спутник":
+          MapPanel.CartographicMode = MapCartographicMode.Hybrid;
+          break;
+        case "карта+рельеф":
+          MapPanel.CartographicMode = MapCartographicMode.Terrain;
+          break;
+      }
+
+      // цвет
+      switch (Data.Settings.GetOrDefault("MapColorMode", "светлый"))
+      {
+        case "светлый":
+          MapPanel.ColorMode = MapColorMode.Light;
+          break;
+        case "тёмный":
+          MapPanel.ColorMode = MapColorMode.Dark;
+          break;
+      }
+      // </>
+
       string mode = "";
       string id = "";
       string name = "";
@@ -54,12 +85,18 @@ namespace MyWay
       if (NavigationContext.QueryString.TryGetValue("desc", out desc))
         Desc.Text = desc.ToUpper();
 
-
       if (NavigationContext.QueryString.TryGetValue("mode", out mode) && NavigationContext.QueryString.TryGetValue("id", out id))
-        if (mode == "route")
-          await ShowRoute(id);
-        else if (mode == "stop" && NavigationContext.QueryString.TryGetValue("lon", out lon) && NavigationContext.QueryString.TryGetValue("lat", out lat))
-          ShowStop(id, lat, lon);
+        switch (mode)
+        {
+          case "route":
+          case "settings":
+            await ShowRoute(id);
+            break;
+          case "stop":
+            if (NavigationContext.QueryString.TryGetValue("lon", out lon) && NavigationContext.QueryString.TryGetValue("lat", out lat))
+              ShowStop(id, lat, lon);
+            break;
+        }
 
       ARInit(); // инициализируем дополненную реальность
 

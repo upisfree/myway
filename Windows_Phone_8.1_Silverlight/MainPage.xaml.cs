@@ -49,6 +49,8 @@ namespace MyWay
 
       base.OnNavigatedTo(e);
 
+      Settings_Init();
+
       if (e.NavigationMode == NavigationMode.New)
         await Favourite_Init(true);
       else
@@ -666,6 +668,41 @@ namespace MyWay
 
     #region Настройки
 
+    // Инициализация настроек
+    private void Settings_Init()
+    {
+      // режим просмотра
+      switch (Data.Settings.GetOrDefault("MapViewMode", "карта"))
+      {
+        case "карта":
+          MapViewMode_Picker.SelectedIndex = 0;
+          break;
+        case "спутник":
+          MapViewMode_Picker.SelectedIndex = 1;
+          break;
+        case "карта+спутник":
+          MapViewMode_Picker.SelectedIndex = 2;
+          break;
+        case "карта+рельеф":
+          MapViewMode_Picker.SelectedIndex = 3;
+          break;
+      }
+
+      // цвет
+      switch (Data.Settings.GetOrDefault("MapColorMode", "светлый"))
+      {
+        case "светлый":
+          MapColorMode_Picker.SelectedIndex = 0;
+          break;
+        case "тёмный":
+          MapColorMode_Picker.SelectedIndex = 1;
+          break;
+      }
+
+      MapViewMode_Picker.UpdateLayout();
+      MapColorMode_Picker.UpdateLayout();
+    }
+
     // Очистка кэша
     private async void DeleteCache(object sender, System.Windows.Input.GestureEventArgs e)
     {
@@ -683,7 +720,7 @@ namespace MyWay
     // Скролл к избранному: вкл
     private void Favourite_Scroll_Changed(object sender, RoutedEventArgs e)
     {
-      ((ToggleSwitch)sender).Content = "Да";
+      ((ToggleSwitch)sender).Content = "Вкл.";
 
       Data.Settings.AddOrUpdate("ScrollToFavouriteOnStart", "true");
     }
@@ -691,9 +728,48 @@ namespace MyWay
     // Скролл к избранному: выкл
     private void Favourite_Scroll_Unchanged(object sender, RoutedEventArgs e)
     {
-      ((ToggleSwitch)sender).Content = "Нет";
+      ((ToggleSwitch)sender).Content = "Выкл.";
 
       Data.Settings.AddOrUpdate("ScrollToFavouriteOnStart", "false");
+    }
+
+    // КАРТА
+
+    private void MapViewMode_Picker_Loaded(object sender, RoutedEventArgs e)
+    {
+      MapViewMode_Picker.SelectionChanged += MapViewMode_Picker_SelectionChanged;
+    }
+
+    private void MapColorMode_Picker_Loaded(object sender, RoutedEventArgs e)
+    {
+      MapColorMode_Picker.SelectionChanged += MapColorMode_Picker_SelectionChanged;
+    }
+
+    private void MapViewMode_Picker_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+      try
+      {
+        string data = ((ListPickerItem)e.AddedItems[0]).Content.ToString();
+
+        Data.Settings.AddOrUpdate("MapViewMode", data);
+      }
+      catch { }
+    }
+
+    private void MapColorMode_Picker_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+      try
+      {
+        string data = ((ListPickerItem)e.AddedItems[0]).Content.ToString();
+
+        Data.Settings.AddOrUpdate("MapColorMode", data);
+      }
+      catch { }
+    }
+
+    private void MapSettings_Open(object sender, RoutedEventArgs e)
+    {
+      NavigationService.Navigate(new Uri("/Map.xaml?mode=settings&id=58", UriKind.Relative)); // почему бы и не показывать 14-ый?
     }
 
     #endregion

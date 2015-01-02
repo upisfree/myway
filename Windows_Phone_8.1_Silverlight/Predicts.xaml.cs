@@ -15,44 +15,47 @@ namespace MyWay
     public StopPredict()
     {
       InitializeComponent();
+
+      this.Loaded += (sender, e) =>
+      {
+        string link = "";
+        string name = "";
+
+        if (NavigationContext.QueryString.TryGetValue("name", out name))
+          Stop.Text = name.ToUpper();
+
+        if (NavigationContext.QueryString.TryGetValue("link", out link))
+          Predicts.Tag = link;
+
+        ShowPredicts(Predicts.Tag.ToString());
+
+        System.Windows.Threading.DispatcherTimer dt = new System.Windows.Threading.DispatcherTimer();
+
+        int t = 30000;
+        int i = 100;
+
+        dt.Interval = TimeSpan.FromMilliseconds(i);
+        dt.Tick += new EventHandler((sender2, e2) =>
+        {
+          if (progress == t)
+          {
+            _refresh();
+            progress = 0;
+            UpdateProgress.Value = 0;
+          }
+
+          UpdateProgress.Value = (float)progress / t;
+
+          progress += i;
+        });
+        dt.Start();
+      };
     }
 
     private int progress = 0;
     protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
     {
       base.OnNavigatedTo(e);
-
-      string link = "";
-      string name = "";
-
-      if (NavigationContext.QueryString.TryGetValue("name", out name))
-        Stop.Text = name.ToUpper();
-
-      if (NavigationContext.QueryString.TryGetValue("link", out link))
-        Predicts.Tag = link;
-
-      ShowPredicts(Predicts.Tag.ToString());
-
-      System.Windows.Threading.DispatcherTimer dt = new System.Windows.Threading.DispatcherTimer();
-      
-      int t = 30000;
-      int i = 100;
-      
-      dt.Interval = TimeSpan.FromMilliseconds(i);
-      dt.Tick += new EventHandler((sender, e2) =>
-      {
-        if (progress == t)
-        {
-          _refresh();
-          progress = 0;
-          UpdateProgress.Value = 0;
-        }
-
-        UpdateProgress.Value = (float)progress / t;
-
-        progress += i;
-      });
-      dt.Start();
     }
 
     public class Predict

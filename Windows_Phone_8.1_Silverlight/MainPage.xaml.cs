@@ -35,8 +35,11 @@ namespace MyWay
     {
       ApplicationBar = ApplicationBar_Routes;
 
-      Routes_Init();
-      Stops_Init();
+      this.Loaded += (sender, e) =>
+      {
+        Routes_Init();
+        Stops_Init();
+      };
 
       InitializeComponent();
     }

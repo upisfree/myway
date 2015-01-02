@@ -20,29 +20,32 @@ namespace MyWay
     public DirectionsList()
     {
       InitializeComponent();
+
+      this.Loaded += (sender, e) =>
+      {
+        string id = "";
+        string lon = "";
+        string lat = "";
+        string name = "";
+
+        if (NavigationContext.QueryString.TryGetValue("name", out name))
+          Title.Text = name.ToUpper();
+
+        if (NavigationContext.QueryString.TryGetValue("id", out id))
+          Directions_Root.Tag = id;
+
+        NavigationContext.QueryString.TryGetValue("lon", out lon);
+        NavigationContext.QueryString.TryGetValue("lat", out lat);
+
+        MapData.Tag = lon + "|" + lat;
+      
+        Directions_Show(Directions_Root.Tag.ToString()); // await убрал
+      };
     }
 
-    protected async override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
+    protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
     {
       base.OnNavigatedTo(e);
-
-      string id = "";
-      string lon = "";
-      string lat = "";
-      string name = "";
-
-      if (NavigationContext.QueryString.TryGetValue("name", out name))
-        Title.Text = name.ToUpper();
-
-      if (NavigationContext.QueryString.TryGetValue("id", out id))
-        Directions_Root.Tag = id;
-
-      NavigationContext.QueryString.TryGetValue("lon", out lon);
-      NavigationContext.QueryString.TryGetValue("lat", out lat);
-
-      MapData.Tag = lon + "|" + lat;
-      
-      await Directions_Show(Directions_Root.Tag.ToString());
     }
 
     private class IO

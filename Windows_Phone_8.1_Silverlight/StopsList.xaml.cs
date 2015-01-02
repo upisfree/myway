@@ -16,33 +16,36 @@ namespace MyWay
     public Route()
     {
       InitializeComponent();
+
+      this.Loaded += (sender, e) =>
+      {
+        string link = "";
+        string name = "";
+        string desc = "";
+
+        NavigationContext.QueryString.TryGetValue("name", out name);
+        PivotRoot.Title = name;
+
+        NavigationContext.QueryString.TryGetValue("desc", out desc);
+        NavigationContext.QueryString.TryGetValue("link", out link);
+
+        Array a = link.Split(new Char[] { '/' });
+        string b = Regex.Match(a.GetValue(a.Length - 1).ToString(), @"\d+").Value; // получаем последную часть ссылки, id прогноза
+
+        LayoutRoot.Tag = link + "|" + b;
+
+        PivotRoot.Tag = desc + "|" + b;
+
+        if (Data.File.IsExists("Stops/" + b + "/a.db"))
+          ShowStopsOffline(link, b);
+        else
+          ShowStopsOnline(link, b);
+      };
     }
 
     protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
     {
       base.OnNavigatedTo(e);
-
-      string link = "";
-      string name = "";
-      string desc = "";
-
-      NavigationContext.QueryString.TryGetValue("name", out name);
-      PivotRoot.Title = name;
-
-      NavigationContext.QueryString.TryGetValue("desc", out desc);
-      NavigationContext.QueryString.TryGetValue("link", out link);
-      
-      Array a = link.Split(new Char[] { '/' });
-      string b = Regex.Match(a.GetValue(a.Length - 1).ToString(), @"\d+").Value; // получаем последную часть ссылки, id прогноза
-
-      LayoutRoot.Tag = link + "|" + b;
-
-      PivotRoot.Tag = desc + "|" + b;
-
-      if (Data.File.IsExists("Stops/" + b + "/a.db"))
-        ShowStopsOffline(link, b);
-      else
-        ShowStopsOnline(link, b);
     }
 
     public class Stop

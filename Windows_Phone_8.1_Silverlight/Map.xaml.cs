@@ -34,72 +34,77 @@ namespace MyWay
     {
       InitializeComponent();
 
-      Init();
-    }
+      this.Loaded += (sender, e) =>
+      {
+        Init();
 
-    protected async override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
-    {
-      ARDisplay.StartServices();
+        ///////
 
-      // Инициализация настроек карты
+        ARDisplay.StartServices();
+
+        // Инициализация настроек карты
       
-      // режим просмотра
-      switch (Data.Settings.GetOrDefault("MapViewMode", "карта"))
-      {
-        case "карта":
-          MapPanel.CartographicMode = MapCartographicMode.Road;
-          break;
-        case "спутник":
-          MapPanel.CartographicMode = MapCartographicMode.Aerial;
-          break;
-        case "карта+спутник":
-          MapPanel.CartographicMode = MapCartographicMode.Hybrid;
-          break;
-        case "карта+рельеф":
-          MapPanel.CartographicMode = MapCartographicMode.Terrain;
-          break;
-      }
-
-      // цвет
-      switch (Data.Settings.GetOrDefault("MapColorMode", "светлый"))
-      {
-        case "светлый":
-          MapPanel.ColorMode = MapColorMode.Light;
-          break;
-        case "тёмный":
-          MapPanel.ColorMode = MapColorMode.Dark;
-          break;
-      }
-      // </>
-
-      string mode = "";
-      string id = "";
-      string name = "";
-      string desc = "";
-      string lat = "";
-      string lon = "";
-
-      if (NavigationContext.QueryString.TryGetValue("name", out name))
-        Name.Text = name.ToUpper();
-
-      if (NavigationContext.QueryString.TryGetValue("desc", out desc))
-        Desc.Text = desc.ToUpper();
-
-      if (NavigationContext.QueryString.TryGetValue("mode", out mode) && NavigationContext.QueryString.TryGetValue("id", out id))
-        switch (mode)
+        // режим просмотра
+        switch (Data.Settings.GetOrDefault("MapViewMode", "карта"))
         {
-          case "route":
-          case "settings":
-            await ShowRoute(id);
+          case "карта":
+            MapPanel.CartographicMode = MapCartographicMode.Road;
             break;
-          case "stop":
-            if (NavigationContext.QueryString.TryGetValue("lon", out lon) && NavigationContext.QueryString.TryGetValue("lat", out lat))
-              ShowStop(id, lat, lon);
+          case "спутник":
+            MapPanel.CartographicMode = MapCartographicMode.Aerial;
+            break;
+          case "карта+спутник":
+            MapPanel.CartographicMode = MapCartographicMode.Hybrid;
+            break;
+          case "карта+рельеф":
+            MapPanel.CartographicMode = MapCartographicMode.Terrain;
             break;
         }
 
-      ARInit(); // инициализируем дополненную реальность
+        // цвет
+        switch (Data.Settings.GetOrDefault("MapColorMode", "светлый"))
+        {
+          case "светлый":
+            MapPanel.ColorMode = MapColorMode.Light;
+            break;
+          case "тёмный":
+            MapPanel.ColorMode = MapColorMode.Dark;
+            break;
+        }
+        // </>
 
+        string mode = "";
+        string id = "";
+        string name = "";
+        string desc = "";
+        string lat = "";
+        string lon = "";
+
+        if (NavigationContext.QueryString.TryGetValue("name", out name))
+          Name.Text = name.ToUpper();
+
+        if (NavigationContext.QueryString.TryGetValue("desc", out desc))
+          Desc.Text = desc.ToUpper();
+
+        if (NavigationContext.QueryString.TryGetValue("mode", out mode) && NavigationContext.QueryString.TryGetValue("id", out id))
+          switch (mode)
+          {
+            case "route":
+            case "settings":
+              ShowRoute(id); // await убрал
+              break;
+            case "stop":
+              if (NavigationContext.QueryString.TryGetValue("lon", out lon) && NavigationContext.QueryString.TryGetValue("lat", out lat))
+                ShowStop(id, lat, lon);
+              break;
+          }
+
+        ARInit(); // инициализируем дополненную реальность
+      };
+    }
+
+    protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
+    {
       base.OnNavigatedTo(e);
     }
 

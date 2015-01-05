@@ -224,10 +224,7 @@ namespace MyWay
 
     #endregion
 
-    /*****************************************
-     IO 
-    *****************************************/
-
+    #region IO
     private class IO
     {
       private async static Task<HtmlDocument> Download(int id)
@@ -295,6 +292,8 @@ namespace MyWay
         }
       }
     }
+
+    #endregion
 
     /*****************************************
      Название бы придумать 
@@ -519,6 +518,16 @@ namespace MyWay
     }
     private void DrawBuses(int id)
     {
+      // убираем пушпины
+      if (_mapPushpinsLayerInt == -1)
+      {
+        MapPanel.Layers.Add(new MapLayer());
+
+        _mapPushpinsLayerInt = MapPanel.Layers.Count - 1;
+      }
+      else
+        MapPanel.Layers[_mapPushpinsLayerInt] = new MapLayer();
+
       if (id == 0)
       {
         if (_mapBusesLayerInt == -1) // да, дубляция, знаю.
@@ -568,17 +577,29 @@ namespace MyWay
 
           foreach (BusesModel.Vehicle a in b.Vehicles)
           {
+            //a.Course = new Random().Next(0, 360);
+            //a.Course = a.Course - 90;
+            
+            Grid grid = new Grid();
+            Border border = new Border();
             Image img = new Image();
             BitmapImage bi = new BitmapImage();
             bi.UriSource = new Uri("/Assets/bus.png", UriKind.Relative);
             img.Source = bi;
-            img.Height = 25;
-            img.Width = 100;
-            //img.RenderTransform = new RotateTransform() { Angle = a.Course };
-            img.Tag = "http://t.bus55.ru/index.php/app/get_stations/" + id + "|" + Util.TypographString(a.Info);
-            img.Tap += (sender2, e2) =>
+            img.Height = 20;
+            img.Width = 20;
+
+            border.Child = img;
+            border.Width = 35;
+            border.Height = 35;
+            border.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+            border.BorderThickness = new Thickness(2);
+            border.BorderBrush = new SolidColorBrush(Util.ConvertStringToColor("#FF455580"));
+            border.CornerRadius = new CornerRadius(100);
+            border.Tag = "http://t.bus55.ru/index.php/app/get_stations/" + id + "|" + Util.TypographString(a.Info);
+            border.Tap += (sender2, e2) =>
             {
-              string str = ((Image)sender2).Tag.ToString();
+              string str = ((Border)sender2).Tag.ToString();
 
               if (_mapPushpinsLayerInt == -1)
               {
@@ -604,8 +625,21 @@ namespace MyWay
               MapPanel.Layers[_mapPushpinsLayerInt] = _layer;
             };
 
+            TextBlock tb = new TextBlock();
+            tb.Text = "➔";
+            tb.FontSize = 32;
+            tb.Foreground = new SolidColorBrush(Colors.White);
+            tb.RenderTransform = new RotateTransform() { Angle = a.Course - 90 };
+            //tb.Margin = new Thickness() { Top = -6 };
+            tb.RenderTransformOrigin = new Point(0.5, 0.8);
+
+            grid.Width = 50;
+            grid.Height = 50;
+            //grid.Children.Add(tb);
+            grid.Children.Add(border);
+
             MapOverlay overlay = new MapOverlay();
-            overlay.Content = img;
+            overlay.Content = grid;
             overlay.PositionOrigin = new Point(0.5, 0.5);
             overlay.GeoCoordinate = new GeoCoordinate() { Longitude = Util.StringToDouble(a.Coordinates[0]), Latitude = Util.StringToDouble(a.Coordinates[1]) };
 
@@ -787,21 +821,21 @@ namespace MyWay
           }
         }
 
-        private string _description;
-        public string Description
-        {
-          get
-          {
-            return _description;
-          }
-          set
-          {
-            if (_description != value)
-            {
-              _description = value;
-            }
-          }
-        }
+        //private string _description;
+        //public string Description
+        //{
+        //  get
+        //  {
+        //    return _description;
+        //  }
+        //  set
+        //  {
+        //    if (_description != value)
+        //    {
+        //      _description = value;
+        //    }
+        //  }
+        //}
       }
     }
 
@@ -907,8 +941,6 @@ namespace MyWay
     private void ARItem_Tap(object sender, System.Windows.Input.GestureEventArgs e)
     {
       string[] str = ((Grid)sender).Tag.ToString().Split(new Char[] { '|' });
-
-      
 
       (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + "http://t.bus55.ru/index.php/app/get_predict/" + str[0] + "&name=" + str[1], UriKind.Relative));
     }

@@ -28,9 +28,9 @@ using Location = System.Device.Location.GeoCoordinate;
 
 namespace MyWay
 {
-  public partial class MainPage : PhoneApplicationPage//////////////////////////////////////////////////////////////// TODO: удаление из избранного
+  public partial class MainPage : PhoneApplicationPage
   {
-    // Конструктор//////////////////////////////////////////////////////////////////////////////////////////////////         настройки карты
+    // Конструктор
     public MainPage()
     {
       ApplicationBar = ApplicationBar_Routes;
@@ -528,7 +528,7 @@ namespace MyWay
             string lat = line[2];
             string name = Util.TypographString(line[3]);
 
-            StopsList.Add(new Stops.Model_XAML() { Name = name, All = id + "|" + lon + "|" + lat + "|" + name  });
+            StopsList.Add(new Stops.Model_XAML() { Name = name, All = id + "|" + lon + "|" + lat + "|" + name });
           }
           catch { }
         }
@@ -1043,6 +1043,12 @@ namespace MyWay
           e3 = Stops_Root;
           break;
       }
+
+      try
+      {
+        e1.ItemsSource = null;
+      }
+      catch { }
 
       e1.Items.Clear();
 

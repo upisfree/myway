@@ -1,0 +1,108 @@
+﻿<phone:PhoneApplicationPage
+  x:Class="MyWay.StopPredict"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+  xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+  mc:Ignorable="d"
+  Style="{StaticResource TransitionPageStyle}"
+  FontFamily="{StaticResource PhoneFontFamilyNormal}"
+  FontSize="{StaticResource PhoneFontSizeNormal}"
+  Foreground="{StaticResource PhoneForegroundBrush}"
+  SupportedOrientations="Portrait" Orientation="Portrait"
+  shell:SystemTray.IsVisible="True"
+  shell:SystemTray.Opacity="0.0">
+
+  <phone:PhoneApplicationPage.Resources>
+    <Grid x:Name="SwipeInfo" Margin="0,-100,0,0" HorizontalAlignment="Center">
+      <TextBlock Text="➔" FontSize="42" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0">
+        <TextBlock.RenderTransform>
+          <RotateTransform Angle="90" CenterX="25" CenterY="25"></RotateTransform>
+        </TextBlock.RenderTransform>
+      </TextBlock>
+
+      <TextBlock Text="потяните, чтобы обновить" FontSize="24" VerticalAlignment="Top" Margin="0,40,0,0" />
+    </Grid>
+  </phone:PhoneApplicationPage.Resources>
+
+  <!--LayoutRoot представляет корневую сетку, где размещается все содержимое страницы-->
+  <Grid x:Name="LayoutRoot" Background="Transparent" Margin="0,30,0,0">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" MinHeight="76"/>
+      <RowDefinition/>
+    </Grid.RowDefinitions>
+
+    <ProgressBar x:Name="UpdateProgress" IsIndeterminate="False" Minimum="0" Maximum="1" Foreground="#FF455580" VerticalAlignment="Top" Height="10" Margin="-12,-33,-12,0" />
+
+    <StackPanel Grid.Row="0" Margin="12,17,0,28">
+      <TextBlock x:Name="Stop" Text="МОЙ МАРШРУТ" Style="{StaticResource PhoneTextNormalStyle}" FontFamily="Segoe WP Semibold" FontSize="22.7" />
+      <!--<TextBlock x:Name="Bus" Text="МОЙ МАРШРУТ" Style="{StaticResource PhoneTextNormalStyle}" FontFamily="Segoe WP Semibold" FontSize="22.7" />-->
+    </StackPanel>
+
+    <Grid x:Name="NoFuture" Tag="off" Opacity="0">
+      <Image Opacity="0" Source="/Assets/NoFuture/1.jpg" Margin="-451,-52,0,-352" />
+      <Image Opacity="0" Source="/Assets/NoFuture/2.jpg" Margin="-307,-52,-144,-352" />
+      <Image Opacity="0" Source="/Assets/NoFuture/3.jpg" Margin="-137,10,-47,-337" />
+      <Image Opacity="0" Source="/Assets/NoFuture/4.jpg" Margin="-224,61,-227,-465" />
+      <Image Opacity="0" Source="/Assets/NoFuture/5.jpg" Margin="-224,-52,-227,-352" />
+      <Image Opacity="0" Source="/Assets/NoFuture/6.jpg" Margin="-224,-52,-227,-352" />
+      <Image Opacity="0" Source="/Assets/NoFuture/7.jpg" Margin="-307,-52,-144,-352" />
+      <Image Opacity="0" Source="/Assets/NoFuture/8.jpg" Margin="-137,54,-314,-458" />
+    </Grid>
+
+    <Grid x:Name="ContentPanel" Margin="28,53,28,23" DataContext="Predict" Grid.RowSpan="2">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="670*"/>
+        <RowDefinition Height="19*"/>
+        <RowDefinition Height="3*"/>
+      </Grid.RowDefinitions>
+
+      
+      <ListBox x:Name="Predicts" Margin="0,10,0,-23" Grid.RowSpan="3" MouseEnter="Predicts_MouseEnter" MouseMove="Predicts_MouseMove" MouseLeftButtonUp="Predicts_MouseLeftButtonUp">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <Grid>
+              <TextBlock FontFamily="{StaticResource PhoneFontFamilySemiLight}" Margin="0,-8,0,0" Height="91" VerticalAlignment="Top">
+                <Run Text="{Binding Number}" FontSize="64" Foreground="{StaticResource PhoneForegroundBrush}" />
+                <Run Text="{Binding Type}" FontSize="42" Foreground="{StaticResource PhoneForegroundBrush}" />
+              </TextBlock>
+              <TextBlock Text="{Binding Desc}" FontSize="24" Foreground="{StaticResource PhoneSubtleBrush}" Margin="0,73,0,-1" />
+
+              <Grid Background="#FF455580" Margin="0,0,0,35" HorizontalAlignment="Right" Height="48" VerticalAlignment="Bottom">
+                <Border BorderBrush="{StaticResource PhoneBackgroundBrush}" BorderThickness="7" Margin="-7">
+                  <TextBlock Text="{Binding Time}" Margin="10,0,10,0" FontSize="32" Foreground="White" FontWeight="ExtraLight" HorizontalAlignment="Left" />
+                </Border>
+              </Grid>
+            </Grid>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+
+        <ListBox.ItemContainerStyle>
+          <Style TargetType="ListBoxItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+            <Setter Property="Margin" Value="0,-10,0,10" />
+          </Style>
+        </ListBox.ItemContainerStyle>
+      </ListBox>
+
+      <Grid x:Name="NoPredicts" Visibility="Collapsed" Grid.RowSpan="3" Margin="0,0,0,0" DoubleTap="NoFuture_DoubleTap">
+        <TextBlock Text="Прогнозов нет" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-75,0,0" />
+        <TextBlock Text="Может, уже поздно и автобусы не ходят?"  Foreground="{StaticResource PhoneSubtleBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+      </Grid>
+
+      <Grid x:Name="Load" Visibility="Visible">
+        <TextBlock Text="Загрузка..." Foreground="{StaticResource PhoneSubtleBrush}" FontSize="36" FontFamily="Segoe WP SemiLight" Margin="-26,0,26,181" HorizontalAlignment="Right" Width="401" />
+      </Grid>
+
+      <Grid x:Name="Error" Visibility="Collapsed" Margin="0,0,0,0">
+        <TextBlock Text="Что-то пошло не так :(" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="42" Margin="0,-90,0,0" />
+        <TextBlock Text="Может, стоит проверить доступ к интернету?"  Foreground="{StaticResource PhoneSubtleBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <Button Content="попробовать ещё раз" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,100,0,0" Tap="Refresh"/>
+      </Grid>
+    </Grid>
+  </Grid>
+</phone:PhoneApplicationPage>

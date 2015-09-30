@@ -39,7 +39,6 @@ dlldata.c
 *.meta
 *.obj
 *.pch
-*.pdb
 *.pgc
 *.pgd
 *.rsp
@@ -176,3 +175,5 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
+
+!GART.WP8.*

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Text.RegularExpressions;
@@ -143,6 +144,31 @@ namespace MyWay
         else
         {
           return defaultValue;
+        }
+      }
+    }
+
+    public static async Task ForceUpdateScheduled()
+    {
+      string lastUpdate = Settings.GetOrDefault("LastUpdate", "0");
+      int limit = 30; // через столько дней будет чиститься кэш
+
+      if (lastUpdate == "0")
+      {
+        Settings.AddOrUpdate("LastUpdate", DateTime.Now.ToShortDateString());
+      }
+      else
+      {
+        DateTime lu = DateTime.Parse(lastUpdate);
+        int diff = DateTime.Now.Subtract(lu).Days;
+
+        Debug.WriteLine("~~~~~~~~~~ Seconds since last cache update: " + DateTime.Now.Subtract(lu).Seconds.ToString());
+
+        if (diff > limit)
+        {
+          Settings.AddOrUpdate("LastUpdate", DateTime.Now.ToShortDateString());
+
+          await Data.Clear();
         }
       }
     }

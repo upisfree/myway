@@ -37,6 +37,8 @@ namespace MyWay
 
       this.Loaded += (sender, e) =>
       {
+        Data.ForceUpdateScheduled(); // смотрим, не пора ли нам обновить кэш. пора? ок, просто удалим всё что там есть.
+
         Routes_Init();
         Stops_Init();
       };

@@ -315,7 +315,7 @@
               </toolkit:ListPicker>
 
               <Button Content="открыть карту" Margin="-12,20,-12,50" Click="MapSettings_Open" toolkit:TiltEffect.IsTiltEnabled="True" />
-           </StackPanel>
+            </StackPanel>
           </ListBoxItem>
         </ListBox>
       </phone:PivotItem>
@@ -353,12 +353,11 @@
 
             <ListBoxItem Margin="0,25,0,0">
               <Grid Width="425">
-                <TextBlock Text="О замечаниях и предложениях можно писать разработчикам"
+                <TextBlock Text="Есть какие-то вопросы, замечания, предложения? Смело пишите сюда!"
 							             FontSize="21"
                            TextWrapping="Wrap" Margin="0,0,-12,0"
                            Foreground="White" />
-                <Button Content="системы" Margin="-12,55,212,27" Click="ContactEmail" toolkit:TiltEffect.IsTiltEnabled="True" Width="225" BorderBrush="White" Foreground="White" />
-                <Button Content="приложения" Margin="213,55,-13,27" Click="ContactVK" toolkit:TiltEffect.IsTiltEnabled="True" Width="225" BorderBrush="White" Foreground="White" />
+                <Button Content="обратная связь" Margin="-13,55,-13,27" Click="ContactVK" toolkit:TiltEffect.IsTiltEnabled="True" BorderBrush="White" Foreground="White" />
               </Grid>
             </ListBoxItem>
 
@@ -379,7 +378,8 @@
               </Grid>
             </ListBoxItem>
 
-            <ListBoxItem Margin="0,15,0,0"> <!-- для отступа -->
+            <ListBoxItem Margin="0,15,0,0">
+              <!-- для отступа -->
               <Grid Width="425">
                 <TextBlock Text="" />
               </Grid>

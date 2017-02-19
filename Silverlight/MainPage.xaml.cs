@@ -822,24 +822,24 @@ namespace MyWay
     }
 
     // Контакты
-    private void ContactEmail(object sender, RoutedEventArgs e)
-    {
-      EmailComposeTask emailComposeTask = new EmailComposeTask();
+    //private void ContactEmail(object sender, RoutedEventArgs e)
+    //{
+    //  EmailComposeTask emailComposeTask = new EmailComposeTask();
 
-      emailComposeTask.To = "info@bus55.ru";
-      emailComposeTask.Subject = "Замечание или предложение";
-      emailComposeTask.Body = "\n\nОтправлено из клиента под Windows Phone.";
+    //  emailComposeTask.To = "info@bus55.ru";
+    //  emailComposeTask.Subject = "Замечание или предложение";
+    //  emailComposeTask.Body = "\n\nОтправлено из клиента под Windows Phone.";
 
-      emailComposeTask.Show();
-    }
+    //  emailComposeTask.Show();
+    //}
 
     private void ContactVK(object sender, RoutedEventArgs e)
     {
       EmailComposeTask emailComposeTask = new EmailComposeTask();
 
       emailComposeTask.To = "upisfree@outlook.com";
-      emailComposeTask.Subject = "fromapp@myway";
-      emailComposeTask.Body = "У меня ещё ВК (vk.com/upisfree) и сайт (upisfree.github.io) есть.";
+      emailComposeTask.Subject = "Мой маршрут @ Windows Phone";
+      emailComposeTask.Body = "\n\nУкажите, пожалуйста, в письме модель вашего телефона. Спасибо!";
 
       emailComposeTask.Show();
     }

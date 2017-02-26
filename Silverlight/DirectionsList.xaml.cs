@@ -17,6 +17,8 @@ namespace MyWay
 {
   public partial class DirectionsList : PhoneApplicationPage
   {
+    private string TileName;
+
     public DirectionsList()
     {
       InitializeComponent();
@@ -33,6 +35,9 @@ namespace MyWay
 
         if (NavigationContext.QueryString.TryGetValue("id", out id))
           Directions_Root.Tag = id;
+        
+        // для передачи на страницу прогнозов версии без капса, чтобы на рабочий стол нормальное название можно было выложить
+        TileName = name;
 
         NavigationContext.QueryString.TryGetValue("lon", out lon);
         NavigationContext.QueryString.TryGetValue("lat", out lat);
@@ -194,7 +199,7 @@ namespace MyWay
       Grid text = (Grid)sender;
 
       string link = text.Tag.ToString();
-      string name = Title.Text;
+      string name = TileName;
 
       (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + link + "&name=" + name, UriKind.Relative));
     }

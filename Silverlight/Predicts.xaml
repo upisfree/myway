@@ -105,4 +105,10 @@
       </Grid>
     </Grid>
   </Grid>
+
+  <phone:PhoneApplicationPage.ApplicationBar>
+    <shell:ApplicationBar IsVisible="True">
+      <shell:ApplicationBarIconButton IconUri="/Images/pin.png" Text="на рабочий стол" Click="AddToStartButton_Click" />
+    </shell:ApplicationBar>
+  </phone:PhoneApplicationPage.ApplicationBar>
 </phone:PhoneApplicationPage>

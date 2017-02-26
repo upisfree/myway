@@ -1,6 +1,8 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Phone.Controls;
+using Microsoft.Phone.Shell;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +14,9 @@ namespace MyWay
 {
   public partial class StopPredict:PhoneApplicationPage
   {
+    private string TileName;
+    private string TileLink;
+
     public StopPredict()
     {
       InitializeComponent();
@@ -26,6 +31,9 @@ namespace MyWay
 
         if (NavigationContext.QueryString.TryGetValue("link", out link))
           Predicts.Tag = link;
+
+        TileName = name;
+        TileLink = link;
 
         ShowPredicts(Predicts.Tag.ToString());
 
@@ -182,6 +190,41 @@ namespace MyWay
       da.Duration = new Duration(TimeSpan.FromSeconds(time));
 
       Util.DoubleAnimation(NoFuture, new PropertyPath("Opacity"), da);
+    }
+
+    #endregion
+
+    #region Вынос остановки на рабочий стол
+
+    private ShellTile IsTileOnStart(string uri)
+    {
+      ShellTile shellTile = ShellTile.ActiveTiles.FirstOrDefault(tile => tile.NavigationUri.ToString().Contains(uri)); // тут стоит проверка на url, чтобы можно было ставить на рабочий стол плитки с одной остановки, но на разные направления 
+                                                                                                                       // но названия у них будут одинаковые, без указания стороны движения
+      return shellTile;                                                                                                // и похуй.
+    }                                                                                                                  // всё равно человек должен помнить это, а если указывать в названии, то оно будет уродсикм
+
+    private void AddToStartButton_Click(object sender, EventArgs e)
+    {
+      IconicTileData data = new IconicTileData()
+      {
+        Title = TileName,
+        IconImage = new Uri("Assets/SecondaryTiles/stop_middle.png", UriKind.Relative),
+        SmallIconImage = new Uri("Assets/SecondaryTiles/stop_small.png", UriKind.Relative)
+      };
+
+      string uri = "/Predicts.xaml?link=" + TileLink + "&name=" + TileName;
+
+      // проверяем, есть ли уже такая плиточка
+      ShellTile tile = IsTileOnStart(uri);
+
+      if (tile == null)
+      {
+        ShellTile.Create(new Uri(uri, UriKind.Relative), data, true);
+      }
+      else
+      {
+        MessageBox.Show("Такая остановка уже есть на рабочем столе.", "Повторение", MessageBoxButton.OK);
+      }
     }
 
     #endregion

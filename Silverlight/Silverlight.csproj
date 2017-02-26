@@ -184,6 +184,8 @@
     <Content Include="Assets\NoFuture\7.jpg" />
     <Content Include="Assets\NoFuture\8.jpg" />
     <Content Include="Assets\stop.png" />
+    <Content Include="Assets\SecondaryTiles\stop_middle.png" />
+    <Content Include="Assets\SecondaryTiles\stop_small.png" />
     <Content Include="Assets\stop_white.png" />
     <Content Include="Assets\Tiles\Large.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -202,6 +204,7 @@
     <Content Include="Images\favs.dark.png" />
     <Content Include="Images\favs.png" />
     <Content Include="Images\me.png" />
+    <Content Include="Images\pin.png" />
     <Content Include="Images\search.png" />
     <Content Include="Images\refresh.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Add.png" />

@@ -42,8 +42,11 @@ namespace MyWay
 
         ARDisplay.StartServices();
 
+        // Токены карты
+        Microsoft.Phone.Maps.MapsSettings.ApplicationContext.ApplicationId = "f5a261f6-05a4-4d6b-b5b4-4cdcf97351b6";
+        Microsoft.Phone.Maps.MapsSettings.ApplicationContext.AuthenticationToken = "iIHLArElHh4MMH3piVYXTw";
+        
         // Инициализация настроек карты
-      
         // режим просмотра
         switch (Data.Settings.GetOrDefault("MapViewMode", "карта"))
         {
@@ -102,7 +105,7 @@ namespace MyWay
         ARInit(); // инициализируем дополненную реальность
       };
     }
-
+    
     protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
     {
       base.OnNavigatedTo(e);

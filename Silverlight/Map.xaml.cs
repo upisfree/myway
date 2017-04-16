@@ -17,13 +17,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Windows.Devices.Geolocation;
 using Windows.System;
-using GART;
 using Location = System.Device.Location.GeoCoordinate;
-using GART.Data;
-using GART.Controls;
-using GART.BaseControls;
-using System.Windows.Media.Animation;
-
+using MathHelper = Microsoft.Xna.Framework.MathHelper;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace MyWay
 {
@@ -37,10 +33,6 @@ namespace MyWay
       this.Loaded += (sender, e) =>
       {
         Init();
-
-        ///////
-
-        ARDisplay.StartServices();
 
         // Токены карты
         Microsoft.Phone.Maps.MapsSettings.ApplicationContext.ApplicationId = "f5a261f6-05a4-4d6b-b5b4-4cdcf97351b6";
@@ -101,8 +93,6 @@ namespace MyWay
                 ShowStop(id, lat, lon);
               break;
           }
-
-        ARInit(); // инициализируем дополненную реальность
       };
     }
     
@@ -117,38 +107,6 @@ namespace MyWay
       //ARDisplay.StopServices();
 
       base.OnNavigatedFrom(e);
-    }
-
-    /// <summary>
-    /// To support any orientation, override this method and call
-    /// ARDisplay.HandleOrientationChange() method
-    /// </summary>
-    /// <param name="e"></param>
-    protected override void OnOrientationChanged(OrientationChangedEventArgs e)
-    {
-      base.OnOrientationChanged(e);
-
-      double h = Application.Current.Host.Content.ActualHeight;
-
-      if (e.Orientation == PageOrientation.Portrait || e.Orientation == PageOrientation.PortraitDown || e.Orientation == PageOrientation.PortraitUp)
-      {
-        Animation(MapPanel_Transform, h, 0, 0.5);
-        Animation(ARDisplay_Transform, 0, h, 0.5);
-      }
-      else
-      {
-        ControlOrientation orientation = ControlOrientation.Default;
-
-        if (e.Orientation == PageOrientation.LandscapeLeft)
-          orientation = ControlOrientation.Clockwise270Degrees;
-        else if (e.Orientation == PageOrientation.LandscapeRight)
-          orientation = ControlOrientation.Clockwise90Degrees;
-
-        Animation(MapPanel_Transform, 0, h, 0.5);
-        Animation(ARDisplay_Transform, h, 0, 0.5);
-
-        ARDisplay.Orientation = orientation;
-      }
     }
 
     // Нажатие на клавишу «Назад»
@@ -313,14 +271,6 @@ namespace MyWay
         ShowUser(false);
       });
       userTimer.Start();
-
-      System.Windows.Threading.DispatcherTimer ARTimer = new System.Windows.Threading.DispatcherTimer();
-      ARTimer.Interval = TimeSpan.FromMilliseconds(60000);
-      ARTimer.Tick += new EventHandler((sender, e) =>
-      {
-        ARInit();
-      });
-      ARTimer.Start();
     }
 
     private int _mapUsersLayerInt = -1;
@@ -437,7 +387,6 @@ namespace MyWay
       }
 
       // Отрисовка остановок
-
       MapLayer layer = new MapLayer();
 
       for (int i = 0; i <= data.Stations.Count - 1; i++)
@@ -449,14 +398,14 @@ namespace MyWay
         BitmapImage bi = new BitmapImage();
         bi.UriSource = new Uri("/Assets/stop.png", UriKind.Relative);
         img.Source = bi;
-        img.Height = 20;
-        img.Width = 20;
+        img.Height = 10; // если возвращать обратно, то просто всё на 2 умножить
+        img.Width = 10;
 
         border.Child = img;
-        border.Width = 35;
-        border.Height = 35;
+        border.Width = 17;
+        border.Height = 17;
         border.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-        border.BorderThickness = new Thickness(2);
+        border.BorderThickness = new Thickness(1);
         border.BorderBrush = new SolidColorBrush(Util.ConvertStringToColor("#FF455580"));
         border.CornerRadius = new CornerRadius(100);
         border.Tag = b.Id + "|" + Util.TypographString(b.Name);
@@ -546,7 +495,6 @@ namespace MyWay
       }
 
       // Отрисовка автобусов
-
       MapLayer layer = new MapLayer();
 
       var client = new WebClient();
@@ -631,14 +579,21 @@ namespace MyWay
             TextBlock tb = new TextBlock();
             tb.Text = "➔";
             tb.FontSize = 32;
-            tb.Foreground = new SolidColorBrush(Colors.White);
+            tb.Foreground = new SolidColorBrush(Util.ConvertStringToColor("#FF455580"));
             tb.RenderTransform = new RotateTransform() { Angle = a.Course - 90 };
-            //tb.Margin = new Thickness() { Top = -6 };
-            tb.RenderTransformOrigin = new Point(0.5, 0.8);
+            
+            Vector2 v = new Vector2((float)Math.Cos(MathHelper.ToRadians(a.Course - 90)), (float)Math.Sin(MathHelper.ToRadians(a.Course - 90)));
+            
+            Debug.WriteLine("x: " + v.X + ", y: " + v.Y);
+            
+            //tb.RenderTransformOrigin = new Point(v.X * 10, v.Y * 10);
+            tb.Margin = new Thickness() { Left = v.X * 10, Top = v.Y * 10 };
+
+            //tb.RenderTransformOrigin = new Point(0.5, 0.8);
 
             grid.Width = 50;
             grid.Height = 50;
-            //grid.Children.Add(tb);
+            grid.Children.Add(tb);
             grid.Children.Add(border);
 
             MapOverlay overlay = new MapOverlay();
@@ -690,7 +645,7 @@ namespace MyWay
 
       MapPanel.SetView(new GeoCoordinate(a, b), 11.5);
 
-      _busTimer.Interval = TimeSpan.FromMilliseconds(30000);
+      _busTimer.Interval = TimeSpan.FromMilliseconds(20000);
       _busTimer.Tick += new EventHandler((sender2, e2) =>
       {
         DrawBuses(id);
@@ -713,14 +668,14 @@ namespace MyWay
       BitmapImage bi = new BitmapImage();
       bi.UriSource = new Uri("/Assets/stop.png", UriKind.Relative);
       img.Source = bi;
-      img.Height = 25;
-      img.Width = 25;
+      img.Height = 10;
+      img.Width = 10;
 
       border.Child = img;
-      border.Width = 35;
-      border.Height = 35;
+      border.Width = 17;
+      border.Height = 17;
       border.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-      border.BorderThickness = new Thickness(2);
+      border.BorderThickness = new Thickness(1);
       border.BorderBrush = new SolidColorBrush(Util.ConvertStringToColor("#FF455580"));
       border.CornerRadius = new CornerRadius(100);
       border.Tag = id + "|" + lon + "|" + lat + "|" + Util.TypographString(Name.Text);
@@ -747,222 +702,6 @@ namespace MyWay
 
       MapPanel.Center = coordinate;
       MapPanel.ZoomLevel = 16;
-    }
-    
-    /*****************************************
-     Всё, что связано с доп. реальностью
-    *****************************************/
-
-    public class ARModel
-    {
-      public class Stop : ARItem
-      {
-        public string Image
-        {
-          get
-          {
-            return "/Assets/stop_white.png";
-          }
-        }
-
-        private string _toPredict;
-        public string ToPredict
-        {
-          get
-          {
-            return _toPredict;
-          }
-          set
-          {
-            if (_toPredict != value)
-            {
-              _toPredict = value;
-            }
-          }
-        }
-
-        private string _distance;
-        public string Distance
-        {
-          get
-          {
-            return _distance;
-          }
-          set
-          {
-            if (_distance != value)
-            {
-              _distance = value;
-            }
-          }
-        }
-      }
-
-      public class Bus : ARItem
-      {
-        public string Image
-        {
-          get
-          {
-            return "/Assets/bus_white.png";
-          }
-        }
-
-        private string _distance;
-        public string Distance
-        {
-          get
-          {
-            return _distance;
-          }
-          set
-          {
-            if (_distance != value)
-            {
-              _distance = value;
-            }
-          }
-        }
-
-        //private string _description;
-        //public string Description
-        //{
-        //  get
-        //  {
-        //    return _description;
-        //  }
-        //  set
-        //  {
-        //    if (_description != value)
-        //    {
-        //      _description = value;
-        //    }
-        //  }
-        //}
-      }
-    }
-
-    private int _stopsNearbyLayer = -1;
-    private void ARInit() // близжайшие автобусы?
-    {
-      var location = ARDisplay.Location;
-
-      // грузим список близжайших остановок
-      var client = new WebClient();
-      client.Headers["If-Modified-Since"] = DateTimeOffset.Now.ToString(); // отключение кэширования
-      client.DownloadStringCompleted += (sender, e) =>
-      {
-        HtmlDocument htmlDocument = new HtmlDocument();
-
-        try
-        {
-          htmlDocument.LoadHtml(e.Result);
-          string json = htmlDocument.DocumentNode.InnerText;
-          json = Regex.Replace(json, "[«»]", "\"");
-
-          MyWay.MainPage.Stops.Model_Near[] b = JsonConvert.DeserializeObject<MyWay.MainPage.Stops.Model_Near[]>(json);
-
-          // чистим список предметов в доп. реальности
-          ARDisplay.ARItems.Clear();
-
-          // подготавливаем остановки
-          if (_stopsNearbyLayer == -1) // да, дубляция, знаю.
-          {
-            MapPanel.Layers.Add(new MapLayer());
-
-            _stopsNearbyLayer = MapPanel.Layers.Count - 1;
-          }
-          else
-            MapPanel.Layers[_stopsNearbyLayer] = new MapLayer();
-
-          MapLayer layer = new MapLayer();
-
-          foreach (MyWay.MainPage.Stops.Model_Near a in b)
-          {
-            // Добавление остановок в доп. реальность
-            ARDisplay.ARItems.Add(new ARModel.Stop()
-            {
-              Content = Util.TypographString(a.Name),
-              ToPredict = a.Id.ToString() + "|" + Util.TypographString(a.Name),
-              Distance = Math.Round(location.GetDistanceTo(new Location() { Longitude = Util.StringToDouble(a.Lon), Latitude = Util.StringToDouble(a.Lat) })).ToString() + " м",
-              GeoLocation = new Location() { Longitude = Util.StringToDouble(a.Lon), Latitude = Util.StringToDouble(a.Lat), Altitude = Double.NaN }
-            });
-
-            // Отрисовка остановок
-            Border border = new Border();
-            Image img = new Image();
-            BitmapImage bi = new BitmapImage();
-            bi.UriSource = new Uri("/Assets/stop.png", UriKind.Relative);
-            img.Source = bi;
-            img.Height = 20;
-            img.Width = 20;
-
-            border.Child = img;
-            border.Width = 35;
-            border.Height = 35;
-            border.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-            border.BorderThickness = new Thickness(2);
-            border.BorderBrush = new SolidColorBrush(Util.ConvertStringToColor("#FF455580"));
-            border.CornerRadius = new CornerRadius(100);
-            border.Tag = a.Id + "|" + Util.TypographString(a.Name);
-            border.Tap += (sender2, e2) =>
-            {
-              string[] str = ((Border)sender2).Tag.ToString().Split(new Char[] { '|' });
-
-              MessageBoxResult mbr = MessageBox.Show("Открыть прогнозы для этой остановки?", str[1], MessageBoxButton.OKCancel);
-
-              if (mbr == MessageBoxResult.OK)
-              {
-                (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + "http://t.bus55.ru/index.php/app/get_predict/" + str[0] + "&name=" + str[1], UriKind.Relative));
-              }
-            };
-
-            MapOverlay overlay = new MapOverlay();
-            overlay.Content = border;
-            overlay.PositionOrigin = new Point(0.5, 0.5);
-            overlay.GeoCoordinate = new GeoCoordinate() { Longitude = Util.StringToDouble(a.Lon), Latitude = Util.StringToDouble(a.Lat) };
-
-            layer.Add(overlay);
-            // конечно, можно вынести это в отдельный метод, чтобы третий раз не писать, но это уже говнокод, а поддерживать его я не особо собираюсь.
-          }
-
-          if (_stopsNearbyLayer == -1)
-          {
-            MapPanel.Layers.Add(layer);
-
-            _stopsNearbyLayer = MapPanel.Layers.Count - 1;
-          }
-          else
-            MapPanel.Layers[_stopsNearbyLayer] = layer;
-        }
-        catch { }
-      };
-
-      client.DownloadStringAsync(new Uri("http://t.bus55.ru/index.php/app/get_stations_geoloc_json/" + Regex.Replace(location.Latitude.ToString(), ",", ".") + "/" + Regex.Replace(location.Longitude.ToString(), ",", ".")));
-    }
-
-    private void ARItem_Tap(object sender, System.Windows.Input.GestureEventArgs e)
-    {
-      string[] str = ((Grid)sender).Tag.ToString().Split(new Char[] { '|' });
-
-      (Application.Current.RootVisual as PhoneApplicationFrame).Navigate(new Uri("/Predicts.xaml?link=" + "http://t.bus55.ru/index.php/app/get_predict/" + str[0] + "&name=" + str[1], UriKind.Relative));
-    }
-
-    // Анимации
-    private void Animation(TranslateTransform t, double from, double to, double time, double amplitude = 0, EasingMode mode = EasingMode.EaseOut)
-    {
-      DoubleAnimation da = new DoubleAnimation();
-
-      da.From = from;
-      da.To = to;
-      da.Duration = new Duration(TimeSpan.FromSeconds(time));
-
-      BackEase b = new BackEase();
-      b.Amplitude = amplitude;
-      b.EasingMode = mode;
-      da.EasingFunction = b;
-
-      Util.DoubleAnimation(t, new PropertyPath("(TranslateTransform.Y)"), da);
     }
   }
 }

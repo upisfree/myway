@@ -83,7 +83,8 @@
 
     <shell:ApplicationBar x:Name="ApplicationBar_Stops" IsVisible="True">
       <shell:ApplicationBarIconButton IconUri="/Images/search.png" Text="поиск" Click="Element_Search_Box_Open"/>
-      <shell:ApplicationBarIconButton IconUri="/Images/me.png" Text="ближайшие остановки" Click="Stops_Near"/>
+      <shell:ApplicationBarIconButton IconUri="/Images/me.png" Text="остановки рядом" Click="Stops_Near"/>
+      <shell:ApplicationBarIconButton IconUri="/Images/feature.camera.png" Text="остановки на камере" Click="Stops_AR"/>
     </shell:ApplicationBar>
 
     <shell:ApplicationBar x:Name="ApplicationBar_Favourite" IsVisible="True" IsMenuEnabled="True" Mode="Minimized">

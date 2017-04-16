@@ -103,6 +103,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AR.xaml.cs">
+      <DependentUpon>AR.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Data.cs" />
     <Compile Include="DirectionsList.xaml.cs">
       <DependentUpon>DirectionsList.xaml</DependentUpon>
@@ -135,6 +138,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Page Include="AR.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DirectionsList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -203,6 +210,7 @@
     <Content Include="Images\favs.addto.png" />
     <Content Include="Images\favs.dark.png" />
     <Content Include="Images\favs.png" />
+    <Content Include="Images\feature.camera.png" />
     <Content Include="Images\me.png" />
     <Content Include="Images\pin.png" />
     <Content Include="Images\search.png" />

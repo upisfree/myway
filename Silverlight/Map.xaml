@@ -16,22 +16,6 @@
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     shell:SystemTray.IsVisible="False">
 
-  <phone:PhoneApplicationPage.Resources>
-    <DataTemplate x:Key="MapItemTemplate">
-      <Grid Background="Black" Margin="4" Width="300" Height="100" Tag="{Binding ToPredict}" Tap="ARItem_Tap" toolkit:TiltEffect.IsTiltEnabled="True">
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-
-        <Image Grid.Column="0" Source="{Binding Image}" Margin="10,0,0,0" Height="100" Width="90" HorizontalAlignment="Left" />
-        <TextBlock Grid.Column="1" x:Name="NameBlock" Text="{Binding Content}" Margin="110,12.5,0,0" FontSize="24" TextWrapping="Wrap" Foreground="White" VerticalAlignment="Top" FontFamily="Segoe WP Black" />
-        <TextBlock Grid.Column="1" x:Name="DescriptionBlock" Text="" FontSize="24" VerticalAlignment="Center" Foreground="White" /> <!-- опи -->
-        <TextBlock Grid.Column="2" Text="{Binding Distance}" FontSize="24" VerticalAlignment="Bottom" Foreground="White" HorizontalAlignment="Right" Margin="0,0,5,5" FontFamily="Segoe WP" />
-      </Grid>
-    </DataTemplate>
-  </phone:PhoneApplicationPage.Resources>
-
   <!--<shell:SystemTray.ProgressIndicator>
     <shell:ProgressIndicator x:Name="UpdateProgress" IsIndeterminate="{Binding IsBusy}" 
                                  IsVisible="{Binding IsBusy}" 
@@ -58,14 +42,7 @@
         </maps:Map.RenderTransform>
       </maps:Map>
 
-      <ARControls:ARDisplay x:Name="ARDisplay" AttitudeRefreshRate="50" MovementThreshold="10">
-        <ARControls:VideoPreview x:Name="VideoPreview" Canvas.ZIndex="1"/>
-        <ARControls:WorldView x:Name="WorldView" Canvas.ZIndex="1" ItemTemplate="{StaticResource MapItemTemplate}" MinItemScale="0.1" MaxItemScale="1.0" FarClippingPlane="500.0" NearClippingPlane="1.0"/>
-      
-        <ARControls:ARDisplay.RenderTransform>
-          <TranslateTransform x:Name="ARDisplay_Transform" />
-        </ARControls:ARDisplay.RenderTransform>
-      </ARControls:ARDisplay>
+      <ARControls:ARDisplay Visibility="Collapsed" CameraEnabled="False" x:Name="ARDisplay" AttitudeRefreshRate="50" MovementThreshold="10"></ARControls:ARDisplay>
     </Grid>
   </Grid>
 </phone:PhoneApplicationPage>

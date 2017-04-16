@@ -627,6 +627,11 @@ namespace MyWay
       }
     }
 
+    private void Stops_AR(object sender, EventArgs e)
+    {
+      NavigationService.Navigate(new Uri("/AR.xaml", UriKind.Relative));
+    }
+    
     private void Stop_Open(object sender, EventArgs e)
     {
       TextBlock text = (TextBlock)sender;

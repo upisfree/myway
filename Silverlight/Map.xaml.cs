@@ -400,7 +400,7 @@ namespace MyWay
 
       MapPolyline line = new MapPolyline();
       line.StrokeColor = Util.ConvertStringToColor("#FF101D80");
-      line.StrokeThickness = 7;
+      line.StrokeThickness = 2;
 
       for (int i = 0; i <= data.Coordinates.Count - 1; i++)
       {

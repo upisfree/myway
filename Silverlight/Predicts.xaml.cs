@@ -37,6 +37,12 @@ namespace MyWay
 
         ShowPredicts(Predicts.Tag.ToString());
 
+        // проверяем, есть ли уже такая плиточка. да? убираем кнопку выноса
+        if (IsTileOnStart("/Predicts.xaml?link=" + TileLink + "&name=" + TileName) != null)
+        {
+          ApplicationBar.IsVisible = false;
+        }
+
         System.Windows.Threading.DispatcherTimer dt = new System.Windows.Threading.DispatcherTimer();
 
         int t = 30000;
@@ -64,6 +70,13 @@ namespace MyWay
     protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
     {
       base.OnNavigatedTo(e);
+
+      // на случай, если человек только что разместил плитку и вернулся
+      // проверяем, есть ли уже такая плиточка. да? убираем кнопку выноса
+      if (IsTileOnStart("/Predicts.xaml?link=" + TileLink + "&name=" + TileName) != null)
+      {
+        ApplicationBar.IsVisible = false;
+      }
     }
 
     public class Predict
@@ -220,10 +233,6 @@ namespace MyWay
       if (tile == null)
       {
         ShellTile.Create(new Uri(uri, UriKind.Relative), data, true);
-      }
-      else
-      {
-        MessageBox.Show("Такая остановка уже есть на рабочем столе.", "Повторение", MessageBoxButton.OK);
       }
     }
 

@@ -512,12 +512,11 @@ namespace MyWay
     private async Task Stops_Init()
     {
       string[] b = await IO.Get("Stops");
+      List<Stops.Model_XAML> StopsList = new List<Stops.Model_XAML>();
 
       if (b != null)
       {
         Util.Hide(Stops_Error);
-
-        List<Stops.Model_XAML> StopsList = new List<Stops.Model_XAML>();
 
         foreach (string a in b)
         {
@@ -537,7 +536,8 @@ namespace MyWay
 
         Util.Hide(Stops_Load);
 
-        Stops_Root.ItemsSource = StopsList.OrderBy(x => x.Name).ToList(); // OrderBy — сортировка по алфавиту
+        StopsList = StopsList.OrderBy(x => x.Name).ToList(); // OrderBy — сортировка по алфавиту
+        //Stops_Root.ItemsSource = StopsList; // ушло в catch у ближайших остановок
       }
       else
       {
@@ -545,6 +545,59 @@ namespace MyWay
         Util.Hide(Stops_Load);
 
         await Stops_Init();
+      }
+
+      // дубляция (прямо как на странице карты), но мне похуй (прямо как на странице карты)
+      try // определение местоположения
+      {
+        GeoCoordinate currentPosition = ARDisplay.Location;
+
+        // загрузка данных
+        var client = new WebClient();
+        client.Headers["If-Modified-Since"] = DateTimeOffset.Now.ToString(); // отключение кэширования
+        client.DownloadStringCompleted += (sender2, e2) =>
+        {
+          HtmlDocument htmlDocument = new HtmlDocument();
+
+          try
+          {
+            htmlDocument.LoadHtml(e2.Result);
+            string json = htmlDocument.DocumentNode.InnerText;
+            json = Regex.Replace(json, "[«»]", "\"");
+
+            Stops.Model_Near[] с = JsonConvert.DeserializeObject<Stops.Model_Near[]>(json);
+
+            List<Stops.Model_XAML> list = new List<Stops.Model_XAML>();
+            Stops.Model_XAML_Comparer mc = new Stops.Model_XAML_Comparer();
+
+            foreach (Stops.Model_Near a in с)
+            {
+              string name = Util.TypographString(a.Name);
+              string all = a.Id + "|" + a.Lon + "|" + a.Lat + "|" + Util.TypographString(a.Name);
+
+              Stops.Model_XAML c = new Stops.Model_XAML() { Name = name, All = all };
+
+              if (!list.Contains(c, mc))
+              {
+                list.Add(c);
+              }
+            }
+
+            StopsList.InsertRange(0, list);
+
+            Stops_Root.ItemsSource = StopsList;
+          }
+          catch
+          {
+            Stops_Root.ItemsSource = StopsList;
+          }
+        };
+
+        client.DownloadStringAsync(new Uri("http://t.bus55.ru/index.php/app/get_stations_geoloc_json/" + Regex.Replace(currentPosition.Latitude.ToString(), ",", ".") + "/" + Regex.Replace(currentPosition.Longitude.ToString(), ",", ".")));
+      }
+      catch (Exception e3)
+      {
+        Stops_Root.ItemsSource = StopsList;
       }
     }
 
@@ -629,7 +682,7 @@ namespace MyWay
       }
       catch (Exception e3)
       {
-        MessageBoxResult mbr = MessageBox.Show("Не могу отобразить тебя на карте, так как у тебя отключено определение местоположения.\nОткрыть настройки, чтобы включить его?", "Местоположение", MessageBoxButton.OKCancel);
+        MessageBoxResult mbr = MessageBox.Show("Не могу найти ближайшие остановки, так как отключено определение местоположения.\nОткрыть настройки, чтобы включить его?", "Местоположение", MessageBoxButton.OKCancel);
 
         if (mbr == MessageBoxResult.OK)
         {

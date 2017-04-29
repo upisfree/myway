@@ -398,12 +398,12 @@ namespace MyWay
         BitmapImage bi = new BitmapImage();
         bi.UriSource = new Uri("/Assets/stop.png", UriKind.Relative);
         img.Source = bi;
-        img.Height = 10; // если возвращать обратно, то просто всё на 2 умножить
-        img.Width = 10;
+        img.Height = 15; // если возвращать обратно, то просто всё на 2 умножить
+        img.Width = 15;
 
         border.Child = img;
-        border.Width = 17;
-        border.Height = 17;
+        border.Width = 25;
+        border.Height = 25;
         border.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
         border.BorderThickness = new Thickness(1);
         border.BorderBrush = new SolidColorBrush(Util.ConvertStringToColor("#FF455580"));
@@ -668,12 +668,12 @@ namespace MyWay
       BitmapImage bi = new BitmapImage();
       bi.UriSource = new Uri("/Assets/stop.png", UriKind.Relative);
       img.Source = bi;
-      img.Height = 10;
-      img.Width = 10;
+      img.Height = 15;
+      img.Width = 15;
 
       border.Child = img;
-      border.Width = 17;
-      border.Height = 17;
+      border.Width = 25;
+      border.Height = 25;
       border.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
       border.BorderThickness = new Thickness(1);
       border.BorderBrush = new SolidColorBrush(Util.ConvertStringToColor("#FF455580"));

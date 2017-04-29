@@ -548,8 +548,19 @@ namespace MyWay
       }
     }
 
+    private int Stops_Near_ButtonClicks = 0; // счётчик кликов для перехода на страницу AR
     private void Stops_Near(object sender, EventArgs e)
     {
+      // переход на страницу виртуальной реальности
+      Stops_Near_ButtonClicks++;
+
+      if (Stops_Near_ButtonClicks >= 3)
+      {
+        Stops_Near_ButtonClicks = 0;
+        
+        Stops_AR(null, null);
+      }
+
       Stops_Search_Result.ItemsSource = new List<Stops.Model_XAML>();
       Util.Hide(Stops_Search_NoResults);
       Util.Show(Stops_Root);

@@ -2,6 +2,7 @@
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -272,6 +273,8 @@ namespace MyWay
     {
       _end = new Point(e.GetPosition(LayoutRoot).X, e.GetPosition(LayoutRoot).Y);
       int sub = (int)(_end.Y - _start.Y); // subtraction
+
+      Debug.WriteLine("Predicts_MouseLeftButtonUp");
 
       if (sub > border)
         _refresh();

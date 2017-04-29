@@ -9,7 +9,7 @@
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
-    SupportedOrientations="Landscape"  Orientation="LandscapeLeft"
+    SupportedOrientations="Landscape" Orientation="LandscapeLeft"
     mc:Ignorable="d"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:ARControls="clr-namespace:GART.Controls;assembly=GART.WP8"
@@ -43,11 +43,7 @@
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="0,0,0,0">
           <ARControls:ARDisplay x:Name="ARDisplay" AttitudeRefreshRate="50" MovementThreshold="10">
               <ARControls:VideoPreview x:Name="VideoPreview" Canvas.ZIndex="1"/>
-              <ARControls:WorldView x:Name="WorldView" Canvas.ZIndex="1" ItemTemplate="{StaticResource MapItemTemplate}" MinItemScale="0.1" MaxItemScale="1.0" FarClippingPlane="500.0" NearClippingPlane="1.0" Margin="-9,0,0,0"/>
-
-              <ARControls:ARDisplay.RenderTransform>
-                <TranslateTransform x:Name="ARDisplay_Transform" />
-              </ARControls:ARDisplay.RenderTransform>
+              <ARControls:WorldView x:Name="WorldView" Canvas.ZIndex="1" ItemTemplate="{StaticResource MapItemTemplate}" MinItemScale="0.1" MaxItemScale="1.0" FarClippingPlane="500.0" NearClippingPlane="1.0" />
             </ARControls:ARDisplay>
           </Grid>
     </Grid>

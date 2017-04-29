@@ -9,10 +9,10 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using Location = System.Device.Location.GeoCoordinate;
-using GART;
-using GART.BaseControls;
 using GART.Controls;
-using GART.Data;
+using System.Diagnostics;
+using System.Linq;
+using System.Windows.Media;
 
 namespace MyWay
 {
@@ -27,18 +27,24 @@ namespace MyWay
         Init();
         
         ARDisplay.StartServices();
-        
+
+        //ARDisplay.PhotoCamera.Initialized += (sender2, e2) =>
+        //{
+        //  //ARDisplay.PhotoCamera.Resolution = ARDisplay.PhotoCamera.AvailableResolutions.Last();
+        //};
+                
         ARDisplay.Orientation = ControlOrientation.Clockwise270Degrees;
 
         ARInit(); // инициализируем дополненную реальность
       };
     }
 
-    protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
+    protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
     {
-      base.OnNavigatedTo(e);
-
+      // Stop AR services
       ARDisplay.StopServices();
+
+      base.OnNavigatedFrom(e);
     }
 
     /// <summary>
@@ -48,14 +54,18 @@ namespace MyWay
     /// <param name="e"></param>
     protected override void OnOrientationChanged(OrientationChangedEventArgs e)
     {
-      //try
-      //{
-      //  if (e.Orientation == PageOrientation.LandscapeLeft)
-      //    ARDisplay.Orientation = ControlOrientation.Clockwise90Degrees;
-      //}
-      //catch { }
+      base.OnOrientationChanged(e);
 
-      return;
+      //CompositeTransform t = new CompositeTransform();
+      //t.Rotation = 270 - (double)e.Orientation;
+
+      //WorldView.RenderTransform = t;
+
+      //if (e.Orientation == PageOrientation.LandscapeRight)
+      //  ARDisplay.Orientation = ControlOrientation.Clockwise270Degrees;
+
+      // return;
+      
       //base.OnOrientationChanged(e);
     }
 

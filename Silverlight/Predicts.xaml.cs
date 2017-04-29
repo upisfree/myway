@@ -41,7 +41,7 @@ namespace MyWay
         // проверяем, есть ли уже такая плиточка. да? убираем кнопку выноса
         if (IsTileOnStart("/Predicts.xaml?link=" + TileLink + "&name=" + TileName) != null)
         {
-          ApplicationBar.IsVisible = false;
+          ((ApplicationBarMenuItem)ApplicationBar.MenuItems[0]).IsEnabled = false; // http://stackoverflow.com/questions/5334574/applicationbariconbutton-is-null
         }
 
         System.Windows.Threading.DispatcherTimer dt = new System.Windows.Threading.DispatcherTimer();
@@ -76,7 +76,7 @@ namespace MyWay
       // проверяем, есть ли уже такая плиточка. да? убираем кнопку выноса
       if (IsTileOnStart("/Predicts.xaml?link=" + TileLink + "&name=" + TileName) != null)
       {
-        ApplicationBar.IsVisible = false;
+        ((ApplicationBarMenuItem)ApplicationBar.MenuItems[0]).IsEnabled = false; // http://stackoverflow.com/questions/5334574/applicationbariconbutton-is-null
       }
     }
 
@@ -95,8 +95,6 @@ namespace MyWay
       NoFuture_Flag = 0;
       Util.Hide(Error);
       Util.Show(Load);
-
-      Predicts.Items.Add(GetSwipeInfo());
 
       await Task.Delay(100);
 
@@ -235,107 +233,6 @@ namespace MyWay
       {
         ShellTile.Create(new Uri(uri, UriKind.Relative), data, true);
       }
-    }
-
-    #endregion
-
-    #region Обновление по свайпу
-
-    private Point _start;
-    private Point _current;
-    private Point _end;
-    private int border = 120;
-
-    private void Predicts_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
-    {
-      _start = _current = new Point(e.GetPosition(LayoutRoot).X, e.GetPosition(LayoutRoot).Y);
-      _end = new Point(0, 0);
-    }
-
-    private void Predicts_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
-    {
-      _current = new Point(e.GetPosition(LayoutRoot).X, e.GetPosition(LayoutRoot).Y);
-      int sub = (int)(_current.Y - _start.Y); // subtraction
-
-      if (sub > border)
-      {
-        SwipeInfoArrow_Animation(90, 270, 0.5);
-        ((TextBlock)((Grid)Predicts.Items[0]).Children[1]).Text = "отпусти, чтобы обновить";
-      }
-      else
-      {
-        SwipeInfoArrow_Animation(270, 90, 0.5);
-        ((TextBlock)((Grid)Predicts.Items[0]).Children[1]).Text = "потяни, чтобы обновить";
-      }
-   }
-
-    private void Predicts_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
-    {
-      _end = new Point(e.GetPosition(LayoutRoot).X, e.GetPosition(LayoutRoot).Y);
-      int sub = (int)(_end.Y - _start.Y); // subtraction
-
-      Debug.WriteLine("Predicts_MouseLeftButtonUp");
-
-      if (sub > border)
-        _refresh();
-    }
-    
-    private Grid GetSwipeInfo()
-    {
-      Grid g = new Grid();
-      g.Margin = new Thickness(0, -100, 0, 0);
-      g.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-
-      TextBlock arrow = new TextBlock();
-      arrow.Text = "➔";
-      arrow.FontSize = 42;
-      arrow.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
-      arrow.VerticalAlignment = System.Windows.VerticalAlignment.Top;
-      RotateTransform rt = new RotateTransform();
-      rt.Angle = 90;
-      rt.CenterX = rt.CenterY = 25;
-      arrow.RenderTransform = rt;
-
-      TextBlock text = new TextBlock();
-      text.Text = "потяни, чтобы обновить";
-      text.FontSize = 24;
-      text.VerticalAlignment = System.Windows.VerticalAlignment.Top;
-      text.Margin = new Thickness(0, 40, 0, 0);
-
-      g.Children.Add(arrow);
-      g.Children.Add(text);
-
-      return g;
-    }
-
-    private double oldFrom; // чтобы он одну и ту же анимацию постоянно не воспроизводил
-    private void SwipeInfoArrow_Animation(double from, double to, double time)
-    {
-      if (oldFrom == from)
-        return;
-      else
-        oldFrom = from;
-
-      Duration duration = new Duration(TimeSpan.FromSeconds(time));
-      Storyboard sb = new Storyboard();
-      sb.Duration = duration;
-
-      DoubleAnimation da = new DoubleAnimation();
-      da.Duration = duration;
-
-      sb.Children.Add(da);
-
-      RotateTransform rt = new RotateTransform();
-
-      Storyboard.SetTarget(da, rt);
-      Storyboard.SetTargetProperty(da, new PropertyPath("Angle"));
-      da.From = from;
-      da.To = to;
-
-      ((TextBlock)((Grid)Predicts.Items[0]).Children[0]).RenderTransform = rt;
-      ((TextBlock)((Grid)Predicts.Items[0]).Children[0]).RenderTransformOrigin = new Point(0.5, 0.5);
-
-      sb.Begin();
     }
 
     #endregion

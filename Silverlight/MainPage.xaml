@@ -272,7 +272,7 @@
         <ListBox Margin="15,-16,15,0">
           <ListBoxItem>
             <Grid Width="425">
-              <TextBlock Text="удаляение всех данных, сохранённых приложением: маршрутов, остановок и т. д."
+              <TextBlock Text="удаление всех данных, сохранённых приложением: маршрутов, остановок и т. д."
                          TextWrapping="Wrap"
                          Foreground="{StaticResource PhoneSubtleBrush}" />
               <Button Content="удалить кэш" Margin="-12,55,-12,0" Tap="DeleteCache" toolkit:TiltEffect.IsTiltEnabled="True" />
@@ -290,7 +290,7 @@
 
           <ListBoxItem>
             <Grid Width="425">
-              <toolkit:ToggleSwitch x:Name="Favourite_Scroll_ToggleSwicth" Header="открывание избранного при старте" Content="Вкл." IsChecked="True" SwitchForeground="#FF455580" Margin="-11,0" Checked="Favourite_Scroll_Changed" Unchecked="Favourite_Scroll_Unchanged" />
+              <toolkit:ToggleSwitch x:Name="Favourite_Scroll_ToggleSwicth" Header="открывать избранное при старте" Content="Вкл." IsChecked="True" SwitchForeground="#FF455580" Margin="-11,0" Checked="Favourite_Scroll_Changed" Unchecked="Favourite_Scroll_Unchanged" />
             </Grid>
           </ListBoxItem>
 

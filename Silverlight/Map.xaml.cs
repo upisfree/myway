@@ -86,7 +86,9 @@ namespace MyWay
           {
             case "route":
             case "settings":
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed. Consider applying the 'await' operator to the result of the call.
               ShowRoute(id); // await убрал
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed. Consider applying the 'await' operator to the result of the call.
               break;
             case "stop":
               if (NavigationContext.QueryString.TryGetValue("lon", out lon) && NavigationContext.QueryString.TryGetValue("lat", out lat))
@@ -247,7 +249,9 @@ namespace MyWay
           _Models.Main _m = JsonConvert.DeserializeObject<_Models.Main>(json);
           return new Model() { Coordinates = _m.Features[0].Geometry.Geometries[0].Coordinates, Stations = _m.Stations };
         }
+#pragma warning disable CS0168 // The variable 'e' is declared but never used
         catch (Exception e)
+#pragma warning restore CS0168 // The variable 'e' is declared but never used
         {
           return null;
         }
@@ -313,13 +317,17 @@ namespace MyWay
 
         DrawUser(currentPosition);
       }
+#pragma warning disable CS0168 // The variable 'e' is declared but never used
       catch (Exception e)
+#pragma warning restore CS0168 // The variable 'e' is declared but never used
       {
         MessageBoxResult mbr = MessageBox.Show("Не могу отобразить тебя на карте, так как у тебя отключено определение местоположения.\nОткрыть настройки, чтобы включить его?", "Местоположение", MessageBoxButton.OKCancel);
 
         if (mbr == MessageBoxResult.OK)
         {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed. Consider applying the 'await' operator to the result of the call.
           Launcher.LaunchUriAsync(new Uri("ms-settings-location:"));
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed. Consider applying the 'await' operator to the result of the call.
         }
       }
     }

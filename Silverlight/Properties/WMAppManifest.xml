@@ -5,7 +5,7 @@
     <Language code="ru" />
     <Language code="ru-RU" />
   </Languages>
-  <App xmlns="" ProductID="{df514d43-08d1-4983-b1f9-507743814f53}" Title="Мой маршрут" RuntimeType="Silverlight" Version="1.3.0.0" Genre="apps.normal" Author="upisfree" Description="Мой маршрут — система, позволяющая наблюдать за движением муниципального транспорта на карте города и показывающая прогноз времени прибытия нужного автобуса, троллейбуса или трамвая на остановку." Publisher="upisfree" PublisherID="{9f7fcde2-6f3e-489d-b3e6-3a9cab21e30c}" NotificationService="MPN">
+  <App xmlns="" ProductID="{df514d43-08d1-4983-b1f9-507743814f53}" Title="Мой маршрут" RuntimeType="Silverlight" Version="1.5.0.0" Genre="apps.normal" Author="Senya Pugach" Description="Мой маршрут — система, позволяющая наблюдать за движением муниципального транспорта на карте города и показывающая прогноз времени прибытия нужного автобуса, троллейбуса или трамвая на остановку." Publisher="Senya Pugach" PublisherID="{9f7fcde2-6f3e-489d-b3e6-3a9cab21e30c}" NotificationService="MPN">
     <IconPath IsRelative="true" IsResource="false">Assets\ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />
@@ -16,7 +16,7 @@
       <Capability Name="ID_CAP_SENSORS" />
     </Capabilities>
     <Tasks>
-      <DefaultTask Name="_default" NavigationPage="MainPage.xaml" />
+      <DefaultTask Name="_default" NavigationPage="MainPage.xaml" ActivationPolicy="Resume" />
     </Tasks>
     <Tokens>
       <PrimaryToken TokenID="MyWayToken" TaskName="_default">

@@ -354,35 +354,20 @@
 
             <ListBoxItem Margin="0,25,0,0">
               <Grid Width="425">
-                <TextBlock Text="Есть какие-то вопросы, замечания, предложения? Смело пишите сюда!"
+                <TextBlock Text="Есть какие-то вопросы? Жмите на кнопку!"
 							             FontSize="21"
                            TextWrapping="Wrap" Margin="0,0,-12,0"
                            Foreground="White" />
-                <Button Content="обратная связь" Margin="-13,55,-13,27" Click="ContactVK" toolkit:TiltEffect.IsTiltEnabled="True" BorderBrush="White" Foreground="White" />
+                <Button Content="обратная связь" Margin="-13,30,-13,27" Click="ContactVK" toolkit:TiltEffect.IsTiltEnabled="True" BorderBrush="White" Foreground="White" />
               </Grid>
             </ListBoxItem>
 
-            <ListBoxItem Margin="0,-15,0,0">
+            <ListBoxItem Margin="0,25,0,0">
               <Grid Width="425">
-                <TextBlock Text="Автор приложения — Сеня Пугач, система разработана ООО «Флагман-Софт»."
+                <TextBlock Text="Сделал Сеня Пугач из Омска в 2014 году."
 							             TextWrapping="Wrap"
                            Foreground="White"
                            FontSize="21" />
-              </Grid>
-            </ListBoxItem>
-
-            <ListBoxItem Margin="0,15,0,0">
-              <Grid Width="425">
-                <TextBlock Text="Тут лежат 2-а пасхальных яйца!"
-							             TextWrapping="Wrap"
-                           Foreground="White" />
-              </Grid>
-            </ListBoxItem>
-
-            <ListBoxItem Margin="0,15,0,0">
-              <!-- для отступа -->
-              <Grid Width="425">
-                <TextBlock Text="" />
               </Grid>
             </ListBoxItem>
           </ListBox>

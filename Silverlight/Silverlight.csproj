@@ -176,6 +176,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\bus.png" />
+    <Content Include="Assets\Buses\0.png" />
+    <Content Include="Assets\Buses\135.png" />
+    <Content Include="Assets\Buses\180.png" />
+    <Content Include="Assets\Buses\225.png" />
+    <Content Include="Assets\Buses\270.png" />
+    <Content Include="Assets\Buses\315.png" />
+    <Content Include="Assets\Buses\360.png" />
+    <Content Include="Assets\Buses\45.png" />
+    <Content Include="Assets\Buses\90.png" />
     <Content Include="Assets\bus_white.png" />
     <Content Include="Assets\MapUser.png" />
     <Content Include="Assets\NoRun.wav" />

@@ -402,16 +402,8 @@ namespace MyWay
         _Models.Stations b = data.Stations[i];
 
         Border border = new Border();
-        Image img = new Image();
-        BitmapImage bi = new BitmapImage();
-        bi.UriSource = new Uri("/Assets/stop.png", UriKind.Relative);
-        img.Source = bi;
-        img.Height = 15; // если возвращать обратно, то просто всё на 2 умножить
-        img.Width = 15;
-
-        border.Child = img;
-        border.Width = 25;
-        border.Height = 25;
+        border.Width = 20;
+        border.Height = 20;
         border.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
         border.BorderThickness = new Thickness(1);
         border.BorderBrush = new SolidColorBrush(Util.ConvertStringToColor("#FF455580"));
@@ -536,29 +528,20 @@ namespace MyWay
 
           foreach (BusesModel.Vehicle a in b.Vehicles)
           {
-            //a.Course = new Random().Next(0, 360);
-            //a.Course = a.Course - 90;
+            int course = 45 * (int)Math.Round(a.Course / 45.0);
             
             Grid grid = new Grid();
-            Border border = new Border();
-            Image img = new Image();
+            Image bus = new Image();
             BitmapImage bi = new BitmapImage();
-            bi.UriSource = new Uri("/Assets/bus.png", UriKind.Relative);
-            img.Source = bi;
-            img.Height = 20;
-            img.Width = 20;
-
-            border.Child = img;
-            border.Width = 35;
-            border.Height = 35;
-            border.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-            border.BorderThickness = new Thickness(2);
-            border.BorderBrush = new SolidColorBrush(Util.ConvertStringToColor("#FF455580"));
-            border.CornerRadius = new CornerRadius(100);
-            border.Tag = "http://t.bus55.ru/index.php/app/get_stations/" + id + "|" + Util.TypographString(a.Info);
-            border.Tap += (sender2, e2) =>
+            bi.UriSource = new Uri("/Assets/Buses/" + course + ".png", UriKind.Relative);
+            
+            bus.Source = bi;
+            bus.Width = 45;
+            bus.Height = 45;
+            bus.Tag = "http://t.bus55.ru/index.php/app/get_stations/" + id + "|" + Util.TypographString(a.Info);
+            bus.Tap += (sender2, e2) =>
             {
-              string str = ((Border)sender2).Tag.ToString();
+              string str = ((Image)sender2).Tag.ToString();
 
               if (_mapPushpinsLayerInt == -1)
               {
@@ -584,25 +567,9 @@ namespace MyWay
               MapPanel.Layers[_mapPushpinsLayerInt] = _layer;
             };
 
-            TextBlock tb = new TextBlock();
-            tb.Text = "➔";
-            tb.FontSize = 32;
-            tb.Foreground = new SolidColorBrush(Util.ConvertStringToColor("#FF455580"));
-            tb.RenderTransform = new RotateTransform() { Angle = a.Course - 90 };
-            
-            Vector2 v = new Vector2((float)Math.Cos(MathHelper.ToRadians(a.Course - 90)), (float)Math.Sin(MathHelper.ToRadians(a.Course - 90)));
-            
-            Debug.WriteLine("x: " + v.X + ", y: " + v.Y);
-            
-            //tb.RenderTransformOrigin = new Point(v.X * 10, v.Y * 10);
-            tb.Margin = new Thickness() { Left = v.X * 10, Top = v.Y * 10 };
-
-            //tb.RenderTransformOrigin = new Point(0.5, 0.8);
-
             grid.Width = 50;
             grid.Height = 50;
-            grid.Children.Add(tb);
-            grid.Children.Add(border);
+            grid.Children.Add(bus);
 
             MapOverlay overlay = new MapOverlay();
             overlay.Content = grid;
@@ -672,16 +639,8 @@ namespace MyWay
       MapLayer layer = new MapLayer();
 
       Border border = new Border();
-      Image img = new Image();
-      BitmapImage bi = new BitmapImage();
-      bi.UriSource = new Uri("/Assets/stop.png", UriKind.Relative);
-      img.Source = bi;
-      img.Height = 15;
-      img.Width = 15;
-
-      border.Child = img;
-      border.Width = 25;
-      border.Height = 25;
+      border.Width = 20;
+      border.Height = 20;
       border.Background = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
       border.BorderThickness = new Thickness(1);
       border.BorderBrush = new SolidColorBrush(Util.ConvertStringToColor("#FF455580"));
